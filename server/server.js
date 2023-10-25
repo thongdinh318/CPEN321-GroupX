@@ -1,13 +1,18 @@
 import express from "express";
-// import {  initDb, getProfile, getSubList, updateProfile, updateHistory } from "./user.js";
 import * as userMod from "./user.js"
 import { MongoClient } from "mongodb";
+import fs from "fs"
+import https from "https"
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 var app = express()
 
 app.use(express.json())
 
+var options = {
+	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+};
 // Error checking function
 function isErr(error){
     //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
@@ -26,6 +31,10 @@ app.post("/initdb", async (req,res)=>{
     }
 })
 // <--- testing purpose
+
+app.get("/", (req,res)=>{
+	res.status(200).send("Hello from HTTPS")
+})
 
 app.get("/profile/:userId", async (req,res)=>{
     var userId = parseInt(req.originalUrl.substring(9), 10)
@@ -79,11 +88,16 @@ async function run(){
     try {
         await client.connect()
         console.log("Successfully connect to db")
-        var server = app.listen(8081, (req,res)=>{
+	
+        /* Use this for localhost test
+	 * var server = app.listen(8081, (req,res)=>{
             var host = server.address().address
             var port = server.address().port
             console.log("Server is running at https://%s:%s",host,port)
-        })
+        })*/
+	
+	// create https server
+	https.createServer(options, app).listen(8081)
     } catch (error) {
         console.log(err)
         await client.close()
