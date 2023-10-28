@@ -1,0 +1,19 @@
+User module:
+GET /profile/:userId
+GET /profile/:userId/subscriptions
+PUT /profile/:userId
+PUT /profile/:userId/history
+
+Article Module:
+
+GET /article/:articleId
+GET /article/filter/search (note: include the query after search)
+ex: GET "http://localhost:8081/article/filter/search?publisher=CNN&after=2023-04-01&before=2023-12-31&categories=education,environment"
+    publisher, after, before:String
+    categories: String. Separated by commas
+
+GET /article/kwsearch/search (NOTE: include keyword needs to be matched after search)
+ex: http://localhost:8081/article/kwsearch/search?keyWord=something
+
+Forum module (TBA)
+    
