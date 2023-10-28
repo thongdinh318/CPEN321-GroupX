@@ -19,18 +19,18 @@ public class ArticlesActivity extends AppCompatActivity {
 
 private ActivityArticlesBinding binding;
 
-    RecyclerView articleView;
+    private RecyclerView articleView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-     binding = ActivityArticlesBinding.inflate(getLayoutInflater());
-     setContentView(binding.getRoot());
+        binding = ActivityArticlesBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
-        CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
-        toolBarLayout.setTitle(getTitle());
+        //CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
+        //toolBarLayout.setTitle(getTitle());
 
         List<Article> palceholderArticles = new ArrayList<Article>();
         palceholderArticles.add(new Article("Article1", "https://www.cbc.ca/player/play/2277156419849", "Lorem Ipsum"));
@@ -40,13 +40,5 @@ private ActivityArticlesBinding binding;
         articleView.setLayoutManager(new LinearLayoutManager(this));
         articleView.setAdapter(new ArticlesViewAdapter(getApplicationContext(), palceholderArticles));
 
-        FloatingActionButton fab = binding.fab;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 }
