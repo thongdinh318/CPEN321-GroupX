@@ -1,6 +1,7 @@
 package com.groupx.quicknews;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,12 +14,14 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
     public TextView articleSynopsis;
     public LinearLayout hiddenView;
     public CardView cardView;
+    public Button redirectButton;
     public ArticleViewHolder(@NonNull View view) {
         super(view);
         articleTitle = itemView.findViewById(R.id.article_title);
         articleSynopsis = itemView.findViewById(R.id.article_synopsis);
         hiddenView = itemView.findViewById(R.id.hidden_view);
         cardView = itemView.findViewById(R.id.base_cardview);
+        redirectButton = itemView.findViewById(R.id.redirect_article_button);
     }
 
 }
