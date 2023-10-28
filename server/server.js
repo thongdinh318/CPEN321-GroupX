@@ -95,7 +95,8 @@ app.put("/profile/:userId/history", async (req,res)=>{
 app.get("/article/:articleId", async (req,res)=>{
 
     var splittedWords = req.originalUrl.split("/")
-    var articleId = splittedWords[2];
+    var articleId = parseInt(splittedWords[2],10);
+    console.log(articleId)
     var foundArticle = await artcileMod.searchById(client,articleId);
 
     if(isErr(foundArticle)){
@@ -107,33 +108,23 @@ app.get("/article/:articleId", async (req,res)=>{
 })
 
 // Search using filters
-app.get("/article/search?publisher=:publisher&before=:beforeDate&after:afterDate&category:categories", async(req,res)=>{
-    var filters = req.originalUrl.split("?")[1]
-    filters = filters.split("&")
+app.get("/article/filter/search", async(req,res)=>{
 
-    var criteriaList = []
-
-    filters.forEach(criteria => {
-        var criterion = criteria.split("=")[1]
-        criteriaList.push(criterion)
-    });
-
-    var publisher = criteriaList[0]
-    var before = criteriaList[1]
-    var after = criteriaList[2]
+    var publisher = req.query.publisher
+    var before = req.query.before
+    var after = req.query.after
+    var categories = req.query.categories
+    // console.log(req.query)
+    // res.status(200).send("Testing")
 
     var query = new Object()
-    if (criteriaList[criteriaList.length-1] != ""){
-        var categoryList = criteriaList[criteriaList.length-1].split(",")
-        query.category = {$in: categoryList}
-    }
-
     if (publisher != ""){
-        query.publisher = {$text:{$search: publisher}}
+        query.publisher = publisher
     }
     if (before != "" && after != ""){
-        before = new Date(before).toISOString
-        after = new Date(after).toISOString
+        before = new Date(before).toISOString()
+        after = new Date(after).toISOString()
+        // console.log(before)
         query.publishedDate = {$gte:after, $lte: before}
     }
     else if (before != ""){
@@ -145,9 +136,15 @@ app.get("/article/search?publisher=:publisher&before=:beforeDate&after:afterDate
         query.publishedDate = {$gte: after}
     }
 
+    if (categories != ""){
+        var list = categories.split(",")
+        query.categories = {$in: list}
+    }
+    // console.log(query)
     var foundArticles = await artcileMod.searchByFilter(client, query)
 
     if(isErr(foundArticles)){
+        console.log("ERROR")
         res.status(400).send(foundArticles)
     }
     else{
@@ -156,12 +153,10 @@ app.get("/article/search?publisher=:publisher&before=:beforeDate&after:afterDate
 })
 
 // Search using search bar
-app.get("/article/search?keywords=:keywords", async(req,res)=>{
-    var filters = req.originalUrl.split("?")[1]
-    var keyWord = filters.split("=")[1]
+app.get("/article/kwsearch/search", async(req,res)=>{
+    var keyWord = req.query.keyWord
 
-    var query = {$text:{$search:keyWord}}
-
+    var query = {content: {$regex: keyWord, $options:"i"}}
     var foundArticles = await artcileMod.searchByFilter(client, query);
 
     if(isErr(foundArticles)){

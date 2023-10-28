@@ -45,9 +45,10 @@ async function initADb(client, initNum){
 async function searchById(client, articleId){
     try {
         var foundArticle  = await client.db("articledb").collection("articles").find({"articleId": articleId});
-        foundArticle = await result.toArray()
+        foundArticle = await foundArticle.toArray()
+        console.log(foundArticle)
         if (foundArticle == undefined || foundArticle.length == 0){
-            return null
+            return ("Not Found")
         }
         else{
             return foundArticle[0]
@@ -60,18 +61,30 @@ async function searchById(client, articleId){
 
 async function searchByFilter(client, query){
     try {
+        // console.log(query)
         var foundArticles  = await client.db("articledb").collection("articles").find(query);
-        foundArticles = await result.toArray()
+        foundArticles = await foundArticles.toArray()
+        console.log(foundArticles)
         if (foundArticles == undefined || foundArticles.length == 0){
-            return null
+            return "Not F"
         }
         else{
             return foundArticles
         }
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return error
     }
 }
 
-export {searchByFilter,searchById, initADb}
+async function getArticleIds(client){
+    var articleCollection = await client.db("articledb").collection("articles").find({}).toArray()
+    var articleIdList = [];
+
+    articleCollection.forEach((article)=>{
+        articleIdList.push(article.articleId);
+    })
+
+    return (articleIdList)
+}
+export {getArticleIds, searchByFilter,searchById, initADb}
