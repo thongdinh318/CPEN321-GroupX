@@ -1,6 +1,9 @@
 //TODO implement database retrieval
 //DUMMY DATA
-const userItemData = [
+import { getArticleIds } from "./articlesMngt";
+import { getAllUserHistory } from "../user";
+
+/* const userItemData = [
     { userId: 1, itemId: 'A', rating: 5 },
     { userId: 1, itemId: 'B', rating: 4 },
     { userId: 2, itemId: 'A', rating: 3 },
@@ -9,16 +12,29 @@ const userItemData = [
   ];
   
   const users = [1, 2, 3];
-  const items = ['A', 'B', 'C'];
+  const items = ['A', 'B', 'C']; */
   
-  function collaborativeFilteringRecommendations(userId) {
+  async function collaborativeFilteringRecommendations(client, userId) {
     // Create user-item rating matrix.
+    const userInfo = await getAllUserHistory(client);
+    const userItemData = userInfo.userItemData;
+    const users = userInfo.users;
+    const items = await getArticleIds(client);
+
+    console.log(userItemData);
+    console.log(users);
+    console.log(items);
+
     const userItemMatrix = {};
     for (const interaction of userItemData) {
       if (!userItemMatrix[interaction.userId]) {
         userItemMatrix[interaction.userId] = {};
       }
-      userItemMatrix[interaction.userId][interaction.itemId] = interaction.rating;
+      if(!userItemMatrix[interaction.userId][interaction.itemId]) {
+        userItemMatrix[interaction.userId][interaction.itemId] = interaction.views;
+      } else {
+        userItemMatrix[interaction.userId][interaction.itemId] += interaction.views;
+      }
     }
   
     // Calculate recommendations for the specified user.
@@ -28,7 +44,7 @@ const userItemData = [
     for (const item of items) {
       if (!userRatings[item]) {
         // Predict the user's rating for the item based on similar users.
-        recommendations[item] = predictRating(userId, item, userItemMatrix);
+        recommendations[item] = predictRating(userId, item, userItemMatrix, users);
       }
     }
   
@@ -38,7 +54,7 @@ const userItemData = [
     return sortedRecommendations;
   }
   
-  function predictRating(userId, itemId, userItemMatrix) {
+  function predictRating(userId, itemId, userItemMatrix, users) {
     let numerator = 0;
     let denominator = 0;
   
@@ -54,10 +70,10 @@ const userItemData = [
   }
   
   function calculateSimilarity(user1, user2, userItemMatrix) {
-    const ratings1 = userItemMatrix[user1];
-    const ratings2 = userItemMatrix[user2];
+    const views1 = userItemMatrix[user1];
+    const views2 = userItemMatrix[user2];
   
-    const commonItems = Object.keys(ratings1).filter((item) => ratings2[item]);
+    const commonItems = Object.keys(ratings1).filter((item) => views2[item]);
   
     if (commonItems.length === 0) {
       return 0;
@@ -68,11 +84,11 @@ const userItemData = [
     let sumSquared2 = 0;
   
     for (const item of commonItems) {
-      const rating1 = ratings1[item];
-      const rating2 = ratings2[item];
-      sumProduct += rating1 * rating2;
-      sumSquared1 += rating1 ** 2;
-      sumSquared2 += rating2 ** 2;
+      const view1 = views1[item];
+      const view2 = views2[item];
+      sumProduct += view1 * view2;
+      sumSquared1 += view1 ** 2;
+      sumSquared2 += view2 ** 2;
     }
   
     return sumProduct / (Math.sqrt(sumSquared1) * Math.sqrt(sumSquared2));
