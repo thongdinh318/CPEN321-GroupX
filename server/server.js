@@ -23,12 +23,13 @@ function isErr(error){
 //testing purpose -->
 app.post("/initdb", async (req,res)=>{
     var initNum = req.body.initNum
-    var result = await userMod.initDb(client, initNum)
-    if (isErr(result)){
-        res.status(400).send(result)
+    var result1 = await userMod.initDb(client, initNum)
+    var result2 = await artcileMod.initADb(client, initNum)
+    if (isErr(result1) || isErr(result2)){
+        res.status(400).send("Failed to init dbs")
     }
     else{
-        res.status(200).send(result)
+        res.status(200).send("success/n")
     }
 })
 // <--- testing purpose
@@ -131,16 +132,16 @@ app.get("/article/search?publisher=:publisher&before=:beforeDate&after:afterDate
         query.publisher = {$text:{$search: publisher}}
     }
     if (before != "" && after != ""){
-        before = new Date(before.toISOString())
-        after = new Date(after.toISOString())
+        before = new Date(before).toISOString
+        after = new Date(after).toISOString
         query.publishedDate = {$gte:after, $lte: before}
     }
     else if (before != ""){
-        before = new Date(before.toISOString())
+        before = new Date(before).toISOString
         query.publishedDate = {$lte: before}
     }
     else if (after != ""){
-        after = new Date(after.toISOString())
+        after = new Date(after).toISOString
         query.publishedDate = {$gte: after}
     }
 
