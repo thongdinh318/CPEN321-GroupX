@@ -11,7 +11,7 @@ const defArticle = {
 function createNewArticle(articleId){
     var newArticle = JSON.parse(JSON.stringify(defArticle))
     newArticle.articleId = articleId
-    newArticle.views = 10
+    newArticle.views = 0
     if (articleId % 2 == 0){
         newArticle.content = "Summarized content of article"
         newArticle.publisher = "CBC"
@@ -82,6 +82,7 @@ async function getArticleIds(client){
     var articleIdList = [];
 
     articleCollection.forEach((article)=>{
+        article.views = article.views + 1
         articleIdList.push(article.articleId);
     })
 
