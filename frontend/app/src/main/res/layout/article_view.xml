@@ -84,7 +84,6 @@
                     android:id="@+id/redirect_article_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="28dp"
                     android:text="@string/redirect_article_button_caption"
                     android:layout_gravity="center"
                     app:layout_constraintBottom_toTopOf="parent"

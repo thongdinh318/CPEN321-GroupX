@@ -1,15 +1,17 @@
 package com.groupx.quicknews;
 
+import static android.app.PendingIntent.getActivity;
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,15 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
-
+    private Context context;
+    private List<Article> articles;
     final static String TAG = "ArticleView";
     public ArticlesViewAdapter(Context context, List<Article> articles) {
         this.context = context;
         this.articles = articles;
     }
 
-    private Context context;
-    private List<Article> articles;
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,6 +48,16 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
                     TransitionManager.beginDelayedTransition(holder.cardView, new AutoTransition());
                     holder.hiddenView.setVisibility(View.VISIBLE);
                 }
+            }
+        });
+
+        holder.redirectButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Uri uri = Uri.parse(articles.get(holder.getAdapterPosition()).getUrl()); // missing 'http://' will cause crashed
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
             }
         });
         return holder;
