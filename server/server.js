@@ -114,8 +114,6 @@ app.get("/article/filter/search", async(req,res)=>{
     var before = req.query.before
     var after = req.query.after
     var categories = req.query.categories
-    // console.log(req.query)
-    // res.status(200).send("Testing")
 
     var query = new Object()
     if (publisher != ""){
@@ -124,7 +122,6 @@ app.get("/article/filter/search", async(req,res)=>{
     if (before != "" && after != ""){
         before = new Date(before).toISOString()
         after = new Date(after).toISOString()
-        // console.log(before)
         query.publishedDate = {$gte:after, $lte: before}
     }
     else if (before != ""){
@@ -140,7 +137,6 @@ app.get("/article/filter/search", async(req,res)=>{
         var list = categories.split(",")
         query.categories = {$in: list}
     }
-    // console.log(query)
     var foundArticles = await artcileMod.searchByFilter(client, query)
 
     if(isErr(foundArticles)){
