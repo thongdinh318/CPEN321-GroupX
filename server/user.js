@@ -8,9 +8,7 @@ const defUser = {
 	"history":[
 /*		{
             "articleId":null,
-			"genre": null,
-			"author": null,
-			"topic": null,
+			"rating":null
 		}*/
 	]
 	
@@ -142,15 +140,29 @@ async function updateHistory(client, userId, data){
 // <--Interfaces with frontend 
 
 // Interfaces with other modules -->
-async function getAllUserHistory(){
+async function getAllUserHistory(client){
     var profileCollec = await client.db("userdb").collection("profile").find({}).toArray()
-    var result = [];
+    
+    var userItemData = [];
+    var userList = [];
+
     profileCollec.forEach((user)=>{
-        var object = new Object()
-        object.userId = user.userId;
-        object.history = user.history;
-        result.push(object)
+        userList.push(user.userId);
+        if (user.history.length > 0)
+        {
+            user.history.forEach((item)=>{
+                var itemData = new Object()
+                itemData.userId = user.userId;
+                itemData.itemId = item.articleId;
+                itemData.views = item.views;
+                userItemData.push(itemData)
+            })
+        }
     })
+
+    var result = new Object();
+    result.users = userList;
+    result.userItemData = userItemData
     console.log(result)
     return result
 }
