@@ -4,15 +4,17 @@ import cheerio from 'cheerio'
 
 const bing_endpoints = "https://api.bing.microsoft.com/v7.0/news"
 const key = '56e2a381b452440abe22ce6ffb33b485'
-
+const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 async function searchNews(query){
     var url = bing_endpoints+"/search"
     console.log(url)
     try {
+        var user_query = query + " " + EXCLUDED_SITE.join(" ")
+        console.log(user_query)
         const res = await axios.get(url, {
             headers:{ 'Ocp-Apim-Subscription-Key': key},
             params:{
-                q:query,
+                q:user_query,
                 count: 3,
                 sortBy:"Date",
                 freshness:"Month",
@@ -49,9 +51,8 @@ async function scrapeURL(url){
     }
 }
 
-async function bingNewsRetriever(term){
-    var result = await searchNews(term)
-    // console.log(result.value)
+async function bingNewsRetriever(searchTerm){
+    var result = await searchNews(searchTerm)
     
     var retrievedArticles =[]
     for (var article of result.value){
@@ -71,5 +72,4 @@ async function bingNewsRetriever(term){
 
     return retrievedArticles
 }
-// bingNewsRetriever("treding")
 export {bingNewsRetriever}
