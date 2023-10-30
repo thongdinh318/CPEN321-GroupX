@@ -43,6 +43,7 @@ function createNewUser(userId){
 //testing purpose -->
 async function initDb(client, initNum){
     try {
+        await client.db("userdb").collection("profile")
         for (var id = 1; id < initNum; id++){
             var newUser = createNewUser(id)
             await client.db("userdb").collection("profile").insertOne(newUser)

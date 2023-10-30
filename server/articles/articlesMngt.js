@@ -31,6 +31,7 @@ function createNewArticle(articleId){
 //testing purpose -->
 async function initADb(client, initNum){
     try {
+        await client.db("articledb").collection("articles")
         for (var id = 1; id < initNum; id++){
             var newArticle = createNewArticle(id)
             await client.db("articledb").collection("articles").insertOne(newArticle)
@@ -66,7 +67,7 @@ async function searchByFilter(client, query){
         foundArticles = await foundArticles.toArray()
         console.log(foundArticles)
         if (foundArticles == undefined || foundArticles.length == 0){
-            return "Not F"
+            return "Not Found"
         }
         else{
             return foundArticles
