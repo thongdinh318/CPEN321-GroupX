@@ -1,48 +1,49 @@
+import { MongoClient } from "mongodb";
+
 const defArticle = {
-    "articleId": null,
-    "views": null,
+    "articleId": 0,
+    "views": 0,
     "content": "",
     "categories":[],
     "publisher":"",
     "publishedDate": null,
 }
 
-// Helper Functions --->
-function createNewArticle(articleId){
-    var newArticle = JSON.parse(JSON.stringify(defArticle))
-    newArticle.articleId = articleId
-    newArticle.views = 0
-    if (articleId % 2 == 0){
-        newArticle.content = "Summarized content of article"
-        newArticle.publisher = "CBC"
-        newArticle.categories = ["sport","criminal"]
-        newArticle.publishedDate = new Date("2023-2-29").toISOString()
-    }
-    else{
-        newArticle.content = "Something about CPEN 321 and News"
-        newArticle.publisher = "CNN"
-        newArticle.categories = ["education", "environment"]
-        newArticle.publishedDate = new Date("2023-10-20").toISOString()
-    }
-    return newArticle
-}
+const uri = "mongodb://127.0.0.1:27017"
+const client = new MongoClient(uri)
 
+// Helper Functions --->
+// function createNewArticle(articleId){
+//     var newArticle = JSON.parse(JSON.stringify(defArticle))
+//     newArticle.articleId = articleId
+//     newArticle.views = 0
+//     if (articleId % 2 == 0){
+//         newArticle.content = "Summarized content of article"
+//         newArticle.publisher = "CBC"
+//         newArticle.categories = ["sport","criminal"]
+//         newArticle.publishedDate = new Date("2023-2-29").toISOString()
+//     }
+//     else{
+//         newArticle.content = "Something about CPEN 321 and News"
+//         newArticle.publisher = "CNN"
+//         newArticle.categories = ["education", "environment"]
+//         newArticle.publishedDate = new Date("2023-10-20").toISOString()
+//     }
+//     return newArticle
+// }
 // <-- Helper Functions
-//testing purpose -->
-async function initADb(client, initNum){
+
+//Intit DB Function-->
+async function initADb(){
     try {
-        for (var id = 1; id < initNum; id++){
-            var newArticle = createNewArticle(id)
-            await client.db("articledb").collection("articles").insertOne(newArticle)
-        }
-        
+        await client.db("articledb").collection("articles").insertOne(defArticle)
         return("success\n")
     } catch (error) {
         return (error)
     }
 }
-//<-- testing purpose 
-async function searchById(client, articleId){
+//<--- Intit DB Function
+async function searchById(articleId){
     try {
         var foundArticle  = await client.db("articledb").collection("articles").find({"articleId": articleId});
         foundArticle = await foundArticle.toArray()
@@ -59,7 +60,7 @@ async function searchById(client, articleId){
     }
 }
 
-async function searchByFilter(client, query){
+async function searchByFilter(query){
     try {
         // console.log(query)
         var foundArticles  = await client.db("articledb").collection("articles").find(query);
@@ -77,13 +78,15 @@ async function searchByFilter(client, query){
     }
 }
 
-async function getArticleIds(client){
+async function getArticleIds(){
     var articleCollection = await client.db("articledb").collection("articles").find({}).toArray()
     var articleIdList = [];
 
     articleCollection.forEach((article)=>{
-        article.views = article.views + 1
-        articleIdList.push(article.articleId);
+        if (article.articleId != 0){
+            article.views = article.views + 1
+            articleIdList.push(article.articleId);
+        }
     })
 
     return (articleIdList)
