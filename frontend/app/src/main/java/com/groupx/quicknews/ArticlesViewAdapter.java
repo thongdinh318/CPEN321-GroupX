@@ -37,13 +37,9 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
                 Log.d(TAG, holder.articleTitle.getText().toString());
 
                 if (holder.hiddenView.getVisibility() == View.VISIBLE) {
-                    // The transition of the hiddenView is carried out by the TransitionManager class.
-                    // Here we use an object of the AutoTransition Class to create a default transition
                     TransitionManager.beginDelayedTransition(holder.cardView, new AutoTransition());
                     holder.hiddenView.setVisibility(View.GONE);
                 }
-                // If the CardView is not expanded, set its visibility to
-                // visible and change the expand more icon to expand less.
                 else {
                     TransitionManager.beginDelayedTransition(holder.cardView, new AutoTransition());
                     holder.hiddenView.setVisibility(View.VISIBLE);
@@ -54,7 +50,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         holder.redirectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri uri = Uri.parse(articles.get(holder.getAdapterPosition()).getUrl()); // missing 'http://' will cause crashed
+                Uri uri = Uri.parse(articles.get(holder.getAdapterPosition()).getUrl()); // missing 'http:' will crash
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
