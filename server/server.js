@@ -3,7 +3,7 @@ import * as userMod from "./user.js"
 import { MongoClient } from "mongodb";
 import fs from "fs"
 import https from "https"
-import * as artcileMod from "./articles/articlesMngt.js"
+import * as articleMod from "./articles/articlesMngt.js"
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 var app = express()
@@ -19,25 +19,10 @@ function isErr(error){
     //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
     return error, error.e, error.stack
 }
-
-//testing purpose -->
-app.post("/initdb", async (req,res)=>{
-    var initNum = req.body.initNum
-    var result1 = await userMod.initDb(client, initNum)
-    var result2 = await artcileMod.initADb(client, initNum)
-    if (isErr(result1) || isErr(result2)){
-        res.status(400).send("Failed to init dbs")
-    }
-    else{
-        res.status(200).send("success/n")
-    }
-})
-// <--- testing purpose
-
 //--> User Module interfaces
 app.get("/", async (req,res)=>{
-    var result = await userMod.getAllUserHistory(client)
-    res.status(200).send(result)
+    // var result = await userMod.getAllUserHistory(client)
+    res.status(200).send("Hello from Group X")
 })
 
 app.get("/profile/:userId", async (req,res)=>{
@@ -97,7 +82,7 @@ app.get("/article/:articleId", async (req,res)=>{
     var splittedWords = req.originalUrl.split("/")
     var articleId = parseInt(splittedWords[2],10);
     console.log(articleId)
-    var foundArticle = await artcileMod.searchById(client,articleId);
+    var foundArticle = await articleMod.searchById(client,articleId);
 
     if(isErr(foundArticle)){
         res.status(400).send(foundArticle)
@@ -137,7 +122,7 @@ app.get("/article/filter/search", async(req,res)=>{
         var list = categories.split(",")
         query.categories = {$in: list}
     }
-    var foundArticles = await artcileMod.searchByFilter(client, query)
+    var foundArticles = await articleMod.searchByFilter(client, query)
 
     if(isErr(foundArticles)){
         console.log("ERROR")
@@ -153,7 +138,7 @@ app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
 
     var query = {content: {$regex: keyWord, $options:"i"}}
-    var foundArticles = await artcileMod.searchByFilter(client, query);
+    var foundArticles = await articleMod.searchByFilter(client, query);
 
     if(isErr(foundArticles)){
         res.status(400).send(foundArticles)
@@ -166,7 +151,8 @@ async function run(){
     try {
         await client.connect()
         console.log("Successfully connect to db")
-	
+        userMod.initDb(client,0)
+        articleMod.initADb(client,0)
         /* Use this for localhost test*/
 	 var server = app.listen(8081, (req,res)=>{
             var host = server.address().address
