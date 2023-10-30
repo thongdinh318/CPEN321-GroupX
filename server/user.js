@@ -1,20 +1,24 @@
+import { MongoClient } from "mongodb";
 //Default user setting
 const defUser = { 
 	"userId": 0,
-    "username": null,
+    "username": "root",
 	"dob": null,
 	"email":null,
 	"subscriptionList":[],
 	"history":[
 /*		{
             "articleId":null,
-			"rating":null
+			"views":null
 		}*/
 	]
 	
 }
+const uri = "mongodb://127.0.0.1:27017"
+const client = new MongoClient(uri)
+
 // Helper Functions --->
-async function checkAvailable(client, query, db, collection){
+async function checkAvailable(query, db, collection){
     try {
         var result = await client.db(db).collection(collection).find(query)
         var arr = await result.toArray()
@@ -40,24 +44,20 @@ function createNewUser(userId){
 }
 
 // <-- Helper Functions
-//testing purpose -->
-async function initDb(client, initNum){
+//Init DB function --->
+async function initUDb(){
     try {
-        for (var id = 1; id < initNum; id++){
-            var newUser = createNewUser(id)
-            await client.db("userdb").collection("profile").insertOne(newUser)
-        }
-        
+        await client.db("userdb").collection("profile").insertOne(defUser)
         return("success\n")
     } catch (error) {
         return (error)
     }
 }
-// <--- testing purpose
+//<--- Init DB function
 
 //Interfaces with frontend -->
 // get profile
-async function getProfile(client, userId){
+async function getProfile(userId){
     try {
         var user = await checkAvailable(client,{"userId":userId},"userdb","profile")
         if (user === null){
@@ -76,7 +76,7 @@ async function getProfile(client, userId){
     }
 }
 //get Subscription list
-async function getSubList(client, userId){
+async function getSubList(userId){
     try {
         var user = await checkAvailable(client, {"userId":userId},"userdb","profile")
         if (user == null){
@@ -92,7 +92,7 @@ async function getSubList(client, userId){
     }
 }
 //Update profile info
-async function updateProfile(client, userId, newProfile){
+async function updateProfile(userId, newProfile){
     try {
         var user = await checkAvailable(client, {"userId": userId},"userdb","profile")
         if (user == null){
@@ -109,7 +109,7 @@ async function updateProfile(client, userId, newProfile){
     }
 }
 //Update reading history
-async function updateHistory(client, userId, data){
+async function updateHistory(userId, data){
     try {
         var user = await checkAvailable(client, {"userId": userId}, "userdb", "profile")
         if (user == null){
@@ -140,7 +140,7 @@ async function updateHistory(client, userId, data){
 // <--Interfaces with frontend 
 
 // Interfaces with other modules -->
-async function getAllUserHistory(client){
+async function getAllUserHistory(){
     var profileCollec = await client.db("userdb").collection("profile").find({}).toArray()
     
     var userItemData = [];
@@ -168,4 +168,4 @@ async function getAllUserHistory(client){
 }
 // <---- Interfaces with other modules
 
-export {initDb, getProfile, getSubList, updateProfile, updateHistory, getAllUserHistory}
+export {initUDb, getProfile, getSubList, updateProfile, updateHistory, getAllUserHistory}
