@@ -117,7 +117,7 @@ app.get("/article/filter/search", async(req,res)=>{
 
     var query = new Object()
     if (publisher != ""){
-        query.publisher = publisher
+        query.publisher = {$regex: publisher, $options:"i"}
     }
     if (before != "" && after != ""){
         before = new Date(before).toISOString()
