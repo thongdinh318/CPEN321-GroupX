@@ -6,22 +6,25 @@ import { MongoClient } from "mongodb";
 
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
-await client.connect()
 
 const bing_endpoints = "https://api.bing.microsoft.com/v7.0/news"
 const key = '56e2a381b452440abe22ce6ffb33b485'
 const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
-var id = 1
+const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
+var id = 1 //keep track of article ids in the db
+
 async function searchNews(query){
     var url = bing_endpoints+"/search"
     console.log(url)
     try {
         var user_query;
-        if (query == ""){
+        if (query === ""){
             user_query = EXCLUDED_SITE.join(" ")
+            // user_query += " " + FOCUSED_SITE.join(" OR ")
         }
         else{
             user_query = query + " " + EXCLUDED_SITE.join(" ")
+            // user_query +=" " + FOCUSED_SITE.join(" OR ")
         }
         console.log(user_query)
         const res = await axios.get(url, {
@@ -108,7 +111,6 @@ async function addToDb(articleList){
         id += 1
         await client.db("articledb").collection("articles").insertOne(article)
     }
-    client.close()
 }
-bingNewsRetriever("")
+// bingNewsRetriever("")
 export {bingNewsRetriever}
