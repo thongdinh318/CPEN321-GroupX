@@ -3,46 +3,41 @@ import * as userMod from "./user.js"
 import { MongoClient } from "mongodb";
 import fs from "fs"
 import https from "https"
-import * as artcileMod from "./articles/articlesMngt.js"
+import * as articleMod from "./articles/articlesMngt.js"
+import { bingNewsRetriever } from "./articles/retriever.js";
+import ForumModule from './forum_module/forum_interface.js'
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 var app = express()
 
 app.use(express.json())
 
+
+
+// Uncomment for https
 // var options = {
 // 	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
 // 	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
 // };
+
+const forum = new ForumModule()
+const RETRIEVE_INTERVAL = 60000 //1 minutes
+var retriever = null //place holder for the retriever before init server
 // Error checking function
 function isErr(error){
     //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
     return error, error.e, error.stack
 }
 
-//testing purpose -->
-app.post("/initdb", async (req,res)=>{
-    var initNum = req.body.initNum
-    var result1 = await userMod.initDb(client, initNum)
-    var result2 = await artcileMod.initADb(client, initNum)
-    if (isErr(result1) || isErr(result2)){
-        res.status(400).send("Failed to init dbs")
-    }
-    else{
-        res.status(200).send("success/n")
-    }
-})
-// <--- testing purpose
-
-//--> User Module interfaces
 app.get("/", async (req,res)=>{
-    var result = await userMod.getAllUserHistory(client)
-    res.status(200).send(result)
+    res.status(200).send("Hellp From QuickNews")
 })
 
+//USER MODULE --->
+//Get a user profile
 app.get("/profile/:userId", async (req,res)=>{
     var userId = parseInt(req.originalUrl.substring(9), 10)
-    var result = await userMod.getProfile(client, userId)
+    var result = await userMod.getProfile(userId)
     if (isErr(result)){ 
         res.status(400).send(result)
     }
@@ -51,10 +46,11 @@ app.get("/profile/:userId", async (req,res)=>{
     }
 })
 
+//Get a user list of subscriptions
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.originalUrl.substring(9)
     userId = parseInt(userId, 10)
-    var result = await userMod.getSubList(client,userId);
+    var result = await userMod.getSubList(userId);
     if (isErr(result)){
         res.status(400).send(result)
     }
@@ -63,11 +59,12 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
     }
 })
 
+//Update profile of a user
 app.put("/profile/:userId", async (req,res)=>{
     var userId = req.originalUrl.substring(9)
     userId = parseInt(userId, 10)
     const newProfile = req.body
-    var result = await userMod.updateProfile(client, userId, newProfile)
+    var result = await userMod.updateProfile(userId, newProfile)
     if (isErr(result)){
         res.status(400).send(result)
     }
@@ -76,11 +73,12 @@ app.put("/profile/:userId", async (req,res)=>{
     }
 })
 
+//Update reading history of the user
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.originalUrl.substring(9)
     userId = parseInt(userId, 10)
     const newHistory = req.body
-    var result = await userMod.updateHistory(client, userId, newHistory);
+    var result = await userMod.updateHistory(userId, newHistory);
     if(isErr(result)){
         res.status(400).send(result)
     }
@@ -88,16 +86,16 @@ app.put("/profile/:userId/history", async (req,res)=>{
         res.status(200).send(result)
     }
 })
-//<-- User Module interfaces
+//<--- USER MODULE
 
-//--> Article Module interfaces
+//ARTICLE MODULE ---> 
 //Get article by id
 app.get("/article/:articleId", async (req,res)=>{
 
     var splittedWords = req.originalUrl.split("/")
     var articleId = parseInt(splittedWords[2],10);
     console.log(articleId)
-    var foundArticle = await artcileMod.searchById(client,articleId);
+    var foundArticle = await articleMod.searchById(articleId);
 
     if(isErr(foundArticle)){
         res.status(400).send(foundArticle)
@@ -137,7 +135,7 @@ app.get("/article/filter/search", async(req,res)=>{
         var list = categories.split(",")
         query.categories = {$in: list}
     }
-    var foundArticles = await artcileMod.searchByFilter(client, query)
+    var foundArticles = await articleMod.searchByFilter(query)
 
     if(isErr(foundArticles)){
         console.log("ERROR")
@@ -153,7 +151,7 @@ app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
 
     var query = {content: {$regex: keyWord, $options:"i"}}
-    var foundArticles = await artcileMod.searchByFilter(client, query);
+    var foundArticles = await articleMod.searchByFilter(query);
 
     if(isErr(foundArticles)){
         res.status(400).send(foundArticles)
@@ -162,24 +160,101 @@ app.get("/article/kwsearch/search", async(req,res)=>{
         res.status(200).send(foundArticles)
     }
 })
+//<--- ARTICLE MODULE
+
+//FORUM MODULE --->
+// Get all forums
+app.get("/forums", async (req, res) =>{
+	try{
+		const result = await forum.getAllForums();
+		if (isErr(result)){
+			res.status(400).send("Cannot get forum list")
+		}
+		else{
+			res.status(200).send(result);
+		}
+	} catch (err){
+		console.log(err);
+		res.status(400).send("No Forums")
+	}
+}); 
+
+// GET one specific forum, queried with forum id
+app.get("/forums/:forum_id", async (req, res) =>{
+	try{
+		
+		const result =await forum.getForum(req.params.forum_id)
+		// const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
+		if (isErr(result)){
+			res.status(400).send(result)
+		}
+		else{
+			res.status(200).send(result);
+		}
+
+	} catch (err){
+
+		console.log(err);
+		res.status(400).send("Forum was not found");
+
+	}
+});  
+
+// Post a comment to a forum
+app.post("/addComment/:forum_id",async (req, res)=>{
+	try{
+		let commentData = req.body.commentData;
+		let userId = req.body.userId
+		const user = await getProfile(userId)
+		
+		const result = await forum.addCommentToForum(req.params.forum_id, commentData, user.username)
+		// await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
+
+		if (isErr(result)){
+			res.status(400).send("Could not post comment")
+		}
+		else{
+			if (result){
+				res.status(200).send("Comment Posted!");
+			}
+			else{
+				res.status(200).send("Failed Posting Comment! Please Try Again")
+			}
+		}
+
+	}catch (err){
+		res.status(400).send(err);
+	}
+} );
+// <--- FORUM MODULE
+
+// Main Function
 async function run(){
     try {
         await client.connect()
         console.log("Successfully connect to db")
 	
         /* Use this for localhost test*/
-	 var server = app.listen(8081, (req,res)=>{
+	    var server = app.listen(8081, (req,res)=>{
             var host = server.address().address
             var port = server.address().port
             console.log("Server is running at https://%s:%s",host,port)
         })
 	
-	// create https server
-	// https.createServer(options, app).listen(8081)
+        // create https server
+        // https.createServer(options, app).listen(8081)
+        await userMod.initUDb()
+        await articleMod.initADb()
+        // bingNewsRetriever("")
+        // retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
+
     } catch (error) {
-        console.log(err)
+        console.log(error)
+
+        if (retriever!= null){
+            clearInterval(retriever)
+        }
         await client.close()
-        
     }
 }
 run()
