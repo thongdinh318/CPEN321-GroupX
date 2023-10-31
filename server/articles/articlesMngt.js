@@ -12,27 +12,6 @@ const defArticle = {
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 
-// Helper Functions --->
-// function createNewArticle(articleId){
-//     var newArticle = JSON.parse(JSON.stringify(defArticle))
-//     newArticle.articleId = articleId
-//     newArticle.views = 0
-//     if (articleId % 2 == 0){
-//         newArticle.content = "Summarized content of article"
-//         newArticle.publisher = "CBC"
-//         newArticle.categories = ["sport","criminal"]
-//         newArticle.publishedDate = new Date("2023-2-29").toISOString()
-//     }
-//     else{
-//         newArticle.content = "Something about CPEN 321 and News"
-//         newArticle.publisher = "CNN"
-//         newArticle.categories = ["education", "environment"]
-//         newArticle.publishedDate = new Date("2023-10-20").toISOString()
-//     }
-//     return newArticle
-// }
-// <-- Helper Functions
-
 //Intit DB Function-->
 async function initADb(){
     try {
@@ -43,23 +22,24 @@ async function initADb(){
     }
 }
 //<--- Intit DB Function
+//Search an article based on its id 
 async function searchById(articleId){
     try {
         var foundArticle  = await client.db("articledb").collection("articles").find({"articleId": articleId});
         foundArticle = await foundArticle.toArray()
         console.log(foundArticle)
         if (foundArticle == undefined || foundArticle.length == 0){
-            return ("Not Found")
+            return (null)
         }
         else{
             return foundArticle[0]
         }
     } catch (error) {
-        console.log(error)
         return error
     }
 }
 
+//Search the database for a list of articles that match the query provided by the user
 async function searchByFilter(query){
     try {
         // console.log(query)
@@ -67,24 +47,24 @@ async function searchByFilter(query){
         foundArticles = await foundArticles.toArray()
         console.log(foundArticles)
         if (foundArticles == undefined || foundArticles.length == 0){
-            return "Not F"
+            return null
         }
         else{
             return foundArticles
         }
     } catch (error) {
-        // console.log(error)
         return error
     }
 }
 
+//Rerieve a list of all article ids in the database
+//Used by the recommendation module
 async function getArticleIds(){
     var articleCollection = await client.db("articledb").collection("articles").find({}).toArray()
     var articleIdList = [];
 
     articleCollection.forEach((article)=>{
         if (article.articleId != 0){
-            article.views = article.views + 1
             articleIdList.push(article.articleId);
         }
     })
