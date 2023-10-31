@@ -1,14 +1,13 @@
-const express = require('express');
+import express from "express";
 import { MongoClient } from "mongodb";
 
 let app = express();
-const axios = require('axios');
 const uri = 'mongodb://127.0.0.1:27017';
 const client = new MongoClient(uri);
 
 //const https = require("https");
 
-const url = "http://" + host + ":" + forumDB_port  + "/forums";
+// const url = "http://" + host + ":" + forumDB_port  + "/forums";
 
 function dateAdded(){
 	const date = new Date();

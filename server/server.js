@@ -49,7 +49,7 @@ app.post("/signin", async (req,res)=>{
 app.get("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     var user = await userMod.getProfile(userId)
-    if (isErr(result)){ 
+    if (isErr(user)){ 
         res.status(400).send("Error when getting user profile")
     }
     else{
@@ -325,6 +325,8 @@ async function run(){
 	
         // create https server
         // https.createServer(options, app).listen(8081)
+        client.db("userdb").collection("profile").deleteMany({})
+        client.db("articledb").collection("articles").deleteMany({})
         await userMod.initUDb()
         await articleMod.initADb()
         // bingNewsRetriever("")
