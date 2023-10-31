@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent" >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/article_view"
+            android:id="@+id/view_article"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </androidx.core.widget.NestedScrollView>

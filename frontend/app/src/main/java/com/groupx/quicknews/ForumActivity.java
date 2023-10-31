@@ -37,7 +37,7 @@ public class ForumActivity extends AppCompatActivity {
         placeHolderComments.add(new Comment("User1", "You're opinions are terrible and you should feel bad about them"));
         placeHolderComments.add(new Comment("User2", "*your. at least learn to spell"));
 
-        forumView = findViewById(R.id.comment_view);
+        forumView = findViewById(R.id.view_comment);
         forumView.setLayoutManager(new LinearLayoutManager(this));
         forumView.setAdapter(new CommentsViewAdapter(getApplicationContext(), placeHolderComments));
 
