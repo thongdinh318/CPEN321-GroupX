@@ -76,7 +76,7 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
 })
 
 //Get reading history
-app.get("/app/profile/:userId/history", async (req,res)=>{
+app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.originalUrl.substring(9)
     userId = parseInt(userId, 10)
 
@@ -95,7 +95,7 @@ app.get("/app/profile/:userId/history", async (req,res)=>{
     }
 })
 
-//Update profile of a user
+//Update profile of a user, including the subscription list
 app.put("/profile/:userId", async (req,res)=>{
     var userId = req.originalUrl.substring(9)
     userId = parseInt(userId, 10)
