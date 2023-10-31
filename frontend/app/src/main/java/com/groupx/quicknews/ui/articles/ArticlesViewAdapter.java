@@ -1,7 +1,6 @@
-package com.groupx.quicknews;
+package com.groupx.quicknews.ui.articles;
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.groupx.quicknews.R;
 
 import java.util.List;
 

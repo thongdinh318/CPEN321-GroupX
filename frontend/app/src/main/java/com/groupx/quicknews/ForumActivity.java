@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.groupx.quicknews.databinding.ActivityForumBinding;
+import com.groupx.quicknews.ui.forum.Comment;
+import com.groupx.quicknews.ui.forum.CommentsViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
