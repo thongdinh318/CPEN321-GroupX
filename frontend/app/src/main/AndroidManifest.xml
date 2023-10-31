@@ -43,8 +43,14 @@
             android:label="@string/title_activity_forum"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
         <activity
+            android:name=".ForumsListActivity"
+            android:exported="false"
+            android:label="@string/title_activity_forums_list"
+            android:theme="@style/Theme.MyApplication.NoActionBar"/>
+        <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="false">
+        </activity>
     </application>
 
 </manifest>

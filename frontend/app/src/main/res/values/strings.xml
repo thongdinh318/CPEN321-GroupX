@@ -93,6 +93,7 @@
     <string name="action_settings">Settings</string>
     <string name="redirect_article_button_caption">Read Full Article</string>
     <string name="title_activity_forum">Forum</string>
+    <string name="title_activity_forums_list">Forums</string>
     <string name="username_caption">Username</string>
     <string name="dob_caption">Date of Birth</string>
     <string name="user_email_caption">User email</string>
