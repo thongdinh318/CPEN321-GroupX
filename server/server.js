@@ -5,6 +5,7 @@ import fs from "fs"
 import https from "https"
 import * as articleMod from "./articles/articlesMngt.js"
 import { bingNewsRetriever } from "./articles/retriever.js";
+import { collaborativeFilteringRecommendations } from "./articles/recommendation.js";
 import ForumModule from './forum_module/forum_interface.js'
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
@@ -30,6 +31,9 @@ function isErr(error){
     return error, error.e, error.stack
 }
 
+
+//USER MODULE --->
+//Verify and register users
 app.post("/signin", async (req,res)=>{
     const token = req.body.idToken;
     const result = await userMod.verify(token)
@@ -41,7 +45,6 @@ app.post("/signin", async (req,res)=>{
     }
 })
 
-//USER MODULE --->
 //Get a user profile
 app.get("/profile/:userId", async (req,res)=>{
     var userId = parseInt(req.originalUrl.substring(9), 10)
@@ -259,6 +262,22 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 	}
 } );
 // <--- FORUM MODULE
+
+//Recommedation module --->
+//Get recommended list of articles for a user
+app.get("/app/recommend/article/:userId", async (req,res)=>{
+    var userId = req.params.userId;
+    try {
+        const recommeded = await collaborativeFilteringRecommendations(userId);
+        res.status(200).send(recommeded)
+        
+    } catch (error) {
+        res.status(400).send("Error when recommending")
+        
+    }
+})
+// <--- Recommendation module
+
 
 // Main Function
 async function run(){
