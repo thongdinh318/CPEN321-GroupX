@@ -16,4 +16,9 @@ GET /article/kwsearch/search (NOTE: include keyword needs to be matched after se
 ex: http://localhost:8081/article/kwsearch/search?keyWord=something
 
 Forum module (TBA)
-    
+GET /forums
+GET /forums/:forum_id
+GET /addComment/:forum_id
+
+Recommendation module
+GET /recommed/article/:userId
