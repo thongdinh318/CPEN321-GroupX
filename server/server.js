@@ -8,6 +8,7 @@ import { bingNewsRetriever } from "./articles/retriever.js";
 import ForumModule from './forum_module/forum_interface.js'
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
+
 var app = express()
 
 app.use(express.json())
@@ -29,20 +30,27 @@ function isErr(error){
     return error, error.e, error.stack
 }
 
-app.get("/", async (req,res)=>{
-    res.status(200).send("Hellp From QuickNews")
+app.post("/signin", async (req,res)=>{
+    const token = req.body.idToken;
+    const result = await userMod.verify(token)
+    if (isErr(result)){ 
+        res.status(400).send("Error when verifying")
+    }
+    else{
+        res.status(200).send(result)
+    }
 })
 
 //USER MODULE --->
 //Get a user profile
 app.get("/profile/:userId", async (req,res)=>{
     var userId = parseInt(req.originalUrl.substring(9), 10)
-    var result = await userMod.getProfile(userId)
+    var user = await userMod.getProfile(userId)
     if (isErr(result)){ 
-        res.status(400).send(result)
+        res.status(400).send("Error when getting user profile")
     }
     else{
-        res.status(200).send(result)
+        res.status(200).send(user)
     }
 })
 
@@ -50,12 +58,37 @@ app.get("/profile/:userId", async (req,res)=>{
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.originalUrl.substring(9)
     userId = parseInt(userId, 10)
-    var result = await userMod.getSubList(userId);
-    if (isErr(result)){
-        res.status(400).send(result)
+    var userProfile = await userMod.getProfile(userId);
+    if (isErr(userProfile)){
+        res.status(400).send("Error when getting subscription list")
     }
     else{
-        res.status(200).send(result)
+        if (userProfile != null){
+            res.status(200).send(userProfile.subscriptionList)
+        }
+        else{
+            res.status(200).send(null)
+        }
+    }
+})
+
+//Get reading history
+app.get("/app/profile/:userId/history", async (req,res)=>{
+    var userId = req.originalUrl.substring(9)
+    userId = parseInt(userId, 10)
+
+    var userProfile = userMod.getProfile(userId);
+
+    if(isErr(userProfile)){
+        res.status(400).send("Error when getting reading history")
+    }
+    else{
+        if (userProfile != null){
+            res.status(200).send(userProfile.history)
+        }
+        else{
+            res.status(200).send(null)
+        }
     }
 })
 
@@ -66,21 +99,21 @@ app.put("/profile/:userId", async (req,res)=>{
     const newProfile = req.body
     var result = await userMod.updateProfile(userId, newProfile)
     if (isErr(result)){
-        res.status(400).send(result)
+        res.status(400).send("Error when updating user profile")
     }
     else{
         res.status(200).send(result)
     }
 })
 
-//Update reading history of the user
+//Add a new article to reading history of a user
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.originalUrl.substring(9)
     userId = parseInt(userId, 10)
-    const newHistory = req.body
-    var result = await userMod.updateHistory(userId, newHistory);
+    const newViewed = req.body
+    var result = await userMod.updateHistory(userId, newViewed);
     if(isErr(result)){
-        res.status(400).send(result)
+        res.status(400).send("Error when updating reading history")
     }
     else{
         res.status(200).send(result)
@@ -98,7 +131,7 @@ app.get("/article/:articleId", async (req,res)=>{
     var foundArticle = await articleMod.searchById(articleId);
 
     if(isErr(foundArticle)){
-        res.status(400).send(foundArticle)
+        res.status(400).send("Error when Searching by id")
     }
     else{
         res.status(200).send(foundArticle)
@@ -138,8 +171,7 @@ app.get("/article/filter/search", async(req,res)=>{
     var foundArticles = await articleMod.searchByFilter(query)
 
     if(isErr(foundArticles)){
-        console.log("ERROR")
-        res.status(400).send(foundArticles)
+        res.status(400).send("Error when Searching by filter")
     }
     else{
         res.status(200).send(foundArticles)
@@ -154,7 +186,7 @@ app.get("/article/kwsearch/search", async(req,res)=>{
     var foundArticles = await articleMod.searchByFilter(query);
 
     if(isErr(foundArticles)){
-        res.status(400).send(foundArticles)
+        res.status(400).send("Error when searching with search bar")
     }
     else{
         res.status(200).send(foundArticles)

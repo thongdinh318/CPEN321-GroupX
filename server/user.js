@@ -1,4 +1,11 @@
 import { MongoClient } from "mongodb";
+import {OAuth2Client} from 'google-auth-library'
+
+const uri = "mongodb://127.0.0.1:27017"
+const client = new MongoClient(uri)
+
+const ggClient = new OAuth2Client();
+const CLIENT_ID = 1 //TODO: replace witht the real client id
 //Default user setting
 const defUser = { 
 	"userId": 0,
@@ -14,13 +21,11 @@ const defUser = {
 	]
 	
 }
-const uri = "mongodb://127.0.0.1:27017"
-const client = new MongoClient(uri)
 
 // Helper Functions --->
-async function checkAvailable(query, db, collection){
+async function checkAvailable(userId){
     try {
-        var result = await client.db(db).collection(collection).find(query)
+        var result = await client.db("userdb").collection("profiles").find({"userId":userId})
         var arr = await result.toArray()
         if (arr == undefined || arr.length == 0){
             return null
@@ -30,20 +35,24 @@ async function checkAvailable(query, db, collection){
         }
     } catch (error) {
         throw(error)
-        
     }    
 
 }
 
-function createNewUser(userId){
+function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
     newUser.userId = userId
-    newUser.username = "user"+ String(userId)
-    newUser.email = newUser.username + "@gmail.com"
+    if (userName == undefined){
+        newUser.username = "default user name"
+    }
+    else{
+        newUser.username = userName
+    }
+    newUser.email = userEmail
     return newUser
 }
-
 // <-- Helper Functions
+
 //Init DB function --->
 async function initUDb(){
     try {
@@ -56,81 +65,86 @@ async function initUDb(){
 //<--- Init DB function
 
 //Interfaces with frontend -->
-// get profile
-async function getProfile(userId){
+
+async function verify(token){
     try {
-        var user = await checkAvailable(client,{"userId":userId},"userdb","profile")
-        if (user === null){
+        const ticket =  await ggClient.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID
+        });
+    
+        const payload =ticket.getPayLoad();
+        const userId = payload['sub']
+
+        const userProfile = await checkAvailable(userId)
+    
+        if (userProfile != null){
+            return userProfile
+        }
+        else{
             console.log("New User registers\n")
-            var newUser = createNewUser(userId)
+            const userEmail = payload['email']
+            const userName = payload['name']
+            var newUser = createNewUser(userId, userName,userEmail)
             await client.db("userdb").collection("profile").insertOne(newUser);
             return (newUser)
         }
-        else{
-            delete user._id;
-            return user
-        }
     } catch (error) {
-        console.log(error)
-        return error
+        return(error)
     }
 }
-//get Subscription list
-async function getSubList(userId){
+// get profile
+async function getProfile(userId){
     try {
-        var user = await checkAvailable(client, {"userId":userId},"userdb","profile")
-        if (user == null){
-            console.log("Not exist\n")
-            return ("User " + String(userId) +  " doesn't exist")
-        }
-        else{
-            return user.subscriptionList
-        }
+        var user = await checkAvailable({"userId":userId})
+        return user
     } catch (error) {
-        console.error(error);
         return error
     }
 }
 //Update profile info
 async function updateProfile(userId, newProfile){
     try {
-        var user = await checkAvailable(client, {"userId": userId},"userdb","profile")
+        var user = await checkAvailable(userId)
         if (user == null){
-            return ("User doesn't exist")
+            return null
         }
         else{
             //TODO: sanitize inputs before update
-            await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: newProfile})
-            return ("Update complete")
+            const result = await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: newProfile})
+            return (result.acknowledged)
         }
     } catch (error) {
-        console.error(error)
         return (error)
     }
 }
 //Update reading history
-async function updateHistory(userId, data){
+async function updateHistory(userId, newViewed){
     try {
-        var user = await checkAvailable(client, {"userId": userId}, "userdb", "profile")
+        var user = await checkAvailable(userId)
         if (user == null){
-            res.status(200).send("User doesn't exist")
+            return null
         }
         else{
-            // const newHistory = req.body
-            const newHistory = data
-            var oldHistory = user.history
-            var updateHistory = new Set()
-            oldHistory.forEach(element => {
-                updateHistory.add(element)
-            });
-            updateHistory = newHistory.filter((update)=>{
-                var dup = updateHistory.has(update.articleId)
-                updateHistory.add(dup)
-                return !dup
-            })
-            await client.db("userdb").collection("profile").updateOne({"userId":userId}, 
+            var dup = false
+            var updateHistory = user.history
+            for (var pastViewed of updateHistory){
+                if (pastViewed.articleId === newViewed.articleId){
+                    pastViewed.views = pastViewed + 1
+                    dup = true
+                    break;
+                }
+            }
+
+            if (!dup){
+                newViewed.views = 1 
+                updateHistory.push(newViewed)
+            }
+
+            const result = await client.db("userdb").collection("profile").updateOne({"userId":userId}, 
             {$set: {"history":updateHistory}})
-            return ("Finish")
+            
+            return (result.acknowledged)
         }
     } catch (error) {
         return (error)
@@ -168,4 +182,4 @@ async function getAllUserHistory(){
 }
 // <---- Interfaces with other modules
 
-export {initUDb, getProfile, getSubList, updateProfile, updateHistory, getAllUserHistory}
+export {initUDb, verify, getProfile, updateProfile, updateHistory, getAllUserHistory}
