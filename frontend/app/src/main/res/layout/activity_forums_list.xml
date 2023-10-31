@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ForumActivity">
+    tools:context=".ForumsListActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -28,44 +28,11 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/view_comment"
+        android:id="@+id/comment_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@+id/layout_make_post"
         app:layout_constraintTop_toBottomOf="@+id/app_bar"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
-
-    <RelativeLayout
-        android:id="@+id/layout_make_post"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <EditText
-            android:id="@+id/edit_post"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@+id/button_post"
-            android:layout_marginStart="16dp"
-            android:background="@android:color/transparent"
-            android:hint="Enter Message"
-            android:inputType="text"
-            android:maxLines="5"
-            tools:ignore="Autofill" />
-
-        <Button
-            android:id="@+id/button_post"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackground"
-            android:text="Post"
-            android:textColor="@color/black" />
-
-    </RelativeLayout>
+        app:layout_constrainedHeight="true"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
