@@ -24,3 +24,4 @@ GET /addComment/:forum_id
 
 Recommendation module
 GET /recommend/article/:userId
+GET /recommend/publisher/:userId
