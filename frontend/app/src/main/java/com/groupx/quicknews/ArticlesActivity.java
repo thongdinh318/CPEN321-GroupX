@@ -42,5 +42,6 @@ private ActivityArticlesBinding binding;
 
     }
     //TODO: get articles from server oncreate
+    //TODO: pull down to refresh?
     //TODO: get recommended articles and create new adapter when selected
 }
