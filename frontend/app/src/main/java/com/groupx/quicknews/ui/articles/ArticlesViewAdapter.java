@@ -1,7 +1,6 @@
-package com.groupx.quicknews;
+package com.groupx.quicknews.ui.articles;
 
 import static android.app.PendingIntent.getActivity;
-import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,6 +14,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.groupx.quicknews.R;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ArticleViewHolder holder = new ArticleViewHolder(LayoutInflater.from(context).inflate(R.layout.article_view, parent, false));
+        ArticleViewHolder holder = new ArticleViewHolder(LayoutInflater.from(context).inflate(R.layout.view_article, parent, false));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
