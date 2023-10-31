@@ -17,11 +17,11 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
     public Button redirectButton;
     public ArticleViewHolder(@NonNull View view) {
         super(view);
-        articleTitle = itemView.findViewById(R.id.article_title);
-        articleSynopsis = itemView.findViewById(R.id.article_synopsis);
-        hiddenView = itemView.findViewById(R.id.hidden_view);
+        articleTitle = itemView.findViewById(R.id.text_article_title);
+        articleSynopsis = itemView.findViewById(R.id.text_article_synopsis);
+        hiddenView = itemView.findViewById(R.id.layout_hidden_view);
         cardView = itemView.findViewById(R.id.base_cardview);
-        redirectButton = itemView.findViewById(R.id.redirect_article_button);
+        redirectButton = itemView.findViewById(R.id.button_redirect_article);
     }
 
 }
