@@ -93,7 +93,7 @@ async function bingNewsRetriever(query){
         else{
             articleEntry.content = articleBody
         }
-        articleEntry.publisher = article.provider[0].name
+        articleEntry.publisher = article.provider[0].name.toLowerCase()
         articleEntry.publishedDate = article.datePublished
         articleEntry.categories = article.category != undefined? [article.category]:[query]
         articleEntry.title = article.name
