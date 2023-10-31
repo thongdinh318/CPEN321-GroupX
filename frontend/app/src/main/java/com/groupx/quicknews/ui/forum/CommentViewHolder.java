@@ -1,10 +1,12 @@
-package com.groupx.quicknews;
+package com.groupx.quicknews.ui.forum;
 
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.groupx.quicknews.R;
 
 public class CommentViewHolder extends RecyclerView.ViewHolder {
     public TextView user;

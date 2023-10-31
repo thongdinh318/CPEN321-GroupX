@@ -1,4 +1,4 @@
-package com.groupx.quicknews;
+package com.groupx.quicknews.ui.forum;
 
 public class Comment {
     String user;

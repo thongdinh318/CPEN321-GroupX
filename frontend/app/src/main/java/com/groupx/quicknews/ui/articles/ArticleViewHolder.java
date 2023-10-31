@@ -1,4 +1,4 @@
-package com.groupx.quicknews;
+package com.groupx.quicknews.ui.articles;
 
 import android.view.View;
 import android.widget.Button;
@@ -8,6 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.groupx.quicknews.R;
 
 public class ArticleViewHolder extends RecyclerView.ViewHolder {
     public TextView articleTitle;
