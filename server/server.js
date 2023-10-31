@@ -265,7 +265,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 
 //Recommedation module --->
 //Get recommended list of articles for a user
-app.get("/app/recommend/article/:userId", async (req,res)=>{
+app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
         const recommeded = await collaborativeFilteringRecommendations(userId);
