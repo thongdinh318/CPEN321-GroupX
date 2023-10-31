@@ -1,5 +1,5 @@
-import { getArticleIds } from "./articlesMngt";
-import { getAllUserHistory } from "../user";
+import { getArticleIds } from "./articlesMngt.js";
+import { getAllUserHistory } from "../user.js";
   
 export async function collaborativeFilteringRecommendations(userId) {
   // Create user-item rating matrix.

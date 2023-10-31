@@ -14,12 +14,12 @@ const defUser = {
 	"email":null,
 	"subscriptionList":[],
 	"history":[
-/*		{
+        /*{
             "articleId":null,
+            "title": null,
 			"views":null
 		}*/
 	]
-	
 }
 
 // Helper Functions --->
@@ -65,7 +65,6 @@ async function initUDb(){
 //<--- Init DB function
 
 //Interfaces with frontend -->
-
 async function verify(token){
     try {
         const ticket =  await ggClient.verifyIdToken({
@@ -154,6 +153,8 @@ async function updateHistory(userId, newViewed){
 // <--Interfaces with frontend 
 
 // Interfaces with other modules -->
+//Get the reading history of all users
+//Used by Recommendation module
 async function getAllUserHistory(){
     var profileCollec = await client.db("userdb").collection("profile").find({}).toArray()
     
