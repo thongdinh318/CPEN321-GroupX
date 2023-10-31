@@ -16,7 +16,7 @@ function dateAdded(){
 	return time;
 }
 
-class ForumModule{
+export class ForumModule{
     construtor(){
         this.dateCreated = new Date();
     }
@@ -124,4 +124,4 @@ class ForumModule{
 
 
 
-module.exports = ForumModule;
+// module.exports = ForumModule;

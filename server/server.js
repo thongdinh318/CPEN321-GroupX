@@ -6,7 +6,7 @@ import https from "https"
 import * as articleMod from "./articles/articlesMngt.js"
 import { bingNewsRetriever } from "./articles/retriever.js";
 import { collaborativeFilteringRecommendations } from "./articles/recommendation.js";
-import ForumModule from './forum_module/forum_interface.js'
+import { ForumModule } from "./forum_module/forum_interface.js";
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 
