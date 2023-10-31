@@ -17,8 +17,7 @@ import java.util.List;
 
 public class ArticlesActivity extends AppCompatActivity {
 
-private ActivityArticlesBinding binding;
-
+    private ActivityArticlesBinding binding;
     private RecyclerView articleView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +41,6 @@ private ActivityArticlesBinding binding;
 
     }
     //TODO: get articles from server oncreate
-    //TODO: pull down to refresh?
+    //TODO: need someway to refresh articles. possibly on pulldown
     //TODO: get recommended articles and create new adapter when selected
 }

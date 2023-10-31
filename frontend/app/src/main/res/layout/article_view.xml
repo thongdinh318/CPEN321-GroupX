@@ -43,7 +43,7 @@
                 app:layout_constraintVertical_bias="0.0">
 
                 <TextView
-                    android:id="@+id/article_title"
+                    android:id="@+id/text_article_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Article Title"
@@ -61,7 +61,7 @@
 
             <!-- The following is the expandable portion whose visibility is initially set to 'gone'-->
             <LinearLayout
-                android:id="@+id/hidden_view"
+                android:id="@+id/layout_hidden_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -72,7 +72,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/fixed_layout">
 
                 <TextView
-                    android:id="@+id/article_synopsis"
+                    android:id="@+id/text_article_synopsis"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -81,7 +81,7 @@
                     android:textColor="@color/black"
                     android:textSize="14dp" />
                 <Button
-                    android:id="@+id/redirect_article_button"
+                    android:id="@+id/button_redirect_article"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/redirect_article_button_caption"
@@ -90,7 +90,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/article_synopsis"
+                    app:layout_constraintTop_toTopOf="@id/text_article_synopsis"
                     app:layout_constraintVertical_bias="0"
                     />
             </LinearLayout>
