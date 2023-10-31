@@ -47,7 +47,7 @@ app.post("/signin", async (req,res)=>{
 
 //Get a user profile
 app.get("/profile/:userId", async (req,res)=>{
-    var userId = parseInt(req.originalUrl.substring(9), 10)
+    var userId = req.params.userId
     var user = await userMod.getProfile(userId)
     if (isErr(result)){ 
         res.status(400).send("Error when getting user profile")
@@ -59,8 +59,7 @@ app.get("/profile/:userId", async (req,res)=>{
 
 //Get a user list of subscriptions
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
-    var userId = req.originalUrl.substring(9)
-    userId = parseInt(userId, 10)
+    var userId = req.params.userId
     var userProfile = await userMod.getProfile(userId);
     if (isErr(userProfile)){
         res.status(400).send("Error when getting subscription list")
@@ -77,8 +76,7 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
 
 //Get reading history
 app.get("/profile/:userId/history", async (req,res)=>{
-    var userId = req.originalUrl.substring(9)
-    userId = parseInt(userId, 10)
+    var userId = req.params.userId
 
     var userProfile = userMod.getProfile(userId);
 
@@ -97,8 +95,7 @@ app.get("/profile/:userId/history", async (req,res)=>{
 
 //Update profile of a user, including the subscription list
 app.put("/profile/:userId", async (req,res)=>{
-    var userId = req.originalUrl.substring(9)
-    userId = parseInt(userId, 10)
+    var userId = req.params.userId
     const newProfile = req.body
     var result = await userMod.updateProfile(userId, newProfile)
     if (isErr(result)){
@@ -111,8 +108,7 @@ app.put("/profile/:userId", async (req,res)=>{
 
 //Add a new article to reading history of a user
 app.put("/profile/:userId/history", async (req,res)=>{
-    var userId = req.originalUrl.substring(9)
-    userId = parseInt(userId, 10)
+    var userId = req.params.userId
     const newViewed = req.body
     var result = await userMod.updateHistory(userId, newViewed);
     if(isErr(result)){
@@ -127,9 +123,7 @@ app.put("/profile/:userId/history", async (req,res)=>{
 //ARTICLE MODULE ---> 
 //Get article by id
 app.get("/article/:articleId", async (req,res)=>{
-
-    var splittedWords = req.originalUrl.split("/")
-    var articleId = parseInt(splittedWords[2],10);
+    var articleId = parseInt(req.params.articleId,10);
     console.log(articleId)
     var foundArticle = await articleMod.searchById(articleId);
 
@@ -137,13 +131,17 @@ app.get("/article/:articleId", async (req,res)=>{
         res.status(400).send("Error when Searching by id")
     }
     else{
-        res.status(200).send(foundArticle)
+        if (foundArticle == null){
+            res.status(200).send("Article Id Not Found")
+        }
+        else{
+            res.status(200).send(foundArticle)
+        }
     }
 })
 
 // Search using filters
 app.get("/article/filter/search", async(req,res)=>{
-
     var publisher = req.query.publisher
     var before = req.query.before
     var after = req.query.after
@@ -177,11 +175,16 @@ app.get("/article/filter/search", async(req,res)=>{
         res.status(400).send("Error when Searching by filter")
     }
     else{
-        res.status(200).send(foundArticles)
+        if (foundArticles == null){
+            res.status(200).send("No articles matched")
+        }
+        else{
+            res.status(200).send(foundArticles)
+        }
     }
 })
 
-// Search using search bar
+// Search keyword in articles
 app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
 
@@ -192,7 +195,12 @@ app.get("/article/kwsearch/search", async(req,res)=>{
         res.status(400).send("Error when searching with search bar")
     }
     else{
-        res.status(200).send(foundArticles)
+        if (foundArticles == null){
+            res.status(200).send("No articles matched")
+        }
+        else{
+            res.status(200).send(foundArticles)
+        }
     }
 })
 //<--- ARTICLE MODULE
@@ -217,7 +225,6 @@ app.get("/forums", async (req, res) =>{
 // GET one specific forum, queried with forum id
 app.get("/forums/:forum_id", async (req, res) =>{
 	try{
-		
 		const result =await forum.getForum(req.params.forum_id)
 		// const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
 		if (isErr(result)){
@@ -269,10 +276,34 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
         const recommeded = await collaborativeFilteringRecommendations(userId);
-        res.status(200).send(recommeded)
+        var recommededArticles = []
+        for (var i = 0; i < recommeded.length(); ++i){
+            var articleId = recommeded[i][0]
+            var article = await articleMod.getArticleIds(articleId)
+            recommededArticles.push(article)
+        }
+        res.status(200).send(recommededArticles)
         
     } catch (error) {
-        res.status(400).send("Error when recommending")
+        res.status(400).send("Error when recommending articles")
+        
+    }
+})
+
+app.get("/recommend/publisher/:userId", async (req,res)=>{
+    var userId = req.params.userId;
+    try {
+        const recommeded = await collaborativeFilteringRecommendations(userId);
+        var recommededPublishers = []
+        for (var i = 0; i < recommeded.length(); ++i){
+            var articleId = recommeded[i][0]
+            var article = await articleMod.getArticleIds(articleId)
+            recommededPublishers.push(article.publisher)
+        }
+        res.status(200).send(recommededPublishers)
+        
+    } catch (error) {
+        res.status(400).send("Error when recommending publishers")
         
     }
 })
