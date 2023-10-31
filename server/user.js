@@ -8,7 +8,7 @@ const ggClient = new OAuth2Client();
 const CLIENT_ID = 1 //TODO: replace witht the real client id
 //Default user setting
 const defUser = { 
-	"userId": 0,
+	"userId": '0',
     "username": "root",
 	"dob": null,
 	"email":null,
@@ -25,10 +25,12 @@ const defUser = {
 // Helper Functions --->
 async function checkAvailable(userId){
     try {
-        var result = await client.db("userdb").collection("profiles").find({"userId":userId})
+        console.log({"userId":userId})
+        var result = client.db("userdb").collection("profile").find({"userId":userId})
         var arr = await result.toArray()
+        console.log(arr)
         if (arr == undefined || arr.length == 0){
-            return null
+            return false
         }
         else{
             return arr[0]
@@ -95,8 +97,13 @@ async function verify(token){
 // get profile
 async function getProfile(userId){
     try {
-        var user = await checkAvailable({"userId":userId})
-        return user
+        var user = await checkAvailable(userId)
+        if(!user){
+            return new Object();
+        }
+        else{
+            return user
+        }
     } catch (error) {
         return error
     }
@@ -105,8 +112,8 @@ async function getProfile(userId){
 async function updateProfile(userId, newProfile){
     try {
         var user = await checkAvailable(userId)
-        if (user == null){
-            return null
+        if (user.userId == undefined){
+            return false
         }
         else{
             //TODO: sanitize inputs before update
@@ -122,7 +129,7 @@ async function updateHistory(userId, newViewed){
     try {
         var user = await checkAvailable(userId)
         if (user == null){
-            return null
+            return false
         }
         else{
             var dup = false
