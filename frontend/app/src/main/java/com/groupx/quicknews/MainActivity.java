@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open forum view");
-                Intent forumIntent = new Intent(MainActivity.this, ForumActivity.class);
+                Intent forumIntent = new Intent(MainActivity.this, ForumsListActivity.class);
                 startActivity(forumIntent);
             }
         });

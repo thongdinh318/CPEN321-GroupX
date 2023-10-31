@@ -1,6 +1,8 @@
 package com.groupx.quicknews;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,6 +41,16 @@ public class ArticlesActivity extends AppCompatActivity {
         articleView.setAdapter(new ArticlesViewAdapter(getApplicationContext(), palceHolderArticles));
 
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu resource
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_articles, menu);
+
+        return true;
+    }
+
     //TODO: get articles from server oncreate
     //TODO: need someway to refresh articles. possibly on pulldown
     //TODO: get recommended articles and create new adapter when selected
