@@ -1,6 +1,7 @@
 package com.groupx.quicknews;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -21,17 +22,19 @@ public class ForumActivity extends AppCompatActivity {
     private ActivityForumBinding binding;
     private RecyclerView forumView;
     private Button postButton;
+    final static String TAG = "ForumActivity";
 
-    //TODO: pass in forum details so correct endpoint is used when adding new messages
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         binding = ActivityForumBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        Log.d(TAG, getIntent().getStringExtra("forumID"));
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getIntent().getStringExtra("forumName"));
 
         List<Comment> placeHolderComments = new ArrayList<Comment>();
         placeHolderComments.add(new Comment("User1", "You're opinions are terrible and you should feel bad about them"));

@@ -51,7 +51,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         holder.redirectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri uri = Uri.parse(articles.get(holder.getAdapterPosition()).getUrl()); // missing 'http:' will crash
+                Uri uri = Uri.parse(articles.get(holder.getAbsoluteAdapterPosition()).getUrl()); // missing 'http:' will crash
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
