@@ -24,9 +24,18 @@ public class MainActivity extends AppCompatActivity {
         articlesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "Trying to open google maps");
-                Intent mapsIntent = new Intent(MainActivity.this, ArticlesActivity.class);
-                startActivity(mapsIntent);
+                Log.d(TAG, "Trying to open articles view");
+                Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);
+                startActivity(articleIntent);
+            }
+        });
+
+        forumButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "Trying to open forum view");
+                Intent forumIntent = new Intent(MainActivity.this, ForumActivity.class);
+                startActivity(forumIntent);
             }
         });
     }
