@@ -63,7 +63,6 @@ public class HttpClient {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG ,response.body().string());
                 callback.onResponse(response);
             }
         });
@@ -88,7 +87,6 @@ public class HttpClient {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, response.body().string());
                 callback.onResponse(response);
             }
         });

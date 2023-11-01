@@ -29,7 +29,6 @@ public class ArticlesActivity extends AppCompatActivity {
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
-        //CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
         //toolBarLayout.setTitle(getTitle());
 
         List<Article> palceHolderArticles = new ArrayList<Article>();

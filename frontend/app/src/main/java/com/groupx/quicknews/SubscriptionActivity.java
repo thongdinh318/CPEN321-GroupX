@@ -48,14 +48,14 @@ public class SubscriptionActivity extends AppCompatActivity {
             public void onResponse(Response response) {
                 try {
                     if (response.code() == 200) {
-                        JSONArray userList = new JSONArray(response.body().toString());
+                        JSONArray userList = new JSONArray(response.body().string());
                         if (userList.length() > 0) {
                             for (int i = 0; i < userList.length(); i++) {
                                 subscriptionList.add(userList.getString(i));
                             }
                         }
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -125,7 +125,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Response response) {
                             if (response.code() == 200){
-                                String result = response.body().toString();
+                                String result = "true";//response.body().string();
                                 if (result == "true"){
                                     //TODO: Switch views here
                                     Log.d(TAG,result);
