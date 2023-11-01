@@ -69,4 +69,28 @@ public class HttpClient {
         });
 
     }
+
+    public static void  putRequest(String url, String json, ApiCallback callback) {
+        MediaType JSON = MediaType.parse("application/json");
+
+        RequestBody requestBody = RequestBody.create(json, JSON);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .put(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Log.d(TAG, response.body().string());
+                callback.onResponse(response);
+            }
+        });
+    }
 }
