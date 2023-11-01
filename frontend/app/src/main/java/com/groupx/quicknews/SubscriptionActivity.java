@@ -4,19 +4,30 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.groupx.quicknews.helpers.HttpClient;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.Response;
+
 public class SubscriptionActivity extends AppCompatActivity {
 
-    private String[] subList;
+    final static String TAG = "SubscriptionActivity";
+    private List<String> subscriptionList;
+    private String userId;
     private TextView cbc, cnn;
     private Switch cbc_sub, cnn_sub;
     private Button confirm;
@@ -27,9 +38,31 @@ public class SubscriptionActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null){
-            subList = extras.getStringArray("SUB_LIST");
+            userId = extras.getString("USER_ID");
         }
 
+        //GET REQUEST GET THE SUB LIST
+        String getUrl = getString(R.string.server_client_id) +"profile/"+ userId+"/subscriptions";
+        HttpClient.getRequest(getUrl, new HttpClient.ApiCallback() {
+            @Override
+            public void onResponse(Response response) {
+                try {
+                    if (response.code() == 200) {
+                        JSONArray userList = new JSONArray(response.body().toString());
+                        if (userList.length() > 0) {
+                            for (int i = 0; i < userList.length(); i++) {
+                                subscriptionList.add(userList.getString(i));
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
+            }
+        });
         cbc = findViewById(R.id.news_publisher_1);
         cbc.setText("CBC");
         cnn = findViewById(R.id.news_publisher_2);
@@ -39,23 +72,23 @@ public class SubscriptionActivity extends AppCompatActivity {
         cbc_sub.setChecked(false);
         cnn_sub = findViewById(R.id.sub_button_2);
         cnn_sub.setChecked(false);
-        for (int i = 0; i < subList.length; ++i){
-            if (subList[i].contains("cbc")){
+        for (int i = 0; i < subscriptionList.size(); ++i){
+            if (subscriptionList.get(i).contains("cbc")){
                 cbc_sub.setChecked(true);
-            } else if (subList[i].contains("cnn")) {
+            } else if (subscriptionList.get(i).contains("cnn")) {
                 cnn_sub.setChecked(true);
             }
         }
-
-        List<String> sub_list = new ArrayList<String>(Arrays.asList(subList));
         cbc_sub.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (!checked){
-                    sub_list.remove("cbc");
+                    subscriptionList.remove("cbc");
+                    Log.d(TAG, subscriptionList.toString());
                 }
                 else{
-                    sub_list.add("cbc");
+                    subscriptionList.add("cbc");
+                    Log.d(TAG, subscriptionList.toString());
                 }
             }
         });
@@ -64,10 +97,12 @@ public class SubscriptionActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (!checked){
-                    sub_list.remove("cnn");
+                    subscriptionList.remove("cnn");
+                    Log.d(TAG, subscriptionList.toString());
                 }
                 else{
-                    sub_list.add("cnn");
+                    subscriptionList.add("cnn");
+                    Log.d(TAG, subscriptionList.toString());
                 }
             }
         });
@@ -76,17 +111,38 @@ public class SubscriptionActivity extends AppCompatActivity {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] new_sub = new String[sub_list.size()];
+                JSONArray newSubArr = new JSONArray();
 
-                for (int i = 0; i<sub_list.size(); ++i){
-                    new_sub[i] = sub_list.get(i);
+                for (int i = 0; i<subscriptionList.size(); ++i){
+                    newSubArr.put(subscriptionList.get(i));
                 }
 
-                //TODO: craft post request here
-
-                //Return to previous view
-                Intent profileIntent = new Intent(SubscriptionActivity.this, ProfileActivity.class);
-                startActivity(profileIntent);
+                String putUrl = getString(R.string.server_client_id)+"profile/"+userId;
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("subscriptionList", newSubArr);
+                    HttpClient.putRequest(putUrl, json.toString(), new HttpClient.ApiCallback() {
+                        @Override
+                        public void onResponse(Response response) {
+                            if (response.code() == 200){
+                                String result = response.body().toString();
+                                if (result == "true"){
+                                    //TODO: Switch views here
+                                    Log.d(TAG,result);
+                                    //Return to previous view
+                                    Intent profileIntent = new Intent(SubscriptionActivity.this, ProfileActivity.class);
+                                    startActivity(profileIntent);
+                                }
+                            }
+                        }
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d(TAG,e.getMessage());
+                        }
+                    });
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
