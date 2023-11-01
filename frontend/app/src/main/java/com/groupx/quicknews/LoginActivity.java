@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import okhttp3.Response;
@@ -111,7 +112,23 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(Response response) {
                     Log.d(TAG, response.toString());
                     //TODO: check if validation was success or failure
-                    updateUI(account);
+                    try{
+                        int statusCode = response.code();
+                        if (statusCode == 200){
+                            JSONObject user = new JSONObject(response.body().toString());
+                            if (user.has("userId")){
+                                String userId = user.getJSONObject("userId").toString();
+                                updateUI(account, userId);
+                            }
+                            else{
+                                //DO NOTHING WHEN FAIL
+                            }
+                        }
+                    }catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+
                 }
 
                 @Override
@@ -125,14 +142,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void updateUI(GoogleSignInAccount account) {
+    private void updateUI(GoogleSignInAccount account, String userId) {
         if (account == null) {
             Log.d(TAG, "No user signed in");
         }
         else {
             //send token to back end
             Intent signInIntent = new Intent(LoginActivity.this, MainActivity.class);
-            //SignInIntent.putExtra("user", account.getGivenName() + " " + account.getFamilyName());
+            signInIntent.putExtra("USER_ID", userId);
             startActivity(signInIntent);
         }
     }
