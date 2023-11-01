@@ -17,22 +17,24 @@ var forum_id = 1;
 // const id_token = "" // for test
 
 // Uncomment for https
-var options = {
- 	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
- 	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-};
+// var options = {
+//  	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+//  	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+// };
 
 const forum = new ForumModule()
 const RETRIEVE_INTERVAL = 60000 //1 minutes
 var retriever = null //place holder for the retriever before init server
+
 // Error checking function
+//https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
 function isErr(error){
-    //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
     return error, error.e, error.stack
 }
 
 
 //USER MODULE --->
+// ChatGPT usage: No.
 //Verify and register users
 app.post("/signin", async (req,res)=>{
     try {
@@ -54,6 +56,7 @@ app.post("/signin", async (req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 //Get a user profile
 app.get("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
@@ -71,6 +74,7 @@ app.get("/profile/:userId", async (req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 //Get a user list of subscriptions
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.params.userId
@@ -88,6 +92,7 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 //Get reading history
 app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
@@ -107,6 +112,7 @@ app.get("/profile/:userId/history", async (req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 //Update profile of a user, including the subscription list
 app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
@@ -125,6 +131,7 @@ app.put("/profile/:userId", async (req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 //Add a new article to reading history of a user
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
@@ -144,7 +151,9 @@ app.put("/profile/:userId/history", async (req,res)=>{
 })
 //<--- USER MODULE
 
-//ARTICLE MODULE ---> 
+//ARTICLE MODULE --->
+
+// ChatGPT usage: No.
 //Get article by id
 app.get("/article/:articleId", async (req,res)=>{
     var articleId = parseInt(req.params.articleId,10);
@@ -164,6 +173,7 @@ app.get("/article/:articleId", async (req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 // Search using filters
 app.get("/article/filter/search", async(req,res)=>{
     var publisher = req.query.publisher
@@ -208,6 +218,7 @@ app.get("/article/filter/search", async(req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 // Search keyword in articles
 app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
@@ -230,6 +241,7 @@ app.get("/article/kwsearch/search", async(req,res)=>{
 //<--- ARTICLE MODULE
 
 //FORUM MODULE --->
+// ChatGPT usage: No.
 // Get all forums
 app.get("/forums", async (req, res) =>{
 	try{
@@ -246,6 +258,7 @@ app.get("/forums", async (req, res) =>{
 	}
 }); 
 
+// ChatGPT usage: No.
 // GET one specific forum, queried with forum id
 app.get("/forums/:forum_id", async (req, res) =>{
 	try{
@@ -266,6 +279,7 @@ app.get("/forums/:forum_id", async (req, res) =>{
 	}
 });  
 
+// ChatGPT usage: No.
 // Post a comment to a forum
 app.post("/addComment/:forum_id",async (req, res)=>{
 	try{
@@ -295,6 +309,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 // <--- FORUM MODULE
 
 //Recommedation module --->
+// ChatGPT usage: No.
 //Get recommended list of articles for a user
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
@@ -314,6 +329,7 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     }
 })
 
+// ChatGPT usage: No.
 app.get("/recommend/publisher/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
@@ -333,21 +349,21 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 })
 // <--- Recommendation module
 
-
+// ChatGPT usage: No.
 // Main Function
 async function run(){
     try {
         await client.connect()
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
-	/*    var server = app.listen(8081, (req,res)=>{
+	    var server = app.listen(8081, (req,res)=>{
             var host = server.address().address
             var port = server.address().port
             console.log("Server is running at https://%s:%s",host,port)
-        })*/
+        })
 	
         // create https server
-        https.createServer(options, app).listen(8081)
+        //https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({})

@@ -1,6 +1,7 @@
 import { getArticleIds } from "./articlesMngt.js";
 import { getAllUserHistory } from "../user.js";
-  
+
+//ChatGPT usage: No
 export async function collaborativeFilteringRecommendations(userId) {
   // Create user-item rating matrix.
   const userInfo = await getAllUserHistory();
@@ -40,7 +41,8 @@ export async function collaborativeFilteringRecommendations(userId) {
   
     return sortedRecommendations;
   }
-  
+
+  //ChatGPT usage: No
 function predictRating(userId, itemId, userItemMatrix, users) {
   let numerator = 0;
   let denominator = 0;
@@ -56,6 +58,7 @@ function predictRating(userId, itemId, userItemMatrix, users) {
   return denominator === 0 ? 0 : numerator / denominator;
 }
   
+//ChatGPT usage: No
 function calculateSimilarity(user1, user2, userItemMatrix) {
   const views1 = userItemMatrix[user1];
   const views2 = userItemMatrix[user2];
