@@ -110,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Response response) {
                     Log.d(TAG, response.toString());
+                    //TODO: check if validation was success or failure
                     updateUI(account);
                 }
 

@@ -46,10 +46,8 @@ public class HttpClient {
                 });
         }
 
-    public static void  getRequest(String url, String json, ApiCallback callback) throws IOException {
+    public static void  getRequest(String url, ApiCallback callback) {
         MediaType JSON = MediaType.parse("application/json");
-
-        RequestBody requestBody = RequestBody.create(json, JSON);
 
         Request request = new Request.Builder()
                 .url(url)
