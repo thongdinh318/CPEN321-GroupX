@@ -4,8 +4,8 @@ import {OAuth2Client} from 'google-auth-library'
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 
-const ggClient = new OAuth2Client();
-const CLIENT_ID = 1 //TODO: replace witht the real client id
+const CLIENT_ID = "474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com"//TODO: replace witht the real client id
+const ggClient = new OAuth2Client(CLIENT_ID);
 //Default user setting
 const defUser = { 
 	"userId": '0',
@@ -25,12 +25,10 @@ const defUser = {
 // Helper Functions --->
 async function checkAvailable(userId){
     try {
-        console.log({"userId":userId})
         var result = client.db("userdb").collection("profile").find({"userId":userId})
         var arr = await result.toArray()
-        console.log(arr)
         if (arr == undefined || arr.length == 0){
-            return false
+            return new Object()
         }
         else{
             return arr[0]
@@ -67,43 +65,45 @@ async function initUDb(){
 //<--- Init DB function
 
 //Interfaces with frontend -->
-async function verify(token){
-    try {
-        const ticket =  await ggClient.verifyIdToken({
-            idToken: token,
-            audience: CLIENT_ID
-        });
-    
-        const payload =ticket.getPayLoad();
-        const userId = payload['sub']
-
-        const userProfile = await checkAvailable(userId)
-    
-        if (userProfile != null){
-            return userProfile
-        }
-        else{
-            console.log("New User registers\n")
-            const userEmail = payload['email']
-            const userName = payload['name']
-            var newUser = createNewUser(userId, userName,userEmail)
-            await client.db("userdb").collection("profile").insertOne(newUser);
-            return (newUser)
-        }
-    } catch (error) {
-        return(error)
-    }
+function verify(token){
+    return new Promise((resolve, reject)=>{
+        ggClient.verifyIdToken(
+            {idToken: token, audience: CLIENT_ID},
+            function(err, login){
+                if (err){
+                    throw err
+                }
+                if (login){
+                    const payload = login.getPayload()
+                    resolve(payload)
+                }
+                else{
+                    reject("invalid token")
+                }
+            })
+    })
 }
+async function registerNewUser(userId, username, userEmail){
+    const userProfile = await checkAvailable(userId)
+
+    if (userProfile.userId){
+        console.log("Old User")
+        return userProfile
+    }
+    else{
+        console.log("New User")
+        var newUser = createNewUser(userId, username,userEmail)
+        await client.db("userdb").collection("profile").insertOne(newUser);
+        return (newUser)
+    }
+
+}
+
 // get profile
 async function getProfile(userId){
     try {
         var user = await checkAvailable(userId)
-        if(!user){
-            return new Object();
-        }
-        else{
-            return user
-        }
+        return user
     } catch (error) {
         return error
     }
@@ -128,7 +128,7 @@ async function updateProfile(userId, newProfile){
 async function updateHistory(userId, newViewed){
     try {
         var user = await checkAvailable(userId)
-        if (user == null){
+        if (user.userId == undefined){
             return false
         }
         else{
@@ -190,4 +190,4 @@ async function getAllUserHistory(){
 }
 // <---- Interfaces with other modules
 
-export {initUDb, verify, getProfile, updateProfile, updateHistory, getAllUserHistory}
+export {initUDb, registerNewUser, verify, getProfile, updateProfile, updateHistory, getAllUserHistory}
