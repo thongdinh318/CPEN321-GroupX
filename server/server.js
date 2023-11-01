@@ -11,16 +11,16 @@ const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 
 var app = express()
-
 app.use(express.json())
 
-
+var forum_id = 1;
+// const id_token = "" // for test
 
 // Uncomment for https
-// var options = {
-// 	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-// 	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-// };
+var options = {
+	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+};
 
 const forum = new ForumModule()
 const RETRIEVE_INTERVAL = 60000 //1 minutes
@@ -35,13 +35,22 @@ function isErr(error){
 //USER MODULE --->
 //Verify and register users
 app.post("/signin", async (req,res)=>{
-    const token = req.body.idToken;
-    const result = await userMod.verify(token)
-    if (isErr(result)){ 
-        res.status(400).send("Error when verifying")
-    }
-    else{
-        res.status(200).send(result)
+    try {
+        const token = req.body.idToken;
+        const payloadPromise =  userMod.verify(token)
+        payloadPromise.then((payload)=>{
+            console.log(payload)
+            var loggedInUserPromise = userMod.registerNewUser(payload['sub'], payload['name'], payload['email'])
+            loggedInUserPromise.then((loggedInUser)=>{
+                console.log(loggedInUser)
+                res.status(200).send(loggedInUser)
+            })
+        }).catch((rejectMsg)=>{
+            res.status(200).send(rejectMsg)
+        })
+        
+    } catch (error) {
+        res.status(400).send("Verification Error")
     }
 })
 
@@ -53,7 +62,12 @@ app.get("/profile/:userId", async (req,res)=>{
         res.status(400).send("Error when getting user profile")
     }
     else{
-        res.status(200).send(user)
+        if (user.userId == undefined){
+            res.status(200).send("User Profile not Found")
+        }
+        else{
+            res.status(200).send(user)
+        }
     }
 })
 
@@ -65,11 +79,11 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
         res.status(400).send("Error when getting subscription list")
     }
     else{
-        if (userProfile != null){
+        if (userProfile.userId){
             res.status(200).send(userProfile.subscriptionList)
         }
         else{
-            res.status(200).send(null)
+            res.status(200).send([])
         }
     }
 })
@@ -84,11 +98,11 @@ app.get("/profile/:userId/history", async (req,res)=>{
         res.status(400).send("Error when getting reading history")
     }
     else{
-        if (userProfile != null){
+        if (userProfile.userId){
             res.status(200).send(userProfile.history)
         }
         else{
-            res.status(200).send(null)
+            res.status(200).send([])
         }
     }
 })
@@ -97,12 +111,17 @@ app.get("/profile/:userId/history", async (req,res)=>{
 app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     const newProfile = req.body
-    var result = await userMod.updateProfile(userId, newProfile)
-    if (isErr(result)){
+    var succeed = await userMod.updateProfile(userId, newProfile)
+    if (isErr(succeed)){
         res.status(400).send("Error when updating user profile")
     }
     else{
-        res.status(200).send(result)
+        if (!succeed){
+            res.status(200).send("Cannot Update Profile/User not found")
+        }
+        else{
+            res.status(200).send(result)
+        }
     }
 })
 
@@ -110,12 +129,17 @@ app.put("/profile/:userId", async (req,res)=>{
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
     const newViewed = req.body
-    var result = await userMod.updateHistory(userId, newViewed);
-    if(isErr(result)){
+    var succeed = await userMod.updateHistory(userId, newViewed);
+    if(isErr(succeed)){
         res.status(400).send("Error when updating reading history")
     }
     else{
-        res.status(200).send(result)
+        if (!succeed){
+            res.status(200).send("Cannot Update History/User not found")
+        }
+        else{
+            res.status(200).send(result)
+        }
     }
 })
 //<--- USER MODULE
@@ -131,7 +155,7 @@ app.get("/article/:articleId", async (req,res)=>{
         res.status(400).send("Error when Searching by id")
     }
     else{
-        if (foundArticle == null){
+        if (foundArticle.articleId == undefined){
             res.status(200).send("Article Id Not Found")
         }
         else{
@@ -175,7 +199,7 @@ app.get("/article/filter/search", async(req,res)=>{
         res.status(400).send("Error when Searching by filter")
     }
     else{
-        if (foundArticles == null){
+        if (foundArticles.length == 0){
             res.status(200).send("No articles matched")
         }
         else{
@@ -195,7 +219,7 @@ app.get("/article/kwsearch/search", async(req,res)=>{
         res.status(400).send("Error when searching with search bar")
     }
     else{
-        if (foundArticles == null){
+        if (foundArticles.length == 0){
             res.status(200).send("No articles matched")
         }
         else{
@@ -317,20 +341,27 @@ async function run(){
         console.log("Successfully connect to db")
 	
         /* Use this for localhost test*/
-	    var server = app.listen(8081, (req,res)=>{
-            var host = server.address().address
-            var port = server.address().port
-            console.log("Server is running at https://%s:%s",host,port)
-        })
+	    // var server = app.listen(8081, (req,res)=>{
+        //     var host = server.address().address
+        //     var port = server.address().port
+        //     console.log("Server is running at https://%s:%s",host,port)
+        // })
 	
         // create https server
-        // https.createServer(options, app).listen(8081)
+        https.createServer(options, app).listen(8081)
+
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({})
         await userMod.initUDb()
         await articleMod.initADb()
-        // bingNewsRetriever("")
-        // retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
+
+        await forum.createForum(forum_id++,"General News")
+        await forum.createForum(forum_id++, "Economics")
+        await forum.createForum(forum_id++, "Education")
+        console.log("Retrieving some articles")
+        bingNewsRetriever("")
+        console.log("Server is ready to use")
+        retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
         console.log(error)
