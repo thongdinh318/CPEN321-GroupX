@@ -1,25 +1,31 @@
+import { MongoClient } from "mongodb";
 //Default user setting
 const defUser = { 
 	"userId": 0,
-    "username": null,
+    "username": "root",
 	"dob": null,
 	"email":null,
 	"subscriptionList":[],
 	"history":[
 /*		{
             "articleId":null,
-			"genre": null,
-			"author": null,
-			"topic": null,
+			"views":null
 		}*/
 	]
 	
 }
+const uri = "mongodb://127.0.0.1:27017"
+const client = new MongoClient(uri)
+
 // Helper Functions --->
-async function checkAvailable(client, query, db, collection){
+// checkAvaulable is buggy 
+// we don't need it since we are using try-catch 
+// we can have a special response in case of errors
+async function checkAvailable(query, db, collection){
     try {
-        var result = await client.db(db).collection(collection).find(query)
-        var arr = await result.toArray()
+        
+        var result = await client.db(db).collection(collection).find(query).toArray()
+        console.log(result)
         if (arr == undefined || arr.length == 0){
             return null
         }
@@ -34,6 +40,7 @@ async function checkAvailable(client, query, db, collection){
 }
 
 function createNewUser(userId){
+
     var newUser = JSON.parse(JSON.stringify(defUser))
     newUser.userId = userId
     newUser.username = "user"+ String(userId)
@@ -42,76 +49,128 @@ function createNewUser(userId){
 }
 
 // <-- Helper Functions
-//testing purpose -->
-async function initDb(client, initNum){
+//Init DB function --->
+async function initUDb(){
     try {
-        for (var id = 1; id < initNum; id++){
-            var newUser = createNewUser(id)
-            await client.db("userdb").collection("profile").insertOne(newUser)
-        }
-        
+        await client.db("userdb").collection("profile").insertOne(defUser)
         return("success\n")
     } catch (error) {
         return (error)
     }
 }
-// <--- testing purpose
+//<--- Init DB function
 
 //Interfaces with frontend -->
+
+
+
+
 // get profile
-async function getProfile(client, userId){
-    try {
-        var user = await checkAvailable(client,{"userId":userId},"userdb","profile")
-        if (user === null){
-            console.log("New User registers\n")
-            var newUser = createNewUser(userId)
-            await client.db("userdb").collection("profile").insertOne(newUser);
-            return (newUser)
+// async function getProfile(userId){
+//     try {
+//         var user = await checkAvailable(client,{"userId":userId},"userdb","profile")
+//         if (user === null){
+//             console.log("New User registers\n")
+//             var newUser = createNewUser(userId)
+//             await client.db("userdb").collection("profile").insertOne(newUser);
+//             return (newUser)
+//         }
+//         else{
+//             delete user._id;
+//             return user
+//         }
+//     } catch (error) {
+//         console.log(error)
+//         return error
+//     }
+// }
+
+
+
+async function getProfile(userId){
+    try{
+        const result = await client.db("userdb").collection("profile").find({"userId" : userId}).toArray();
+        return result[0];
+    } catch(err){
+        return err;
+    }
+    
+}
+
+async function addUser(userId, profile){
+    try{
+        var newUser = {
+            "userId" : userId,
+            "username" : profile.username,
+            "dob" : profile.dob,
+            "email" : profile.email, 
+            "subscriptionList" : [],
+            "history" : []
         }
-        else{
-            delete user._id;
-            return user
-        }
-    } catch (error) {
-        console.log(error)
-        return error
+        const result = await client.db("userdb").collection("profile").insertOne(newUser);
+        return result;
+    } catch(err){
+        return err;
     }
 }
+
+
+
 //get Subscription list
-async function getSubList(client, userId){
+async function getSubList(userId){
     try {
-        var user = await checkAvailable(client, {"userId":userId},"userdb","profile")
-        if (user == null){
-            console.log("Not exist\n")
-            return ("User " + String(userId) +  " doesn't exist")
-        }
-        else{
-            return user.subscriptionList
-        }
+        // var user = await checkAvailable(client, {"userId":userId},"userdb","profile")
+        // if (user == null){
+        //     console.log("Not exist\n")
+        //     return ("User " + String(userId) +  " doesn't exist")
+        // }
+        // else{
+        //     return user.subscriptionList
+        // }
+
+        const user = await client.db("userdb").collection("profile").find({"userId" : userId}).toArray();
+        return user[0].subscriptionList;
     } catch (error) {
         console.error(error);
         return error
     }
 }
+
+
+
 //Update profile info
-async function updateProfile(client, userId, newProfile){
+async function updateProfile(userId, newProfile){
     try {
-        var user = await checkAvailable(client, {"userId": userId},"userdb","profile")
-        if (user == null){
-            return ("User doesn't exist")
-        }
-        else{
-            //TODO: sanitize inputs before update
-            await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: newProfile})
-            return ("Update complete")
-        }
+        // var user = await checkAvailable(client, {"userId": userId},"userdb","profile")
+        // if (user == null){
+        //     return ("User doesn't exist")
+        // }
+        // else{
+        //     //TODO: sanitize inputs before update
+        //     await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: newProfile})
+        //     return ("Update complete")
+        // }
+        await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: {
+            "userId" : newProfile.userId,
+            "username" : newProfile.username,
+            "dob" : newProfile.dob,
+            "email" : newProfile.email, 
+            "subscriptionList" : newProfile.subscriptionList,
+            "history" : newProfile.history
+        }});
+        return ("Update complete");
+
     } catch (error) {
         console.error(error)
         return (error)
     }
 }
+
+
+
+
 //Update reading history
-async function updateHistory(client, userId, data){
+async function updateHistory(userId, data){
     try {
         var user = await checkAvailable(client, {"userId": userId}, "userdb", "profile")
         if (user == null){
@@ -144,16 +203,30 @@ async function updateHistory(client, userId, data){
 // Interfaces with other modules -->
 async function getAllUserHistory(){
     var profileCollec = await client.db("userdb").collection("profile").find({}).toArray()
-    var result = [];
+    
+    var userItemData = [];
+    var userList = [];
+
     profileCollec.forEach((user)=>{
-        var object = new Object()
-        object.userId = user.userId;
-        object.history = user.history;
-        result.push(object)
+        userList.push(user.userId);
+        if (user.history.length > 0)
+        {
+            user.history.forEach((item)=>{
+                var itemData = new Object()
+                itemData.userId = user.userId;
+                itemData.itemId = item.articleId;
+                itemData.views = item.views;
+                userItemData.push(itemData)
+            })
+        }
     })
+
+    var result = new Object();
+    result.users = userList;
+    result.userItemData = userItemData
     console.log(result)
     return result
 }
 // <---- Interfaces with other modules
 
-export {initDb, getProfile, getSubList, updateProfile, updateHistory, getAllUserHistory}
+export {initUDb, getProfile, getSubList, updateProfile, updateHistory, getAllUserHistory, addUser}
