@@ -1,137 +1,156 @@
+import { MongoClient } from "mongodb";
+import {OAuth2Client} from 'google-auth-library'
+
+const uri = "mongodb://127.0.0.1:27017"
+const client = new MongoClient(uri)
+
+const CLIENT_ID = "474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com"//TODO: replace witht the real client id
+const ggClient = new OAuth2Client(CLIENT_ID);
 //Default user setting
 const defUser = { 
-	"userId": 0,
-    "username": null,
+	"userId": '0',
+    "username": "root",
 	"dob": null,
 	"email":null,
 	"subscriptionList":[],
 	"history":[
-/*		{
+        /*{
             "articleId":null,
-			"rating":null
+            "title": null,
+			"views":null
 		}*/
 	]
-	
 }
+
 // Helper Functions --->
-async function checkAvailable(client, query, db, collection){
+async function checkAvailable(userId){
     try {
-        var result = await client.db(db).collection(collection).find(query)
+        var result = client.db("userdb").collection("profile").find({"userId":userId})
         var arr = await result.toArray()
         if (arr == undefined || arr.length == 0){
-            return null
+            return new Object()
         }
         else{
             return arr[0]
         }
     } catch (error) {
         throw(error)
-        
     }    
 
 }
 
-function createNewUser(userId){
+function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
     newUser.userId = userId
-    newUser.username = "user"+ String(userId)
-    newUser.email = newUser.username + "@gmail.com"
+    if (userName == undefined){
+        newUser.username = "default user name"
+    }
+    else{
+        newUser.username = userName
+    }
+    newUser.email = userEmail
     return newUser
 }
-
 // <-- Helper Functions
-//testing purpose -->
-async function initDb(client, initNum){
+
+//Init DB function --->
+async function initUDb(){
     try {
-        await client.db("userdb").collection("profile")
-        for (var id = 1; id < initNum; id++){
-            var newUser = createNewUser(id)
-            await client.db("userdb").collection("profile").insertOne(newUser)
-        }
-        
+        await client.db("userdb").collection("profile").insertOne(defUser)
         return("success\n")
     } catch (error) {
         return (error)
     }
 }
-// <--- testing purpose
+//<--- Init DB function
 
 //Interfaces with frontend -->
-// get profile
-async function getProfile(client, userId){
-    try {
-        var user = await checkAvailable(client,{"userId":userId},"userdb","profile")
-        if (user === null){
-            console.log("New User registers\n")
-            var newUser = createNewUser(userId)
-            await client.db("userdb").collection("profile").insertOne(newUser);
-            return (newUser)
-        }
-        else{
-            delete user._id;
-            return user
-        }
-    } catch (error) {
-        console.log(error)
-        return error
-    }
+function verify(token){
+    return new Promise((resolve, reject)=>{
+        ggClient.verifyIdToken(
+            {idToken: token, audience: CLIENT_ID},
+            function(err, login){
+                if (err){
+                    throw err
+                }
+                if (login){
+                    const payload = login.getPayload()
+                    resolve(payload)
+                }
+                else{
+                    reject("invalid token")
+                }
+            })
+    })
 }
-//get Subscription list
-async function getSubList(client, userId){
+async function registerNewUser(userId, username, userEmail){
+    const userProfile = await checkAvailable(userId)
+
+    if (userProfile.userId){
+        console.log("Old User")
+        return userProfile
+    }
+    else{
+        console.log("New User")
+        var newUser = createNewUser(userId, username,userEmail)
+        await client.db("userdb").collection("profile").insertOne(newUser);
+        return (newUser)
+    }
+
+}
+
+// get profile
+async function getProfile(userId){
     try {
-        var user = await checkAvailable(client, {"userId":userId},"userdb","profile")
-        if (user == null){
-            console.log("Not exist\n")
-            return ("User " + String(userId) +  " doesn't exist")
-        }
-        else{
-            return user.subscriptionList
-        }
+        var user = await checkAvailable(userId)
+        return user
     } catch (error) {
-        console.error(error);
         return error
     }
 }
 //Update profile info
-async function updateProfile(client, userId, newProfile){
+async function updateProfile(userId, newProfile){
     try {
-        var user = await checkAvailable(client, {"userId": userId},"userdb","profile")
-        if (user == null){
-            return ("User doesn't exist")
+        var user = await checkAvailable(userId)
+        if (user.userId == undefined){
+            return false
         }
         else{
             //TODO: sanitize inputs before update
-            await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: newProfile})
-            return ("Update complete")
+            const result = await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: newProfile})
+            return (result.acknowledged)
         }
     } catch (error) {
-        console.error(error)
         return (error)
     }
 }
 //Update reading history
-async function updateHistory(client, userId, data){
+async function updateHistory(userId, newViewed){
     try {
-        var user = await checkAvailable(client, {"userId": userId}, "userdb", "profile")
-        if (user == null){
-            res.status(200).send("User doesn't exist")
+        var user = await checkAvailable(userId)
+        if (user.userId == undefined){
+            return false
         }
         else{
-            // const newHistory = req.body
-            const newHistory = data
-            var oldHistory = user.history
-            var updateHistory = new Set()
-            oldHistory.forEach(element => {
-                updateHistory.add(element)
-            });
-            updateHistory = newHistory.filter((update)=>{
-                var dup = updateHistory.has(update.articleId)
-                updateHistory.add(dup)
-                return !dup
-            })
-            await client.db("userdb").collection("profile").updateOne({"userId":userId}, 
+            var dup = false
+            var updateHistory = user.history
+            for (var pastViewed of updateHistory){
+                if (pastViewed.articleId === newViewed.articleId){
+                    pastViewed.views = pastViewed + 1
+                    dup = true
+                    break;
+                }
+            }
+
+            if (!dup){
+                newViewed.views = 1 
+                updateHistory.push(newViewed)
+            }
+
+            const result = await client.db("userdb").collection("profile").updateOne({"userId":userId}, 
             {$set: {"history":updateHistory}})
-            return ("Finish")
+            
+            return (result.acknowledged)
         }
     } catch (error) {
         return (error)
@@ -141,7 +160,9 @@ async function updateHistory(client, userId, data){
 // <--Interfaces with frontend 
 
 // Interfaces with other modules -->
-async function getAllUserHistory(client){
+//Get the reading history of all users
+//Used by Recommendation module
+async function getAllUserHistory(){
     var profileCollec = await client.db("userdb").collection("profile").find({}).toArray()
     
     var userItemData = [];
@@ -169,4 +190,4 @@ async function getAllUserHistory(client){
 }
 // <---- Interfaces with other modules
 
-export {initDb, getProfile, getSubList, updateProfile, updateHistory, getAllUserHistory}
+export {initUDb, registerNewUser, verify, getProfile, updateProfile, updateHistory, getAllUserHistory}
