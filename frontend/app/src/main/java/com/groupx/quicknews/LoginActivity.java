@@ -103,32 +103,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateToken(String idToken, GoogleSignInAccount account) {
-        String url = getString(R.string.server_dns) + "signin";
+        /*String url = getString(R.string.server_dns) + "signin";
         try {
             JSONObject json = new JSONObject();
             json.put("idToken", idToken);
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) {
-                    Log.d(TAG, response.toString());
                     //TODO: check if validation was success or failure
                     try{
+                        String responseBody = response.body().string();
                         int statusCode = response.code();
                         if (statusCode == 200){
-                            JSONObject user = new JSONObject(response.body().toString());
+                            JSONObject user = new JSONObject(responseBody);
                             if (user.has("userId")){
                                 String userId = user.getJSONObject("userId").toString();
                                 updateUI(account, userId);
                             }
-                            else{
-                                //DO NOTHING WHEN FAIL
-                            }
                         }
-                    }catch (JSONException e) {
+                    }catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-
-
                 }
 
                 @Override
@@ -139,7 +134,8 @@ public class LoginActivity extends AppCompatActivity {
         }
         catch(Exception e) {
             Log.e(TAG, "exception", e);
-        }
+        }*/
+        updateUI(account,"111");
     }
 
     private void updateUI(GoogleSignInAccount account, String userId) {

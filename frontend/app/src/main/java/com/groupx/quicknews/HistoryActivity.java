@@ -56,6 +56,6 @@ public class HistoryActivity extends AppCompatActivity {
             }
         });
 
-        //Display the list of article for the user here
+        //TODO: Display the list of article for the user here
     }
 }
