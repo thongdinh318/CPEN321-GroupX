@@ -22,6 +22,8 @@ import android.view.View;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
@@ -110,25 +112,25 @@ public class LoginActivity extends AppCompatActivity {
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) {
-                    Log.d(TAG, response.toString());
-                    //TODO: check if validation was success or failure
+//                    Log.d(TAG, response.toString());
                     try{
                         int statusCode = response.code();
                         if (statusCode == 200){
-                            JSONObject user = new JSONObject(response.body().toString());
+//                            String res = "{'_id':'6542c1b579fec8b99f4d056e', 'userId':'101228437722251375432', 'username':'Tanaka Shido', 'dob':null, 'email':'tanakashido1@gmail.com', 'subscriptionList':[], 'history':[]}";
+                            String res = response.body().string();
+                            res.replace("\"", "\'");
+                            JSONObject user = new JSONObject(res);
                             if (user.has("userId")){
-                                String userId = user.getJSONObject("userId").toString();
-                                updateUI(account, userId);
+                                String userId = user.getString("userId");
+                                updateUI(account,userId);
                             }
-                            else{
-                                //DO NOTHING WHEN FAIL
-                            }
+                            Log.d(TAG, res);
                         }
                     }catch (JSONException e) {
                         throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-
-
                 }
 
                 @Override
