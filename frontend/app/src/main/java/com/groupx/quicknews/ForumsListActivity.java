@@ -42,4 +42,6 @@ public class ForumsListActivity extends AppCompatActivity {
         viewForum.setLayoutManager(new LinearLayoutManager(this));
         viewForum.setAdapter(new ForumsViewAdapter(getApplicationContext(), placeHolderForums));
     }
+
+    //TODO: get list of forums
 }

@@ -1,6 +1,7 @@
 package com.groupx.quicknews;
 
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -9,14 +10,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.groupx.quicknews.helpers.HttpClient;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+
+import org.json.JSONObject;
+
+import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -32,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.server_client_id))
                 .requestEmail()
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
@@ -51,8 +57,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        updateUI(account);
+        mGoogleSignInClient.silentSignIn().addOnCompleteListener(this,
+                        new OnCompleteListener<GoogleSignInAccount>() {
+                            @Override
+                            public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                                handleSignInResult(task);
+                            }
+                        });
     }
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -76,7 +87,8 @@ public class LoginActivity extends AppCompatActivity {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             // Signed in successfully, show authenticated UI.
-            updateUI(account);
+            String idToken = account.getIdToken();
+            validateToken(idToken, account);
         } catch (ApiException e) {
 
             //AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
@@ -89,8 +101,30 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void validateToken(String idToken, GoogleSignInAccount account) {
+        String url = getString(R.string.server_dns) + "signin";
+        try {
+            JSONObject json = new JSONObject();
+            json.put("idToken", idToken);
+            HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
+                @Override
+                public void onResponse(Response response) {
+                    Log.d(TAG, response.toString());
+                    updateUI(account);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e(TAG, "exception", e);
+                }
+            });
+        }
+        catch(Exception e) {
+            Log.e(TAG, "exception", e);
+        }
+    }
+
     private void updateUI(GoogleSignInAccount account) {
-        //TODO: pass ID to backend for auth, display alert if not signed in?
         if (account == null) {
             Log.d(TAG, "No user signed in");
         }

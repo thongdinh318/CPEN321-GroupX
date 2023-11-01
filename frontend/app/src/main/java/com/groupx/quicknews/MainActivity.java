@@ -39,4 +39,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    //TODO: push notifications for when someone posts to a followed forum
 }
