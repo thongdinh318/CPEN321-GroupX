@@ -1,8 +1,10 @@
 User module:
-GET /profile/:userId
-GET /profile/:userId/subscriptions
-PUT /profile/:userId
-PUT /profile/:userId/history
+POST /signin
+GET  /profile/:userId
+GET  /profile/:userId/subscriptions
+GET  /profile/:userId/history
+PUT  /profile/:userId
+PUT  /profile/:userId/history
 
 Article Module:
 
@@ -15,5 +17,11 @@ ex: GET "http://localhost:8081/article/filter/search?publisher=CNN&after=2023-04
 GET /article/kwsearch/search (NOTE: include keyword needs to be matched after search)
 ex: http://localhost:8081/article/kwsearch/search?keyWord=something
 
-Forum module (TBA)
-    
+Forum module
+GET /forums
+GET /forums/:forum_id
+GET /addComment/:forum_id
+
+Recommendation module
+GET /recommend/article/:userId
+GET /recommend/publisher/:userId
