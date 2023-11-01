@@ -8,7 +8,7 @@ const client = new MongoClient(uri);
 //const https = require("https");
 
 // const url = "http://" + host + ":" + forumDB_port  + "/forums";
-
+//ChatGPT usage: No
 function dateAdded(){
 	const date = new Date();
 	let time = date.toLocaleDateString() + " " + date.toLocaleTimeString();	
@@ -16,11 +16,13 @@ function dateAdded(){
 }
 
 export class ForumModule{
+    //ChatGPT usage: No
     construtor(){
         this.dateCreated = new Date();
     }
 
     // DATABASE COMMUNICATION INTERFACES
+    //ChatGPT usage: No
     createForum = async function(forumId, forumName){
         try{
             let forum = {
@@ -36,7 +38,7 @@ export class ForumModule{
         }
     }
 
-
+    //ChatGPT usage: No
     getAllForums = async function(){
         try{
             const result = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
@@ -45,6 +47,7 @@ export class ForumModule{
             return(err)
         }
     }
+    //ChatGPT usage: No
     getForum = async function (forumId){
         // const response = await axios.get(url  + "/" + forumId);
         try{
@@ -58,6 +61,7 @@ export class ForumModule{
         
     }
 
+    //ChatGPT usage: No
     deleteForum = async function(forumId){
         // const response = await axios.delete(url + "/" +forumId);
         // return response.data;
@@ -72,6 +76,7 @@ export class ForumModule{
         
     }
 
+    //ChatGPT usage: No
     deleteForums = async function(){
         // const response = await axios.delete(url);
         // return response.data;
@@ -87,6 +92,7 @@ export class ForumModule{
         
     }
 
+    //ChatGPT usage: No
     addCommentToForum = async function(forumId, commentData, username){
         try{
             var datePosted = dateAdded();

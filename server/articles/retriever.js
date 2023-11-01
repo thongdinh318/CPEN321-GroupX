@@ -13,17 +13,18 @@ const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
 var id = 1 //keep track of article ids in the db
 
+//ChatGPT usage: No
 async function searchNews(query){
     var url = bing_endpoints+"/search"
     console.log(url)
     try {
         var user_query;
         if (query === ""){
-            user_query = EXCLUDED_SITE.join(" ")
+            user_query = EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
             // user_query += " " + FOCUSED_SITE.join(" OR ")
         }
         else{
-            user_query = query + " " + EXCLUDED_SITE.join(" ")
+            user_query = query + " " + EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
             // user_query +=" " + FOCUSED_SITE.join(" OR ")
         }
         console.log(user_query)
@@ -31,7 +32,7 @@ async function searchNews(query){
             headers:{ 'Ocp-Apim-Subscription-Key': key},
             params:{
                 q:user_query,
-                count: 5,
+                count: 15,
                 sortBy:"Date",
                 freshness:"Day",
                 mkt:'en-CA'
@@ -43,6 +44,8 @@ async function searchNews(query){
     }
 }
 
+
+//ChatGPT usage: Yes
 async function scrapeURL(url){
     try {
         const response = await axios.get(url)
@@ -67,6 +70,7 @@ async function scrapeURL(url){
     }
 }
 
+// ChatGPT usage: No”
 async function bingNewsRetriever(query){
     var result = await searchNews(query)
     if (query ==""){

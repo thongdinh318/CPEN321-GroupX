@@ -23,6 +23,7 @@ const defUser = {
 }
 
 // Helper Functions --->
+//ChatGPT usage: No
 async function checkAvailable(userId){
     try {
         var result = client.db("userdb").collection("profile").find({"userId":userId})
@@ -38,7 +39,7 @@ async function checkAvailable(userId){
     }    
 
 }
-
+//ChatGPT usage: No
 function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
     newUser.userId = userId
@@ -54,6 +55,7 @@ function createNewUser(userId, userName, userEmail){
 // <-- Helper Functions
 
 //Init DB function --->
+//ChatGPT usage: No
 async function initUDb(){
     try {
         await client.db("userdb").collection("profile").insertOne(defUser)
@@ -83,6 +85,7 @@ function verify(token){
             })
     })
 }
+//ChatGPT usage: No
 async function registerNewUser(userId, username, userEmail){
     const userProfile = await checkAvailable(userId)
 
@@ -100,6 +103,7 @@ async function registerNewUser(userId, username, userEmail){
 }
 
 // get profile
+//ChatGPT usage: No
 async function getProfile(userId){
     try {
         var user = await checkAvailable(userId)
@@ -109,6 +113,7 @@ async function getProfile(userId){
     }
 }
 //Update profile info
+//ChatGPT usage: No
 async function updateProfile(userId, newProfile){
     try {
         var user = await checkAvailable(userId)
@@ -124,6 +129,8 @@ async function updateProfile(userId, newProfile){
         return (error)
     }
 }
+
+// ChatGPT usage: No.
 //Update reading history
 async function updateHistory(userId, newViewed){
     try {
@@ -160,6 +167,8 @@ async function updateHistory(userId, newViewed){
 // <--Interfaces with frontend 
 
 // Interfaces with other modules -->
+
+// ChatGPT usage: No.
 //Get the reading history of all users
 //Used by Recommendation module
 async function getAllUserHistory(){
