@@ -69,10 +69,14 @@ async function scrapeURL(url){
 
 async function bingNewsRetriever(query){
     var result = await searchNews(query)
+    if (query ==""){
+        query = "general"
+    }
     
     var retrievedArticles =[]
     for (var article of result.value){
         var articleEntry = new Object()
+        articleEntry.url = article.url;
         var content = await scrapeURL(article.url)
         //skip if cannot scrape the content
         if (content.para == undefined || content.para.length == 0){
@@ -91,16 +95,15 @@ async function bingNewsRetriever(query){
             continue
         }
         else{
+            articleEntry.title = article.name
             articleEntry.content = articleBody
         }
         articleEntry.publisher = article.provider[0].name.toLowerCase()
         articleEntry.publishedDate = article.datePublished
         articleEntry.categories = article.category != undefined? [article.category]:[query]
-        articleEntry.title = article.name
         retrievedArticles.push(articleEntry)
     }
-
-    console.log(retrievedArticles)
+    // console.log(retrievedArticles)
     addToDb(retrievedArticles)
     return retrievedArticles
 }
