@@ -17,10 +17,10 @@ var forum_id = 1;
 // const id_token = "" // for test
 
 // Uncomment for https
-// var options = {
-// 	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-// 	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-// };
+var options = {
+ 	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+ 	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+};
 
 const forum = new ForumModule()
 const RETRIEVE_INTERVAL = 60000 //1 minutes
@@ -340,18 +340,19 @@ async function run(){
         await client.connect()
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
-	    var server = app.listen(8081, (req,res)=>{
+	/*    var server = app.listen(8081, (req,res)=>{
             var host = server.address().address
             var port = server.address().port
             console.log("Server is running at https://%s:%s",host,port)
-        })
+        })*/
 	
         // create https server
-        // https.createServer(options, app).listen(8081)
+        https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({})
-        await userMod.initUDb()
+        client.db("ForumDB").collection("forums").deleteMany({})
+	await userMod.initUDb()
         await articleMod.initADb()
 
         await forum.createForum(forum_id++,"General News")
