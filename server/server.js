@@ -359,7 +359,7 @@ async function run(){
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
         console.log("Retrieving some articles")
-        bingNewsRetriever("")
+        await bingNewsRetriever("")
         console.log("Server is ready to use")
         retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
