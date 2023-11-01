@@ -42,7 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     //Switch to display sub list
                     Intent subListIntent = new Intent(ProfileActivity.this, SubscriptionActivity.class);
-                    subListIntent.putExtra("SUB_LIST", subscriptionList);
+                    subListIntent.putExtra("USER_ID", userId);
                     startActivity(subListIntent);
 
                 }
