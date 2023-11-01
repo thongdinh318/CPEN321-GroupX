@@ -29,7 +29,7 @@ async function searchById(articleId){
         foundArticle = await foundArticle.toArray()
         console.log(foundArticle)
         if (foundArticle == undefined || foundArticle.length == 0){
-            return (null)
+            return (new Object())
         }
         else{
             return foundArticle[0]
@@ -47,7 +47,7 @@ async function searchByFilter(query){
         foundArticles = await foundArticles.toArray()
         console.log(foundArticles)
         if (foundArticles == undefined || foundArticles.length == 0){
-            return null
+            return []
         }
         else{
             return foundArticles
