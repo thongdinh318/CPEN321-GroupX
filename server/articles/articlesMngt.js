@@ -42,13 +42,13 @@ async function searchById(articleId){
 //Search the database for a list of articles that match the query provided by the user
 async function searchByFilter(query){
     try {
-        // console.log(query)
+        console.log(query)
         var foundArticles  = await client.db("articledb").collection("articles").find(query);
         foundArticles = await foundArticles.toArray()
-        console.log(foundArticles)
-        if (foundArticles.length() > 10){
+        if (foundArticles.length > 10){
             foundArticles = foundArticles.slice(0,9)
         }
+	
         if (foundArticles == undefined || foundArticles.length == 0){
             return []
         }
