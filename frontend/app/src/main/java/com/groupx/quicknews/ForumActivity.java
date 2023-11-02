@@ -23,6 +23,8 @@ import com.groupx.quicknews.ui.forum.CommentsViewAdapter;
 import com.groupx.quicknews.ui.forumlist.Forum;
 import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -57,8 +59,6 @@ public class ForumActivity extends AppCompatActivity {
         forumView = findViewById(R.id.view_comment);
         commentText = findViewById(R.id.edit_post);
 
-        Log.d(TAG, LoginActivity.getAccount().getDisplayName());
-
         postButton = findViewById(R.id.button_post);
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +77,6 @@ public class ForumActivity extends AppCompatActivity {
 
     private void getComments () {
         String url = getString(R.string.server_dns) + "forums/" + forumID;
-        Log.d(TAG, forumID);
         try {
         HttpClient.getRequest(url, new HttpClient.ApiCallback(){
             @Override
@@ -86,17 +85,25 @@ public class ForumActivity extends AppCompatActivity {
                 if (statusCode == 200){
                     String responseBody = response.body().string();
                     Log.d(TAG, responseBody);
+                    try {
+                        JSONArray jsonArray = new JSONArray(responseBody);
+                        JSONObject json = jsonArray.getJSONObject(0);
+                        JSONArray jsonComments = json.getJSONArray("comments");
 
-                    //update forums view
-                    ObjectMapper mapper = new ObjectMapper();
-                    comments = Arrays.asList(mapper.readValue(responseBody, Comment[].class));
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            forumView.setLayoutManager(new LinearLayoutManager(ForumActivity.this));
-                            forumView.setAdapter(new CommentsViewAdapter(getApplicationContext(), comments));
-                        }
-                    });
+                        //update forum comment view
+                        ObjectMapper mapper = new ObjectMapper();
+                        comments = Arrays.asList(mapper.readValue(jsonComments.toString(), Comment[].class));
+                        comments = new ArrayList<>(comments); //jacksons creates immutable list
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                forumView.setLayoutManager(new LinearLayoutManager(ForumActivity.this));
+                                forumView.setAdapter(new CommentsViewAdapter(getApplicationContext(), comments));
+                            }
+                        });
+                    } catch (JSONException e) {
+                        throw new IOException(e);
+                    }
                 }
             }
 
@@ -112,7 +119,6 @@ public class ForumActivity extends AppCompatActivity {
     }
 
     private void postComment(String comment) {
-        Log.d(TAG,comment);
         String url = getString(R.string.server_dns) + "addComment/" + forumID;
         try {
             JSONObject json = new JSONObject();
@@ -124,11 +130,17 @@ public class ForumActivity extends AppCompatActivity {
 
                     String responseBody = response.body().string();
                     int statusCode = response.code();
-
-                    Log.d(TAG, responseBody);
-                    Log.d(TAG, String.valueOf(statusCode));
+                    //TODO: update statusCodes so they convey more information
                     if (statusCode == 200){
+                        Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
 
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                comments.add(postedComment);
+                                forumView.getAdapter().notifyItemInserted(comments.size()-1);
+                            }
+                        });
                     }
                 }
 
