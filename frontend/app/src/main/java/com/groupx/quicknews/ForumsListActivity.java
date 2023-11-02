@@ -9,23 +9,16 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.groupx.quicknews.databinding.ActivityForumBinding;
 import com.groupx.quicknews.databinding.ActivityForumsListBinding;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.forumlist.Forum;
 import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-//import com.google.gson.GSON;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import kotlin.jvm.internal.TypeReference;
 import okhttp3.Response;
 
 public class ForumsListActivity extends AppCompatActivity {
@@ -54,24 +47,21 @@ public class ForumsListActivity extends AppCompatActivity {
         try {
             HttpClient.getRequest(url, new HttpClient.ApiCallback(){
                 @Override
-                public void onResponse(Response response) {
-                    try{
-                        int statusCode = response.code();
-                        if (statusCode == 200){
-                            //update forums list
-                            ObjectMapper mapper = new ObjectMapper();
-                            forums = Arrays.asList(mapper.readValue(response.body().string(), Forum[].class));
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    viewForum.setLayoutManager(new LinearLayoutManager(ForumsListActivity.this));
-                                    viewForum.setAdapter(new ForumsViewAdapter(getApplicationContext(), forums));
-                                }
-                            });
-
-                        }
-                    }catch (Exception e) {
-                        throw new RuntimeException(e);
+                public void onResponse(Response response) throws IOException {
+                    int statusCode = response.code();
+                    if (statusCode == 200){
+                        String responseBody = response.body().string();
+                        Log.d(TAG, responseBody);
+                        //update forums list
+                        ObjectMapper mapper = new ObjectMapper();
+                        forums = Arrays.asList(mapper.readValue(responseBody, Forum[].class));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                viewForum.setLayoutManager(new LinearLayoutManager(ForumsListActivity.this));
+                                viewForum.setAdapter(new ForumsViewAdapter(getApplicationContext(), forums));
+                            }
+                        });
                     }
                 }
 
