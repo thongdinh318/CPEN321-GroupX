@@ -48,7 +48,7 @@ app.post("/signin", async (req,res)=>{
                 res.status(200).send(loggedInUser)
             })
         }).catch((rejectMsg)=>{
-            res.status(200).send(rejectMsg)
+            res.status(400).send(rejectMsg)
         })
         
     } catch (error) {
@@ -66,7 +66,7 @@ app.get("/profile/:userId", async (req,res)=>{
     }
     else{
         if (user.userId == undefined){
-            res.status(200).send("User Profile not Found")
+            res.status(400).send("User Profile not Found")
         }
         else{
             res.status(200).send(user)
@@ -123,7 +123,7 @@ app.put("/profile/:userId", async (req,res)=>{
     }
     else{
         if (!succeed){
-            res.status(200).send("Cannot Update Profile/User not found")
+            res.status(400).send("Cannot Update Profile/User not found")
         }
         else{
             res.status(200).send(result)
@@ -142,7 +142,7 @@ app.put("/profile/:userId/history", async (req,res)=>{
     }
     else{
         if (!succeed){
-            res.status(200).send("Cannot Update History/User not found")
+            res.status(400).send("Cannot Update History/User not found")
         }
         else{
             res.status(200).send(result)
@@ -165,7 +165,7 @@ app.get("/article/:articleId", async (req,res)=>{
     }
     else{
         if (foundArticle.articleId == undefined){
-            res.status(200).send("Article Id Not Found")
+            res.status(400).send("Article Id Not Found")
         }
         else{
             res.status(200).send(foundArticle)
@@ -210,7 +210,7 @@ app.get("/article/filter/search", async(req,res)=>{
     }
     else{
         if (foundArticles.length == 0){
-            res.status(200).send("No articles matched")
+            res.status(400).send("No articles matched")
         }
         else{
             res.status(200).send(foundArticles)
@@ -231,7 +231,7 @@ app.get("/article/kwsearch/search", async(req,res)=>{
     }
     else{
         if (foundArticles.length == 0){
-            res.status(200).send("No articles matched")
+            res.status(400).send("No articles matched")
         }
         else{
             res.status(200).send(foundArticles)
@@ -298,7 +298,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 				res.status(200).send("Comment Posted!");
 			}
 			else{
-				res.status(200).send("Failed Posting Comment! Please Try Again")
+				res.status(400).send("Failed Posting Comment! Please Try Again")
 			}
 		}
 
@@ -369,25 +369,31 @@ async function run(){
         https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
-        client.db("articledb").collection("articles").deleteMany({})
-        client.db("ForumDB").collection("forums").deleteMany({})
+        
+	client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        
+	client.db("ForumDB").collection("forums").deleteMany({})
+	
 	await userMod.initUDb()
-        await articleMod.initADb()
+        
+	await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
         console.log("Retrieving some articles")
-        await bingNewsRetriever("")
-        console.log("Server is ready to use")
+        
+	await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        
+	console.log("Server is ready to use")
         //retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
         console.log(error)
 
-        if (retriever!= null){
+        /*if (retriever!= null){
             clearInterval(retriever)
-        }
+        }*/
         await client.close()
     }
 }
