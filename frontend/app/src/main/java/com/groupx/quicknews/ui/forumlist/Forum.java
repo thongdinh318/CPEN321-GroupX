@@ -9,7 +9,7 @@ public class Forum {
     String forumID;
     String forumName;
     @JsonCreator
-    public Forum(@JsonProperty("_id") String forumID, @JsonProperty("name") String forumName) {
+    public Forum(@JsonProperty("id") String forumID, @JsonProperty("name") String forumName) {
         this.forumID = forumID;
         this.forumName = forumName;
     }
