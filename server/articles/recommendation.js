@@ -14,6 +14,11 @@ export async function collaborativeFilteringRecommendations(userId) {
   console.log(items);
 
   const userItemMatrix = {};
+
+  for(const user of users){
+    userItemMatrix[user] = {};
+  }
+  
   for (const interaction of userItemData) {
     if (!userItemMatrix[interaction.userId]) {
       userItemMatrix[interaction.userId] = {};

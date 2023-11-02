@@ -315,10 +315,11 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
         const recommeded = await collaborativeFilteringRecommendations(userId);
+        // console.log(recommeded)
         var recommededArticles = []
         for (var i = 0; i < recommeded.length; ++i){
             var articleId = recommeded[i][0]
-            var article = await articleMod.getArticleIds(articleId)
+            var article = await articleMod.searchById(parseInt(articleId,10))
             recommededArticles.push(article)
         }
         res.status(200).send(recommededArticles)
@@ -338,7 +339,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
         var recommededPublishers = []
         for (var i = 0; i < recommeded.length; ++i){
             var articleId = recommeded[i][0]
-            var article = await articleMod.getArticleIds(articleId)
+            var article = await articleMod.searchById(parseInt(articleId,10))
             recommededPublishers.push(article.publisher)
         }
         res.status(200).send(recommededPublishers)
