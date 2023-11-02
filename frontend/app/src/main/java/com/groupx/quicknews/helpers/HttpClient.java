@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -40,7 +41,7 @@ public class HttpClient {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Log.d(TAG, response.body().string());
+//                        Log.d(TAG, response.body().string());
                         callback.onResponse(response);
                     }
                 });
@@ -63,12 +64,12 @@ public class HttpClient {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG ,response.body().string());
+//                Log.d(TAG ,response.body().string());
                 callback.onResponse(response);
             }
         });
-
     }
+
 
     public static void  putRequest(String url, String json, ApiCallback callback) {
         MediaType JSON = MediaType.parse("application/json");
@@ -88,7 +89,7 @@ public class HttpClient {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d(TAG, response.body().string());
+//                Log.d(TAG, response.body().string());
                 callback.onResponse(response);
             }
         });
