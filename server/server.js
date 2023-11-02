@@ -17,10 +17,10 @@ var forum_id = 1;
 // const id_token = "" // for test
 
 // Uncomment for https
-// var options = {
-//  	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-//  	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-// };
+var options = {
+ 	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+ 	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+};
 
 const forum = new ForumModule()
 const RETRIEVE_INTERVAL = 60000 //1 minutes
@@ -262,7 +262,7 @@ app.get("/forums", async (req, res) =>{
 // GET one specific forum, queried with forum id
 app.get("/forums/:forum_id", async (req, res) =>{
 	try{
-		const result =await forum.getForum(req.params.forum_id)
+		const result =await forum.getForum(parseInt(req.params.forum_id),10)
 		// const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
 		if (isErr(result)){
 			res.status(400).send(result)
@@ -285,9 +285,9 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 	try{
 		let commentData = req.body.commentData;
 		let userId = req.body.userId
-		const user = await getProfile(userId)
+		const user = await userMod.getProfile(userId)
 		
-		const result = await forum.addCommentToForum(req.params.forum_id, commentData, user.username)
+		const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
 		// await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
 
 		if (isErr(result)){
@@ -356,14 +356,14 @@ async function run(){
         await client.connect()
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
-	    var server = app.listen(8081, (req,res)=>{
-            var host = server.address().address
-            var port = server.address().port
-            console.log("Server is running at https://%s:%s",host,port)
-        })
+	    // var server = app.listen(8081, (req,res)=>{
+        //     var host = server.address().address
+        //     var port = server.address().port
+        //     console.log("Server is running at https://%s:%s",host,port)
+        // })
 	
         // create https server
-        //https.createServer(options, app).listen(8081)
+        https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({})
