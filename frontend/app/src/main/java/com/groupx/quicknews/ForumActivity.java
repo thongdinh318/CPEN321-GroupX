@@ -77,6 +77,7 @@ public class ForumActivity extends AppCompatActivity {
 
     private void getComments () {
         String url = getString(R.string.server_dns) + "forums/" + forumID;
+        Log.d(TAG, forumID);
         try {
         HttpClient.getRequest(url, new HttpClient.ApiCallback(){
             @Override
@@ -115,7 +116,7 @@ public class ForumActivity extends AppCompatActivity {
         String url = getString(R.string.server_dns) + "addComment/" + forumID;
         try {
             JSONObject json = new JSONObject();
-            json.put("userId", LoginActivity.getAccount().getIdToken());
+            json.put("userId", LoginActivity.getUserId());
             json.put("commentData", comment);
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
