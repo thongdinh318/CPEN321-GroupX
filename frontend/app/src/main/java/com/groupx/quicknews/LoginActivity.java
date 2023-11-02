@@ -30,6 +30,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
     private SignInButton googleSignInButton;
+    private static GoogleSignInAccount account;
+    private static String userId;
     private int RC_SIGN_IN = 1;
     final static String TAG = "LoginActivity";
 
@@ -58,15 +60,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
+        //sign in previously signed in account
         mGoogleSignInClient.silentSignIn().addOnCompleteListener(this,
-                        new OnCompleteListener<GoogleSignInAccount>() {
-                            @Override
-                            public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
-                                handleSignInResult(task);
-                            }
-                        });
+        new OnCompleteListener<GoogleSignInAccount>() {
+            @Override
+            public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                handleSignInResult(task);
+            }
+        });
     }
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -79,8 +80,6 @@ public class LoginActivity extends AppCompatActivity {
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
@@ -88,10 +87,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            account = completedTask.getResult(ApiException.class);
             // Signed in successfully, show authenticated UI.
             String idToken = account.getIdToken();
-            validateToken(idToken, account);
+            validateToken(idToken);
         } catch (ApiException e) {
 
             //AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
@@ -104,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void validateToken(String idToken, GoogleSignInAccount account) {
+    private void validateToken(String idToken) {
         String url = getString(R.string.server_dns) + "signin";
         try {
             JSONObject json = new JSONObject();
@@ -116,15 +115,13 @@ public class LoginActivity extends AppCompatActivity {
                     try{
                         int statusCode = response.code();
                         if (statusCode == 200){
-//                            String res = "{'_id':'6542c1b579fec8b99f4d056e', 'userId':'101228437722251375432', 'username':'Tanaka Shido', 'dob':null, 'email':'tanakashido1@gmail.com', 'subscriptionList':[], 'history':[]}";
                             String res = response.body().string();
                             res.replace("\"", "\'");
                             JSONObject user = new JSONObject(res);
+
                             if (user.has("userId")){
-                                String userId = user.getString("userId");
-                                updateUI(account,userId);
+                                userId = user.getString("userId");
                             }
-                            Log.d(TAG, res);
                         }
                     }catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -137,22 +134,30 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(Exception e) {
                     Log.e(TAG, "exception", e);
                 }
-            });
+        });
         }
         catch(Exception e) {
             Log.e(TAG, "exception", e);
         }
+        updateUI();
     }
 
-    private void updateUI(GoogleSignInAccount account, String userId) {
+    private void updateUI() {
         if (account == null) {
             Log.d(TAG, "No user signed in");
         }
         else {
             //send token to back end
             Intent signInIntent = new Intent(LoginActivity.this, MainActivity.class);
-            signInIntent.putExtra("USER_ID", userId);
             startActivity(signInIntent);
         }
+    }
+
+    public static GoogleSignInAccount getAccount() {
+        return account;
+    }
+
+    public static String getUserId() {
+        return userId;
     }
 }

@@ -54,7 +54,7 @@
             android:layout_marginStart="16dp"
             android:background="@android:color/transparent"
             android:hint="Enter Message"
-            android:inputType="text"
+            android:inputType="textNoSuggestions"
             android:maxLines="5"
             tools:ignore="Autofill" />
 
