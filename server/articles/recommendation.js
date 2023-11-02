@@ -59,7 +59,7 @@ import { getAllUserHistory } from "../user";
     let denominator = 0;
   
     for (const user of users) {
-      if (user !== userId && userItemMatrix[user][itemId]) {
+      if (user !== userId && userItemMatrix[user] && userItemMatrix[user][itemId]) {
         const similarity = calculateSimilarity(userId, user, userItemMatrix);
         numerator += similarity * userItemMatrix[user][itemId];
         denominator += similarity;
@@ -93,8 +93,3 @@ import { getAllUserHistory } from "../user";
   
     return sumProduct / (Math.sqrt(sumSquared1) * Math.sqrt(sumSquared2));
   }
-  
-  const userId = 3;
-  const recommendations = collaborativeFilteringRecommendations(userId);
-  console.log(`Recommendations for user ${userId}:`);
-  console.log(recommendations);
