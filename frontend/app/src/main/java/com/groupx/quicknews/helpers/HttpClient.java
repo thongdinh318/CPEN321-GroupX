@@ -19,7 +19,7 @@ public class HttpClient {
         final static String TAG = "HTTP_Client";
 
         public interface ApiCallback {
-            void onResponse(Response response);
+            void onResponse(Response response) throws IOException;
             void onFailure(Exception e);
         }
         public static void  postRequest(String url, String json, ApiCallback callback) {
@@ -40,7 +40,6 @@ public class HttpClient {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Log.d(TAG, response.body().string());
                         callback.onResponse(response);
                     }
                 });
