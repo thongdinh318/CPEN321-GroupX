@@ -104,4 +104,5 @@
     <string name="sub_button_caption">Subscribe</string>
     <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
     <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
+    <string name="search_hint">Search articles</string>
 </resources>
