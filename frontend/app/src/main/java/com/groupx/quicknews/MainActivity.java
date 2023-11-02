@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open articles view");
                 //TODO:Get User Id here
-                String userId = "0";
+                String userId = LoginActivity.getUserId();
                 String url = getString(R.string.server_dns) + "recommend/article/"+userId;
                 HttpClient.getRequest(url, new HttpClient.ApiCallback() {
                     @Override
