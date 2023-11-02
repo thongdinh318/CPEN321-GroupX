@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button fromButton, toButton;
     private DatePickerDialog datePickerDialogFrom, datePickerDialogTo;
-    private static List<Article> articleList;
+    private static List<Article> articleList = new ArrayList<>();
     final static String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,25 +109,38 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(Response response) {
                         String json = null;
                         try {
-                            json = response.body().string();
-                            JSONArray res = new JSONArray(json);
-                            if (res.length() == 0){
+                            //Check if error occured on the server
+                            if (response.code() == 400){
+                                String msg = response.body().string();
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                                     }
                                 });
                             }
-                            else{
-                                for (int i = 0; i < res.length(); i++){
-                                    JSONObject articleJson = res.getJSONObject(i);
-                                    Article article = new Article(articleJson.getString("title"),
-                                            articleJson.getString("url"),
-                                            articleJson.getString("content"));
-                                    articleList.add(article);
+                            else {
+                                json = response.body().string();
+//                            Log.d(TAG, json);
+                                JSONArray res = new JSONArray(json);
+                                //Check for any matched articles, length == 0 means no match
+                                if (res.length() == 0) {
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                } else {
+                                    articleList = new ArrayList<Article>(); //clear the articleList to refresh ArticleActivity when switching
+                                    for (int i = 0; i < res.length(); i++) {
+                                        JSONObject articleJson = res.getJSONObject(i);
+                                        Article article = new Article(articleJson.getString("title"),
+                                                articleJson.getString("url"),
+                                                articleJson.getString("content"));
+                                        articleList.add(article);
+                                    }
+                                    Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);
+                                    startActivity(articleIntent);
                                 }
-                                Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
-                                startActivity(articleIntent);
                             }
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -150,33 +164,47 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 String url = getString(R.string.server_dns) + "article/kwsearch/search?keyWord="+query;
+                Log.d(TAG,url);
                 HttpClient.getRequest(url, new HttpClient.ApiCallback() {
                     @Override
                     public void onResponse(Response response) {
                         try {
-                            String json = response.body().string();
-                            JSONArray res = new JSONArray(json);
-                            if (res.length() == 0){
+                            //Status code check
+                            if (response.code() == 400){
+                                String msg = response.body().string();
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                                     }
                                 });
 
                             }
                             else{
-                                for (int i = 0; i < res.length(); i++){
-                                    JSONObject articleJson = res.getJSONObject(i);
-                                    Article article = new Article(articleJson.getString("title"),
-                                                                    articleJson.getString("url"),
-                                                                    articleJson.getString("content"));
-                                    articleList.add(article);
+                                String json = response.body().string();
+                                Log.d(TAG, json);
+                                JSONArray res = new JSONArray(json);
+                                //Check if matched articles found
+                                if (res.length() == 0){
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+
                                 }
-                                Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
-                                startActivity(articleIntent);
-
+                                else{
+                                    articleList = new ArrayList<Article>();
+                                    for (int i = 0; i < res.length(); i++){
+                                        JSONObject articleJson = res.getJSONObject(i);
+                                        Article article = new Article(articleJson.getString("title"),
+                                                articleJson.getString("url"),
+                                                articleJson.getString("content"));
+                                        articleList.add(article);
+                                    }
+                                    Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
+                                    startActivity(articleIntent);
+                                }
                             }
-
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         } catch (IOException e) {
@@ -203,8 +231,64 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open articles view");
-                Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);
-                startActivity(articleIntent);
+                //TODO:Get User Id here
+                String userId = "0";
+                String url = getString(R.string.server_dns) + "recommend/article/"+userId;
+                HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+                    @Override
+                    public void onResponse(Response response) {
+                        String json = null;
+                        try {
+                            Log.d(TAG, String.valueOf(response.code()));
+                            // Status code check
+                            if (response.code() == 400){
+                                String msg = response.body().string();
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                            }
+                            else {
+                                json = response.body().string();
+                                Log.d(TAG,json);
+                                JSONArray res = new JSONArray(json);
+                                //Matched articles check
+                                if (res.length() == 0){
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Toast.makeText(MainActivity.this, "No Recommendation", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                                else {
+                                    articleList = new ArrayList<Article>();
+                                    for (int i = 0; i < res.length(); i++) {
+                                        JSONObject articleJson = res.getJSONObject(i);
+                                        Article article = new Article(articleJson.getString("title"),
+                                                articleJson.getString("url"),
+                                                articleJson.getString("content"));
+                                        articleList.add(article);
+                                    }
+                                Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
+                                startActivity(articleIntent);
+                                }
+                            }
+
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+
+                    }
+                });
+
             }
         });
 
@@ -217,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    //Helper functions to create date pickers --->
     private String getTodayDate() {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
@@ -241,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
 
         datePickerDialogTo = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
                 year, month, day);
-        datePickerDialogTo.getDatePicker().setMaxDate(System.currentTimeMillis());
+//        datePickerDialogTo.getDatePicker().setMaxDate(System.currentTimeMillis());
 
     }
     private void initDatePickerFrom() {
@@ -312,9 +397,12 @@ public class MainActivity extends AppCompatActivity {
         return monthString;
     }
 
-    public void openDatePicker(View view, DatePickerDialog datePickerDialog){
+    private void openDatePicker(View view, DatePickerDialog datePickerDialog){
         datePickerDialog.show();
     }
+
+    //<--- Helper functions
+
     public static List<Article> getArticleList(){
         return articleList;
     }
