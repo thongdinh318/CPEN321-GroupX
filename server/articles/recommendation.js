@@ -63,7 +63,7 @@ function calculateSimilarity(user1, user2, userItemMatrix) {
   const views1 = userItemMatrix[user1];
   const views2 = userItemMatrix[user2];
 
-  const commonItems = Object.keys(ratings1).filter((item) => views2[item]);
+  const commonItems = Object.keys(views1).filter((item) => views2[item]);
 
   if (commonItems.length === 0) {
     return 0;
