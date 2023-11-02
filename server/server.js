@@ -204,7 +204,7 @@ app.get("/article/filter/search", async(req,res)=>{
         query.categories = {$in: list}
     }
     var foundArticles = await articleMod.searchByFilter(query)
-
+	console.log(foundArticles)
     if(isErr(foundArticles)){
         res.status(400).send("Error when Searching by filter")
     }
@@ -316,7 +316,7 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     try {
         const recommeded = await collaborativeFilteringRecommendations(userId);
         var recommededArticles = []
-        for (var i = 0; i < recommeded.length(); ++i){
+        for (var i = 0; i < recommeded.length; ++i){
             var articleId = recommeded[i][0]
             var article = await articleMod.getArticleIds(articleId)
             recommededArticles.push(article)
@@ -324,6 +324,7 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         res.status(200).send(recommededArticles)
         
     } catch (error) {
+	    console.log(error)
         res.status(400).send("Error when recommending articles")
         
     }
@@ -335,7 +336,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
     try {
         const recommeded = await collaborativeFilteringRecommendations(userId);
         var recommededPublishers = []
-        for (var i = 0; i < recommeded.length(); ++i){
+        for (var i = 0; i < recommeded.length; ++i){
             var articleId = recommeded[i][0]
             var article = await articleMod.getArticleIds(articleId)
             recommededPublishers.push(article.publisher)
@@ -343,6 +344,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
         res.status(200).send(recommededPublishers)
         
     } catch (error) {
+	    console.log(error)
         res.status(400).send("Error when recommending publishers")
         
     }
@@ -377,7 +379,7 @@ async function run(){
         console.log("Retrieving some articles")
         await bingNewsRetriever("")
         console.log("Server is ready to use")
-        retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
+        //retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
         console.log(error)
