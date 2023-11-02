@@ -26,10 +26,10 @@ import { getAllUserHistory } from "../user";
     console.log(items);
 
     const userItemMatrix = {};
+    for(const user of users){
+      userItemMatrix[user] = {};
+    }
     for (const interaction of userItemData) {
-      if (!userItemMatrix[interaction.userId]) {
-        userItemMatrix[interaction.userId] = {};
-      }
       if(!userItemMatrix[interaction.userId][interaction.itemId]) {
         userItemMatrix[interaction.userId][interaction.itemId] = interaction.views;
       } else {
@@ -59,7 +59,7 @@ import { getAllUserHistory } from "../user";
     let denominator = 0;
   
     for (const user of users) {
-      if (user !== userId && userItemMatrix[user] && userItemMatrix[user][itemId]) {
+      if (user !== userId && userItemMatrix[user][itemId]) {
         const similarity = calculateSimilarity(userId, user, userItemMatrix);
         numerator += similarity * userItemMatrix[user][itemId];
         denominator += similarity;
