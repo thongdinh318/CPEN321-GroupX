@@ -46,6 +46,9 @@ async function searchByFilter(query){
         var foundArticles  = await client.db("articledb").collection("articles").find(query);
         foundArticles = await foundArticles.toArray()
         console.log(foundArticles)
+        if (foundArticles.length() > 10){
+            foundArticles = foundArticles.slice(0,9)
+        }
         if (foundArticles == undefined || foundArticles.length == 0){
             return []
         }
