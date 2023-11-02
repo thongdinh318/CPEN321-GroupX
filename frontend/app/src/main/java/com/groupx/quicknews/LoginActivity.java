@@ -22,6 +22,8 @@ import android.view.View;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
@@ -29,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private SignInButton googleSignInButton;
     private static GoogleSignInAccount account;
+    private static String userId;
     private int RC_SIGN_IN = 1;
     final static String TAG = "LoginActivity";
 
@@ -101,28 +104,31 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateToken(String idToken) {
-        /*String url = getString(R.string.server_dns) + "signin";
+        String url = getString(R.string.server_dns) + "signin";
         try {
             JSONObject json = new JSONObject();
             json.put("idToken", idToken);
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) {
-                    //TODO: check if validation was success or failure
                     try{
-                        String responseBody = response.body().string();
                         int statusCode = response.code();
                         if (statusCode == 200){
-                            JSONObject user = new JSONObject(responseBody);
+                            String res = response.body().string();
+                            res.replace("\"", "\'");
+                            JSONObject user = new JSONObject(res);
+
                             if (user.has("userId")){
-                                String userId = user.getJSONObject("userId").toString();
-                                updateUI(account, userId);
+                                userId = user.getString("userId");
                             }
                         }
-                    }catch (Exception e) {
+                    }catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 }
+
 
                 @Override
                 public void onFailure(Exception e) {
@@ -132,23 +138,26 @@ public class LoginActivity extends AppCompatActivity {
         }
         catch(Exception e) {
             Log.e(TAG, "exception", e);
-        }*/
-        updateUI("111");
+        }
+        updateUI();
     }
 
-    private void updateUI(String userId) {
+    private void updateUI() {
         if (account == null) {
             Log.d(TAG, "No user signed in");
         }
         else {
             //send token to back end
             Intent signInIntent = new Intent(LoginActivity.this, MainActivity.class);
-            signInIntent.putExtra("USER_ID", userId);
             startActivity(signInIntent);
         }
     }
 
     public static GoogleSignInAccount getAccount() {
         return account;
+    }
+
+    public static String getUserId() {
+        return userId;
     }
 }
