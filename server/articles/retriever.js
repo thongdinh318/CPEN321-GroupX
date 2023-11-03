@@ -32,7 +32,7 @@ async function searchNews(query){
             headers:{ 'Ocp-Apim-Subscription-Key': key},
             params:{
                 q:user_query,
-                count: 1,
+                count: 3,
                 sortBy:"Date",
                 freshness:"Day",
                 mkt:'en-CA'
@@ -94,14 +94,14 @@ async function bingNewsRetriever(query){
             webContent += sentence
             sentenceNum += 1 
         })
-        var articleBody = await summarizeArticle(webContent, Math.round(sentenceNum/2))
+        /*var articleBody = await summarizeArticle(webContent, Math.round(sentenceNum/2))
         if (articleBody, articleBody.e, articleBody.stack){
             continue
         }
-        else{
+        else{*/
             articleEntry.title = article.name
-            articleEntry.content = articleBody
-        }
+            articleEntry.content = webContent
+        //}
         articleEntry.publisher = article.provider[0].name.toLowerCase()
         articleEntry.publishedDate = article.datePublished
         articleEntry.categories = article.category != undefined? [article.category]:[query]
@@ -116,6 +116,7 @@ async function addToDb(articleList){
     for (var article of articleList){
         article.articleId = id
         id += 1
+	console.log(article)
         await client.db("articledb").collection("articles").insertOne(article)
     }
 }
