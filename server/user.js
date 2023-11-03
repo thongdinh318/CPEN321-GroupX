@@ -42,8 +42,8 @@ async function checkAvailable(userId){
 //ChatGPT usage: No
 function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
-    newUser.userId = userId
-    newUser._id = userId
+    newUser.userId = userId;
+    newUser._id = userId;
     if (userName == undefined){
         newUser.username = "default user name"
     }
