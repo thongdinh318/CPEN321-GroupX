@@ -23,19 +23,21 @@ var options = {
 };
 
 const forum = new ForumModule()
-const RETRIEVE_INTERVAL = 60000 //1 minutes
+const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
 var retriever = null //place holder for the retriever before init server
 
 // Error checking function
 //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
+// ChatGPT usage: No.
 function isErr(error){
     return error, error.e, error.stack
 }
 
 
 //USER MODULE --->
-// ChatGPT usage: No.
+
 //Verify and register users
+// ChatGPT usage: No.
 app.post("/signin", async (req,res)=>{
     try {
         const token = req.body.idToken;
@@ -56,8 +58,9 @@ app.post("/signin", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Get a user profile
+// ChatGPT usage: No.
 app.get("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     var user = await userMod.getProfile(userId)
@@ -74,8 +77,9 @@ app.get("/profile/:userId", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Get a user list of subscriptions
+// ChatGPT usage: No.
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.params.userId
     var userProfile = await userMod.getProfile(userId);
@@ -92,19 +96,26 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Get reading history
+// ChatGPT usage: No.
 app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
 
     var userProfile = await userMod.getProfile(userId);
-	console.log(userProfile)    
     if(isErr(userProfile)){
         res.status(400).send("Error when getting reading history")
     }
     else{
         if (userProfile.userId){
-            res.status(200).send(userProfile.history)
+            
+            var articleArray = []
+		console.log(userProfile.history)
+            for(var article of userProfile.history){
+                var foundArticle = await articleMod.searchById(article.articleId);
+                articleArray.push(foundArticle)
+            }
+            res.status(200).send(articleArray)
         }
         else{
             res.status(200).send([])
@@ -112,8 +123,9 @@ app.get("/profile/:userId/history", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Update profile of a user, including the subscription list
+// ChatGPT usage: No.
 app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     const newProfile = req.body
@@ -131,8 +143,9 @@ app.put("/profile/:userId", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Add a new article to reading history of a user
+// ChatGPT usage: No.
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
     const newViewed = req.body
@@ -155,8 +168,9 @@ app.put("/profile/:userId/history", async (req,res)=>{
 
 //ARTICLE MODULE --->
 
-// ChatGPT usage: No.
+
 //Get article by id
+// ChatGPT usage: No.
 app.get("/article/:articleId", async (req,res)=>{
     var articleId = parseInt(req.params.articleId,10);
     console.log(articleId)
@@ -175,8 +189,9 @@ app.get("/article/:articleId", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 // Search using filters
+// ChatGPT usage: No.
 app.get("/article/filter/search", async(req,res)=>{
     var publisher = req.query.publisher
     var before = req.query.before
@@ -220,12 +235,14 @@ app.get("/article/filter/search", async(req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 // Search keyword in articles
+// ChatGPT usage: No.
 app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
+    console.log(keyWord)
 
-    var query = {content: {$regex: keyWord, $options:"i"}}
+    var query = {$or: [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]}
     var foundArticles = await articleMod.searchByFilter(query);
 
     if(isErr(foundArticles)){
@@ -243,8 +260,9 @@ app.get("/article/kwsearch/search", async(req,res)=>{
 //<--- ARTICLE MODULE
 
 //FORUM MODULE --->
-// ChatGPT usage: No.
+
 // Get all forums
+// ChatGPT usage: No.
 app.get("/forums", async (req, res) =>{
 	try{
 		const result = await forum.getAllForums();
@@ -260,8 +278,9 @@ app.get("/forums", async (req, res) =>{
 	}
 }); 
 
-// ChatGPT usage: No.
+
 // GET one specific forum, queried with forum id
+// ChatGPT usage: No.
 app.get("/forums/:forum_id", async (req, res) =>{
 	try{
 		const result =await forum.getForum(parseInt(req.params.forum_id),10)
@@ -281,8 +300,9 @@ app.get("/forums/:forum_id", async (req, res) =>{
 	}
 });  
 
-// ChatGPT usage: No.
+
 // Post a comment to a forum
+// ChatGPT usage: No.
 app.post("/addComment/:forum_id",async (req, res)=>{
 	try{
 		let commentData = req.body.commentData;
@@ -297,7 +317,10 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 		}
 		else{
 			if (result){
-				res.status(200).send("Comment Posted!");
+				// make a get request to get the updated forum
+                		const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
+				res.status(200).send(updatedForum);
+				//res.status(200).send("Comment Posted!");
 			}
 			else{
 				res.status(400).send("Failed Posting Comment! Please Try Again")
@@ -311,8 +334,9 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 // <--- FORUM MODULE
 
 //Recommedation module --->
-// ChatGPT usage: No.
+
 //Get recommended list of articles for a user
+// ChatGPT usage: No.
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
@@ -354,8 +378,9 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 })
 // <--- Recommendation module
 
-// ChatGPT usage: No.
+
 // Main Function
+// ChatGPT usage: No.
 async function run(){
     try {
         await client.connect()
@@ -372,22 +397,22 @@ async function run(){
 
         client.db("userdb").collection("profile").deleteMany({})
         
-	client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+	    client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         
-	client.db("ForumDB").collection("forums").deleteMany({})
+	    client.db("ForumDB").collection("forums").deleteMany({})
 	
-	await userMod.initUDb()
+	    await userMod.initUDb()
         
-	await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+	    await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
         console.log("Retrieving some articles")
         
-	await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+	    await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         
-	console.log("Server is ready to use")
+	    console.log("Server is ready to use")
         //retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {

@@ -107,11 +107,11 @@ async function bingNewsRetriever(query){
         articleEntry.categories = article.category != undefined? [article.category]:[query]
         retrievedArticles.push(articleEntry)
     }
-    // console.log(retrievedArticles)
     addToDb(retrievedArticles)
     return retrievedArticles
 }
 
+// ChatGPT usage: No.
 async function addToDb(articleList){
     for (var article of articleList){
         article.articleId = id

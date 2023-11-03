@@ -43,6 +43,7 @@ async function checkAvailable(userId){
 function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
     newUser.userId = userId
+    newUser._id = userId
     if (userName == undefined){
         newUser.username = "default user name"
     }
@@ -67,6 +68,7 @@ async function initUDb(){
 //<--- Init DB function
 
 //Interfaces with frontend -->
+//ChatGPT usage: No
 function verify(token){
     return new Promise((resolve, reject)=>{
         ggClient.verifyIdToken(
@@ -130,8 +132,9 @@ async function updateProfile(userId, newProfile){
     }
 }
 
-// ChatGPT usage: No.
+
 //Update reading history
+// ChatGPT usage: No.
 async function updateHistory(userId, newViewed){
     try {
         var user = await checkAvailable(userId)
@@ -170,9 +173,10 @@ async function updateHistory(userId, newViewed){
 
 // Interfaces with other modules -->
 
-// ChatGPT usage: No.
+
 //Get the reading history of all users
 //Used by Recommendation module
+// ChatGPT usage: No.
 async function getAllUserHistory(){
     var profileCollec = await client.db("userdb").collection("profile").find({}).toArray()
     

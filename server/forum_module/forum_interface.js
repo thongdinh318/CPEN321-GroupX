@@ -111,22 +111,3 @@ export class ForumModule{
 
     }
 };
-
-
-// Testing
-
-// app.listen(this_port, async () => {
-// 	console.log(`${new Date()}  Forum Services Started. Listening on ${host}:${this_port}`);
-//     console.log(url);
-//     fm = new ForumModule();
-//     //console.log(await fm.deleteForums());
-//     console.log(await fm.createForum("123", "economics"));
-//     console.log(await fm.createForum("456", "sports"));
-//     console.log(await fm.createForum("789", "economics"));
-
-// });
-
-
-
-
-// module.exports = ForumModule;

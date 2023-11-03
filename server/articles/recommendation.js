@@ -88,8 +88,3 @@ function calculateSimilarity(user1, user2, userItemMatrix) {
 
   return sumProduct / (Math.sqrt(sumSquared1) * Math.sqrt(sumSquared2));
 }
-
-// const userId = 3;
-// const recommendations = collaborativeFilteringRecommendations(userId);
-// console.log(`Recommendations for user ${userId}:`);
-// console.log(recommendations);
