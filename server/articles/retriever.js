@@ -112,6 +112,7 @@ async function bingNewsRetriever(query){
     return retrievedArticles
 }
 
+// ChatGPT usage: No.
 async function addToDb(articleList){
     for (var article of articleList){
         article.articleId = id

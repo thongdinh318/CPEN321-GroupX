@@ -34,6 +34,7 @@ const sumReqBody = {
   ]
 };
 
+// ChatGPT usage: No.
 export const summarizeArticle = async function(text, sentenceCount){
     try{    
         let data = sumReqBody;
@@ -66,6 +67,7 @@ export const summarizeArticle = async function(text, sentenceCount){
     }
 }
 
+// ChatGPT usage: No.
 var getSummary = async function(path){
   const response = await axios.get(path,
    {
@@ -76,64 +78,9 @@ var getSummary = async function(path){
   return response.data;
 };
 
+// ChatGPT usage: No.
 function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 }
-
-// TESTING
-// app.listen(port, async () =>  {
-	// console.log(`${new Date()}  ForumDB communcation. Listening on ${host}:${port}`);
-    //getSummary();
-    //summarizeArticle(sampleText).then((res) =>{console.log(res)});
-    //console.log(await summarizeArticle(sampleText, 5));
-    // var sm = new SummarizationEngine();
-    // console.log(await sm.summarizeArticle(sampleText));
-    //console.log(sampleText);
-
-// });
-
-
-
-
-
-// class SummarizationEngine {
-//     construtor(){
-//         this.dateCreated = new Date();
-//     }
-
-//     summarizeArticle = async function(text){
-//         try{    
-//             let data = sumReqBody;
-                
-//             data.analysisInput.documents[0].text = text;
-    
-
-//             const response = await axios.post(endpoint, data,
-//                 {
-//                     headers :{
-//                         "Ocp-Apim-Subscription-Key" : key
-//                     }
-//                 })
-
-//             let path = await response.headers["operation-location"];
-//             console.log(path);
-//             var summary;
-            
-//             do{
-//                 await sleep(1000);
-//                 summary = await getSummary(path);
-//                 console.log(summary.status);
-//             }while(summary.status !== "succeeded" );
-            
-//             return summary.tasks.items[0].results.documents[0].summaries[0].text;
-    
-//         }catch(err){
-//             console.log(err);
-//         }
-//     }
-
-// }
-
-//module.exports = SummarizationEngine;
