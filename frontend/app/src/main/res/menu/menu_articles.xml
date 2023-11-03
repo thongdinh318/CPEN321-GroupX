@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.groupx.quicknews.ArticlesActivity" >
+    <item
+        android:id="@+id/action_view_history"
+        android:orderInCategory="100"
+        android:title="History"
+        app:actionViewClass="android.widget.SearchView" />
+    <item
+        android:id="@+id/action_manage_subscriptions"
+        android:title="Subscriptions"
+        android:orderInCategory="101"
+        app:showAsAction="never" />
+</menu>
