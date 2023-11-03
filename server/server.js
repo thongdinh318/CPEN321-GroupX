@@ -102,14 +102,20 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
 app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
 
-    var userProfile = userMod.getProfile(userId);
-
+    var userProfile = await userMod.getProfile(userId);
+    // console.log(userProfile)
     if(isErr(userProfile)){
         res.status(400).send("Error when getting reading history")
     }
     else{
         if (userProfile.userId){
-            res.status(200).send(userProfile.history)
+            
+            var articleArray = []
+            for(var article of userProfile.history){
+                var foundArticle = await articleMod.searchById(article.articleId);
+                articleArray.push(foundArticle)
+            }
+            res.status(200).send(articleArray)
         }
         else{
             res.status(200).send([])
@@ -232,8 +238,9 @@ app.get("/article/filter/search", async(req,res)=>{
 // ChatGPT usage: No.
 app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
+    console.log(keyWord)
 
-    var query = {content: {$regex: keyWord, $options:"i"}}
+    var query = {$or: [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]}
     var foundArticles = await articleMod.searchByFilter(query);
 
     if(isErr(foundArticles)){
@@ -388,22 +395,22 @@ async function run(){
 
         client.db("userdb").collection("profile").deleteMany({})
         
-	client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+	    client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         
-	client.db("ForumDB").collection("forums").deleteMany({})
+	    client.db("ForumDB").collection("forums").deleteMany({})
 	
-	await userMod.initUDb()
+	    await userMod.initUDb()
         
-	await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+	    await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
         console.log("Retrieving some articles")
         
-	await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+	    await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         
-	console.log("Server is ready to use")
+	    console.log("Server is ready to use")
         //retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
