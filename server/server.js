@@ -97,8 +97,8 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
 app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
 
-    var userProfile = userMod.getProfile(userId);
-
+    var userProfile = await userMod.getProfile(userId);
+	console.log(userProfile)    
     if(isErr(userProfile)){
         res.status(400).send("Error when getting reading history")
     }
@@ -126,7 +126,7 @@ app.put("/profile/:userId", async (req,res)=>{
             res.status(400).send("Cannot Update Profile/User not found")
         }
         else{
-            res.status(200).send(result)
+	    res.status(200).send("Profile was updated")
         }
     }
 })
@@ -136,6 +136,8 @@ app.put("/profile/:userId", async (req,res)=>{
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
     const newViewed = req.body
+	console.log(newViewed)
+	console.log(userId)
     var succeed = await userMod.updateHistory(userId, newViewed);
     if(isErr(succeed)){
         res.status(400).send("Error when updating reading history")
@@ -145,7 +147,7 @@ app.put("/profile/:userId/history", async (req,res)=>{
             res.status(400).send("Cannot Update History/User not found")
         }
         else{
-            res.status(200).send(result)
+            res.status(200).send("Article added to history")
         }
     }
 })
