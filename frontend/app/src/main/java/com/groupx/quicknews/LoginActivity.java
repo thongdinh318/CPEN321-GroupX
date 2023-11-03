@@ -111,6 +111,7 @@ public class LoginActivity extends AppCompatActivity {
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) {
+//                    Log.d(TAG, response.toString());
                     try{
                         int statusCode = response.code();
                         if (statusCode == 200){
@@ -129,12 +130,11 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
 
-
                 @Override
                 public void onFailure(Exception e) {
                     Log.e(TAG, "exception", e);
                 }
-            });
+        });
         }
         catch(Exception e) {
             Log.e(TAG, "exception", e);
