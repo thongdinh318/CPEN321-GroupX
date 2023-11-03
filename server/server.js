@@ -308,7 +308,10 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 		}
 		else{
 			if (result){
-				res.status(200).send("Comment Posted!");
+				// make a get request to get the updated forum
+                		const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
+				res.status(200).send(updatedForum);
+				//res.status(200).send("Comment Posted!");
 			}
 			else{
 				res.status(400).send("Failed Posting Comment! Please Try Again")
