@@ -135,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             if (user.has("userId")){
                                 userId = user.getString("userId");
+                                updateUI();
                             }
                         }
                     } catch (Exception e) {
@@ -152,7 +153,6 @@ public class LoginActivity extends AppCompatActivity {
         catch(Exception e) {
             Log.e(TAG, "exception", e);
         }
-        updateUI();
     }
 
     // ChatGPT usage: No.
