@@ -135,6 +135,7 @@ async function updateProfile(userId, newProfile){
 async function updateHistory(userId, newViewed){
     try {
         var user = await checkAvailable(userId)
+	    console.log(user)
         if (user.userId == undefined){
             return false
         }
@@ -160,6 +161,7 @@ async function updateHistory(userId, newViewed){
             return (result.acknowledged)
         }
     } catch (error) {
+	    console.log(error)
         return (error)
     }
 }
