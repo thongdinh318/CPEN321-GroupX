@@ -32,8 +32,8 @@ public class ArticlesActivity extends AppCompatActivity {
         //toolBarLayout.setTitle(getTitle());
 
         List<Article> palceHolderArticles = new ArrayList<Article>();
-        palceHolderArticles.add(new Article("Article1", "https://www.cbc.ca/player/play/2277156419849", "Lorem Ipsum"));
-        palceHolderArticles.add(new Article("Article2", "https://www.cbc.ca/news/world/israel-ground-raid-gaza-city-us-strikes-syria-un-vote-eu-members-ceasefire-1.7010037", "Lorem Ipsum"));
+        palceHolderArticles.add(new Article("Article1", "https://www.cbc.ca/player/play/2277156419849", "Lorem Ipsum", "CBC"));
+        palceHolderArticles.add(new Article("Article2", "https://www.cbc.ca/news/world/israel-ground-raid-gaza-city-us-strikes-syria-un-vote-eu-members-ceasefire-1.7010037", "Lorem Ipsum", "CTV"));
 
         articleView = findViewById(R.id.view_article);
         articleView.setLayoutManager(new LinearLayoutManager(this));
