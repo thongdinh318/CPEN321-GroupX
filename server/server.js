@@ -23,7 +23,7 @@ var options = {
 };
 
 const forum = new ForumModule()
-const RETRIEVE_INTERVAL = 60000 //1 minutes
+const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
 var retriever = null //place holder for the retriever before init server
 
 // Error checking function
