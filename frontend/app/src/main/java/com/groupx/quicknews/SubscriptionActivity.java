@@ -26,8 +26,8 @@ import okhttp3.Response;
 public class SubscriptionActivity extends AppCompatActivity {
 
     final static String TAG = "SubscriptionActivity";
-    private List<String> subscriptionList;
-    private String userId;
+    private List<String> subscriptionList = new ArrayList<>();
+    private String userId = LoginActivity.getUserId();
     private TextView cbc, cnn;
     private Switch cbc_sub, cnn_sub;
     private Button confirm;
@@ -36,10 +36,6 @@ public class SubscriptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subscription);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            userId = extras.getString("USER_ID");
-        }
 
         //GET REQUEST GET THE SUB LIST
         String getUrl = getString(R.string.server_dns) +"profile/"+ userId+"/subscriptions";
