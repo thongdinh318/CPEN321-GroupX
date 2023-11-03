@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.groupx.quicknews.HistoryActivity;
 import com.groupx.quicknews.LoginActivity;
 import com.groupx.quicknews.R;
 import com.groupx.quicknews.helpers.HttpClient;
@@ -43,7 +44,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
             public void onClick(View view) {
                 Log.d(TAG, holder.articleTitle.getText().toString());
                 Article article = articles.get(holder.getAbsoluteAdapterPosition());
-                if (!article.getArticleRead()) {
+                if (!article.getArticleRead() && !(context instanceof HistoryActivity)) {
                     addArticleToHistory(article);
                 }
                 if (holder.hiddenView.getVisibility() == View.VISIBLE) {
@@ -81,8 +82,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
     }
 
     private void addArticleToHistory(Article article) {
-        String dns = "https://quicknews.canadacentral.cloudapp.azure.com:8081/";
-        String url =  dns + "profile/"+ LoginActivity.getUserId() + "/history";
+        String url =  context.getString(R.string.server_dns) + "profile/"+ LoginActivity.getUserId() + "/history";
         try {
             JSONObject json = new JSONObject();
             json.put("articleId", article.getArticleId());
