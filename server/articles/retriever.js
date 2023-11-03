@@ -94,14 +94,14 @@ async function bingNewsRetriever(query){
             webContent += sentence
             sentenceNum += 1 
         })
-        /*var articleBody = await summarizeArticle(webContent, Math.round(sentenceNum/2))
+        var articleBody = await summarizeArticle(webContent, Math.round(sentenceNum/2))
         if (articleBody, articleBody.e, articleBody.stack){
             continue
         }
-        else{*/
+        else{
             articleEntry.title = article.name
-            articleEntry.content = webContent
-        //}
+            articleEntry.content = articleBody
+        }
         articleEntry.publisher = article.provider[0].name.toLowerCase()
         articleEntry.publishedDate = article.datePublished
         articleEntry.categories = article.category != undefined? [article.category]:[query]
