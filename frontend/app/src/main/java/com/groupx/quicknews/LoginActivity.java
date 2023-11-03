@@ -88,9 +88,14 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             account = completedTask.getResult(ApiException.class);
-            // Signed in successfully, show authenticated UI.
-            String idToken = account.getIdToken();
-            validateToken(idToken);
+            if (account == null) {
+                updateUI();
+            }
+            else {
+                // Signed in successfully, show authenticated UI.
+                String idToken = account.getIdToken();
+                validateToken(idToken);
+            }
         } catch (ApiException e) {
 
             //AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
@@ -123,9 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                                 userId = user.getString("userId");
                             }
                         }
-                    }catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -147,7 +150,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "No user signed in");
         }
         else {
-            //send token to back end
             Intent signInIntent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(signInIntent);
         }
