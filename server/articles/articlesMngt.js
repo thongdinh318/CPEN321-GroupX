@@ -13,6 +13,7 @@ const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 
 //Intit DB Function-->
+// ChatGPT usage: No.
 async function initADb(){
     try {
         await client.db("articledb").collection("articles").insertOne(defArticle)
@@ -23,6 +24,7 @@ async function initADb(){
 }
 //<--- Intit DB Function
 //Search an article based on its id 
+// ChatGPT usage: No.
 async function searchById(articleId){
     try {
         var foundArticle  = await client.db("articledb").collection("articles").find({"articleId": articleId});
@@ -40,6 +42,7 @@ async function searchById(articleId){
 }
 
 //Search the database for a list of articles that match the query provided by the user
+// ChatGPT usage: No.
 async function searchByFilter(query){
     try {
         console.log(query)
@@ -62,6 +65,7 @@ async function searchByFilter(query){
 
 //Rerieve a list of all article ids in the database
 //Used by the recommendation module
+// ChatGPT usage: No.
 async function getArticleIds(){
     var articleCollection = await client.db("articledb").collection("articles").find({}).toArray()
     var articleIdList = [];

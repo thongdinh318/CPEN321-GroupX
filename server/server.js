@@ -28,14 +28,16 @@ var retriever = null //place holder for the retriever before init server
 
 // Error checking function
 //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
+// ChatGPT usage: No.
 function isErr(error){
     return error, error.e, error.stack
 }
 
 
 //USER MODULE --->
-// ChatGPT usage: No.
+
 //Verify and register users
+// ChatGPT usage: No.
 app.post("/signin", async (req,res)=>{
     try {
         const token = req.body.idToken;
@@ -56,8 +58,9 @@ app.post("/signin", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Get a user profile
+// ChatGPT usage: No.
 app.get("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     var user = await userMod.getProfile(userId)
@@ -74,8 +77,9 @@ app.get("/profile/:userId", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Get a user list of subscriptions
+// ChatGPT usage: No.
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.params.userId
     var userProfile = await userMod.getProfile(userId);
@@ -92,8 +96,9 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Get reading history
+// ChatGPT usage: No.
 app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
 
@@ -112,8 +117,9 @@ app.get("/profile/:userId/history", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Update profile of a user, including the subscription list
+// ChatGPT usage: No.
 app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     const newProfile = req.body
@@ -131,8 +137,9 @@ app.put("/profile/:userId", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 //Add a new article to reading history of a user
+// ChatGPT usage: No.
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
     const newViewed = req.body
@@ -153,8 +160,9 @@ app.put("/profile/:userId/history", async (req,res)=>{
 
 //ARTICLE MODULE --->
 
-// ChatGPT usage: No.
+
 //Get article by id
+// ChatGPT usage: No.
 app.get("/article/:articleId", async (req,res)=>{
     var articleId = parseInt(req.params.articleId,10);
     console.log(articleId)
@@ -173,8 +181,9 @@ app.get("/article/:articleId", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 // Search using filters
+// ChatGPT usage: No.
 app.get("/article/filter/search", async(req,res)=>{
     var publisher = req.query.publisher
     var before = req.query.before
@@ -218,8 +227,9 @@ app.get("/article/filter/search", async(req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
+
 // Search keyword in articles
+// ChatGPT usage: No.
 app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
 
@@ -241,8 +251,9 @@ app.get("/article/kwsearch/search", async(req,res)=>{
 //<--- ARTICLE MODULE
 
 //FORUM MODULE --->
-// ChatGPT usage: No.
+
 // Get all forums
+// ChatGPT usage: No.
 app.get("/forums", async (req, res) =>{
 	try{
 		const result = await forum.getAllForums();
@@ -258,8 +269,9 @@ app.get("/forums", async (req, res) =>{
 	}
 }); 
 
-// ChatGPT usage: No.
+
 // GET one specific forum, queried with forum id
+// ChatGPT usage: No.
 app.get("/forums/:forum_id", async (req, res) =>{
 	try{
 		const result =await forum.getForum(parseInt(req.params.forum_id),10)
@@ -279,8 +291,9 @@ app.get("/forums/:forum_id", async (req, res) =>{
 	}
 });  
 
-// ChatGPT usage: No.
+
 // Post a comment to a forum
+// ChatGPT usage: No.
 app.post("/addComment/:forum_id",async (req, res)=>{
 	try{
 		let commentData = req.body.commentData;
@@ -309,8 +322,9 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 // <--- FORUM MODULE
 
 //Recommedation module --->
-// ChatGPT usage: No.
+
 //Get recommended list of articles for a user
+// ChatGPT usage: No.
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
@@ -352,8 +366,9 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 })
 // <--- Recommendation module
 
-// ChatGPT usage: No.
+
 // Main Function
+// ChatGPT usage: No.
 async function run(){
     try {
         await client.connect()
