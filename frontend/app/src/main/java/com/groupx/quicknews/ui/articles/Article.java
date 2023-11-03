@@ -1,6 +1,8 @@
 package com.groupx.quicknews.ui.articles;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Article {
@@ -10,7 +12,13 @@ public class Article {
     String publisher;
     int articleId;
     Boolean articleRead;
-    public Article(String title, String url, String synopsis, int articleId) {
+    @JsonCreator
+    public Article(
+        @JsonProperty("title") String title,
+        @JsonProperty("url") String url,
+        @JsonProperty("content") String synopsis,
+        @JsonProperty("articleId") int articleId)
+    {
         this.title = title;
         this.url = url;
         this.synopsis = synopsis;

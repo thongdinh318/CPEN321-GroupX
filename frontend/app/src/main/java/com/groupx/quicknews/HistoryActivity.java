@@ -5,6 +5,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -36,6 +38,7 @@ public class HistoryActivity extends AppCompatActivity {
     private List<Article> articles;
     private RecyclerView articleView;
     private final String TAG = "HistoryActivity";
+    Context context = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +73,7 @@ public class HistoryActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 articleView.setLayoutManager(new LinearLayoutManager(HistoryActivity.this));
-                                articleView.setAdapter(new ArticlesViewAdapter(getApplicationContext(), articles));
+                                articleView.setAdapter(new ArticlesViewAdapter(context, articles));
                             }
                         });
                     }
