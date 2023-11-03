@@ -46,7 +46,7 @@ export const summarizeArticle = async function(text, sentenceCount){
         do{
             await sleep(1000);
             summary = await getSummary(path);
-            console.log(summary.status);
+            //console.log(summary.status);
         }while(summary.status !== "succeeded" );
         
         //TODO: need to handle summary.task.item[0].result == undefined
