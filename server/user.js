@@ -42,7 +42,8 @@ async function checkAvailable(userId){
 //ChatGPT usage: No
 function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
-    newUser.userId = userId
+    newUser.userId = userId;
+    newUser._id = userId;
     if (userName == undefined){
         newUser.username = "default user name"
     }
@@ -137,6 +138,7 @@ async function updateProfile(userId, newProfile){
 async function updateHistory(userId, newViewed){
     try {
         var user = await checkAvailable(userId)
+	    console.log(user)
         if (user.userId == undefined){
             return false
         }
@@ -162,6 +164,7 @@ async function updateHistory(userId, newViewed){
             return (result.acknowledged)
         }
     } catch (error) {
+	    console.log(error)
         return (error)
     }
 }
