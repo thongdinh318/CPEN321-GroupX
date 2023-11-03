@@ -44,6 +44,7 @@ public class ForumActivity extends AppCompatActivity {
     private List<Comment> comments;
     final static String TAG = "ForumActivity";
 
+    // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,16 +70,19 @@ public class ForumActivity extends AppCompatActivity {
         });
     }
 
+    // ChatGPT usage: No.
     @Override
     protected void onStart() {
         super.onStart();
         getComments();
     }
 
+    // ChatGPT usage: No.
     private void getComments () {
         String url = getString(R.string.server_dns) + "forums/" + forumID;
         try {
         HttpClient.getRequest(url, new HttpClient.ApiCallback(){
+            // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) throws IOException {
                 int statusCode = response.code();
@@ -95,6 +99,7 @@ public class ForumActivity extends AppCompatActivity {
                         comments = Arrays.asList(mapper.readValue(jsonComments.toString(), Comment[].class));
                         comments = new ArrayList<>(comments); //jacksons creates immutable list
                         runOnUiThread(new Runnable() {
+                            // ChatGPT usage: No.
                             @Override
                             public void run() {
                                 forumView.setLayoutManager(new LinearLayoutManager(ForumActivity.this));
@@ -106,7 +111,7 @@ public class ForumActivity extends AppCompatActivity {
                     }
                 }
             }
-
+            // ChatGPT usage: No.
             @Override
             public void onFailure(Exception e) {
                 Log.e(TAG, "exception", e);
@@ -118,6 +123,7 @@ public class ForumActivity extends AppCompatActivity {
         }
     }
 
+    // ChatGPT usage: No.
     private void postComment(String comment) {
         String url = getString(R.string.server_dns) + "addComment/" + forumID;
         try {
@@ -135,6 +141,7 @@ public class ForumActivity extends AppCompatActivity {
                         Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
 
                         runOnUiThread(new Runnable() {
+                            // ChatGPT usage: No.
                             @Override
                             public void run() {
                                 comments.add(postedComment);
@@ -143,7 +150,7 @@ public class ForumActivity extends AppCompatActivity {
                         });
                     }
                 }
-
+                // ChatGPT usage: No.
                 @Override
                 public void onFailure(Exception e) {
                     Log.e(TAG, "exception", e);
@@ -156,6 +163,7 @@ public class ForumActivity extends AppCompatActivity {
     }
 
     //https://dev.to/ahmmedrejowan/hide-the-soft-keyboard-and-remove-focus-from-edittext-in-android-ehp
+    // ChatGPT usage: No.
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {

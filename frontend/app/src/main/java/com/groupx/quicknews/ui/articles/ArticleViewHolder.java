@@ -17,6 +17,7 @@ public class ArticleViewHolder extends RecyclerView.ViewHolder {
     public LinearLayout hiddenView;
     public CardView cardView;
     public Button redirectButton;
+    // ChatGPT usage: No.
     public ArticleViewHolder(@NonNull View view) {
         super(view);
         articleTitle = itemView.findViewById(R.id.text_article_title);

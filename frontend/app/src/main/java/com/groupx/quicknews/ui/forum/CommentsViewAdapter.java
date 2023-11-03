@@ -16,24 +16,25 @@ public class CommentsViewAdapter extends RecyclerView.Adapter<CommentViewHolder>
     private List<Comment> comments;
 
     final static String TAG = "ArticleView";
+    // ChatGPT usage: No.
     public CommentsViewAdapter(Context context, List<Comment> comments) {
         this.context = context;
         this.comments = comments;
     }
-
+    // ChatGPT usage: No.
     @NonNull
     @Override
     public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         CommentViewHolder holder = new CommentViewHolder(LayoutInflater.from(context).inflate(R.layout.view_comment, parent, false));
         return holder;
     }
-
+    // ChatGPT usage: No.
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         holder.user.setText(comments.get(position).getUser());
         holder.comment.setText(comments.get(position).getComment());
     }
-
+    // ChatGPT usage: No.
     @Override
     public int getItemCount() {
         return comments.size();
