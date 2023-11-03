@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.groupx.quicknews.R;
 
+// ChatGPT usage: No.
 public class CommentViewHolder extends RecyclerView.ViewHolder {
     public TextView user;
     public TextView comment;

@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private DatePickerDialog datePickerDialogFrom, datePickerDialogTo;
     private static List<Article> articleList = new ArrayList<>();
     final static String TAG = "MainActivity";
+    // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         publisher.setAdapter(adapter);
 
         fromButton.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 openDatePicker(view, datePickerDialogFrom);
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         toButton.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 openDatePicker(view, datePickerDialogTo);
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         filterSearchButton = findViewById(R.id.filter_search_button);
         filterSearchButton.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 String publisherName = publisher.getSelectedItem().toString();
@@ -119,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d(TAG,url);
 
                 HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+                    // ChatGPT usage: No.
                     @Override
                     public void onResponse(Response response) {
                         String json = null;
@@ -127,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                             if (response.code() == 400){
                                 String msg = response.body().string();
                                 runOnUiThread(new Runnable() {
+                                    // ChatGPT usage: No.
                                     public void run() {
                                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                                     }
@@ -139,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                                 //Check for any matched articles, length == 0 means no match
                                 if (res.length() == 0) {
                                     runOnUiThread(new Runnable() {
+                                        // ChatGPT usage: No.
                                         public void run() {
                                             Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
                                         }
@@ -176,11 +183,13 @@ public class MainActivity extends AppCompatActivity {
         recommendedArticlesButton = findViewById(R.id.article_button);
         searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // ChatGPT usage: No.
             @Override
             public boolean onQueryTextSubmit(String query) {
                 String url = getString(R.string.server_dns) + "article/kwsearch/search?keyWord="+query;
                 Log.d(TAG,url);
                 HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+                    // ChatGPT usage: No.
                     @Override
                     public void onResponse(Response response) {
                         try {
@@ -188,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                             if (response.code() == 400){
                                 String msg = response.body().string();
                                 runOnUiThread(new Runnable() {
+                                    // ChatGPT usage: No.
                                     public void run() {
                                         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
                                     }
@@ -201,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                                 //Check if matched articles found
                                 if (res.length() == 0){
                                     runOnUiThread(new Runnable() {
+                                        // ChatGPT usage: No.
                                         public void run() {
                                             Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
                                         }
@@ -244,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open articles view");
@@ -251,6 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 String userId = LoginActivity.getUserId();
                 String url = getString(R.string.server_dns) + "recommend/article/"+userId;
                 HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+                    // ChatGPT usage: No.
                     @Override
                     public void onResponse(Response response) {
                         String json = null;
@@ -310,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         forumButton.setOnClickListener( new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open forum view");
@@ -319,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     //Helper functions to create date pickers --->
+    // ChatGPT usage: No.
     private String getTodayDate() {
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
@@ -326,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
         int day = cal.get(Calendar.DAY_OF_MONTH);
         return makeDateString(day, month, year);
     }
+    // ChatGPT usage: No.
     private void initDatePickerTo() {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -346,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
 //        datePickerDialogTo.getDatePicker().setMaxDate(System.currentTimeMillis());
 
     }
+    // ChatGPT usage: No.
     private void initDatePickerFrom() {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -366,10 +383,12 @@ public class MainActivity extends AppCompatActivity {
         datePickerDialogFrom.getDatePicker().setMaxDate(System.currentTimeMillis());
     }
 
+    // ChatGPT usage: No.
     private String makeDateString(int day, int month, int year) {
         return getMonthFormat(month) + " " + day + " " + year;
     }
 
+    // ChatGPT usage: No.
     private String getMonthFormat(int month) {
         String monthString;
         switch (month){
@@ -413,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return monthString;
     }
-
+    // ChatGPT usage: No.
     private void openDatePicker(View view, DatePickerDialog datePickerDialog){
         datePickerDialog.show();
     }
@@ -421,6 +440,7 @@ public class MainActivity extends AppCompatActivity {
     //<--- Helper functions
 
     //https://dev.to/ahmmedrejowan/hide-the-soft-keyboard-and-remove-focus-from-edittext-in-android-ehp
+    // ChatGPT usage: No.
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -438,6 +458,7 @@ public class MainActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
+    // ChatGPT usage: No.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu resource
@@ -445,6 +466,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_articles, menu);
         return true;
     }
+    // ChatGPT usage: No.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Switching on the item id of the menu item
@@ -463,7 +485,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+    // ChatGPT usage: No.
     public static List<Article> getArticleList(){
         return articleList;
     }

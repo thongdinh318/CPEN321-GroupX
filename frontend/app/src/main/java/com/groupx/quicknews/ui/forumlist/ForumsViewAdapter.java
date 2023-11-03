@@ -19,12 +19,12 @@ public class ForumsViewAdapter extends RecyclerView.Adapter<ForumViewHolder> {
 
     private Context context;
     private List<Forum> forums;
-
+    // ChatGPT usage: No.
     public ForumsViewAdapter(Context context, List<Forum> forums) {
         this.context = context;
         this.forums = forums;
     }
-
+    // ChatGPT usage: No.
     @NonNull
     @Override
     public ForumViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -32,6 +32,7 @@ public class ForumsViewAdapter extends RecyclerView.Adapter<ForumViewHolder> {
 
         //navigate to specific forum when container is clicked
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, ForumActivity.class);
@@ -43,12 +44,12 @@ public class ForumsViewAdapter extends RecyclerView.Adapter<ForumViewHolder> {
         });
         return holder;
     }
-
+    // ChatGPT usage: No.
     @Override
     public void onBindViewHolder(@NonNull ForumViewHolder holder, int position) {
         holder.forumName.setText(forums.get(position).getForumName());
     }
-
+    // ChatGPT usage: No.
     @Override
     public int getItemCount() {
         return forums.size();
