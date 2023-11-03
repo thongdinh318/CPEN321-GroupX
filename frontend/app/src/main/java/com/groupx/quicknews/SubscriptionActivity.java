@@ -33,6 +33,7 @@ public class SubscriptionActivity extends AppCompatActivity {
     private TextView cbc, cnn;
     private Switch cbc_sub, cnn_sub;
     private Button confirm;
+    // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +51,7 @@ public class SubscriptionActivity extends AppCompatActivity {
         cnn_sub.setChecked(false);
 
         cbc_sub.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            // ChatGPT usage: No.
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (!checked){
@@ -64,6 +66,7 @@ public class SubscriptionActivity extends AppCompatActivity {
         });
 
         cnn_sub.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            // ChatGPT usage: No.
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
                 if (!checked){
@@ -81,6 +84,7 @@ public class SubscriptionActivity extends AppCompatActivity {
 
         confirm = findViewById(R.id.sub_confirm_button);
         confirm.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 updateSubscriptionList();
@@ -88,6 +92,7 @@ public class SubscriptionActivity extends AppCompatActivity {
         });
     }
 
+    // ChatGPT usage: No.
     @Override
     protected void onStart() {
         super.onStart();
@@ -95,6 +100,7 @@ public class SubscriptionActivity extends AppCompatActivity {
         getSubscriptionList ();
     }
 
+    // ChatGPT usage: No.
     private void getSubscriptionList () {
         //GET REQUEST GET THE SUB LIST
         String getUrl = getString(R.string.server_dns) +"profile/"+ userId+"/subscriptions";
@@ -139,7 +145,7 @@ public class SubscriptionActivity extends AppCompatActivity {
             }
         });
     }
-
+    // ChatGPT usage: No.
     private void updateSubscriptionList () {
             JSONArray newSubArr = new JSONArray();
 

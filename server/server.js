@@ -168,7 +168,6 @@ app.put("/profile/:userId/history", async (req,res)=>{
 
 //ARTICLE MODULE --->
 
-
 //Get article by id
 // ChatGPT usage: No.
 app.get("/article/:articleId", async (req,res)=>{
@@ -413,14 +412,14 @@ async function run(){
 	    await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         
 	    console.log("Server is ready to use")
-        //retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
+        retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
         console.log(error)
 
-        /*if (retriever!= null){
+        if (retriever != null){
             clearInterval(retriever)
-        }*/
+        }
         await client.close()
     }
 }

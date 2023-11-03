@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private int RC_SIGN_IN = 1;
     final static String TAG = "LoginActivity";
 
+    // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
 
         googleSignInButton = findViewById(R.id.sign_in_button);
         googleSignInButton.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 signIn();
@@ -57,23 +59,27 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    // ChatGPT usage: No.
     @Override
     protected void onStart() {
         super.onStart();
         //sign in previously signed in account
         mGoogleSignInClient.silentSignIn().addOnCompleteListener(this,
         new OnCompleteListener<GoogleSignInAccount>() {
+            // ChatGPT usage: No.
             @Override
             public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
                 handleSignInResult(task);
             }
         });
     }
+    // ChatGPT usage: No.
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    // ChatGPT usage: No.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -85,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // ChatGPT usage: No.
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             account = completedTask.getResult(ApiException.class);
@@ -108,12 +115,14 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // ChatGPT usage: No.
     private void validateToken(String idToken) {
         String url = getString(R.string.server_dns) + "signin";
         try {
             JSONObject json = new JSONObject();
             json.put("idToken", idToken);
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
+                // ChatGPT usage: No.
                 @Override
                 public void onResponse(Response response) {
 //                    Log.d(TAG, response.toString());
@@ -133,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
 
+                // ChatGPT usage: No.
                 @Override
                 public void onFailure(Exception e) {
                     Log.e(TAG, "exception", e);
@@ -145,6 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         updateUI();
     }
 
+    // ChatGPT usage: No.
     private void updateUI() {
         if (account == null) {
             Log.d(TAG, "No user signed in");

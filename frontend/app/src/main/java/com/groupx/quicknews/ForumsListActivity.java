@@ -27,6 +27,8 @@ public class ForumsListActivity extends AppCompatActivity {
     private RecyclerView viewForum;
     private List<Forum> forums;
     final static String TAG = "ForumsListActivity";
+    
+    // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +44,7 @@ public class ForumsListActivity extends AppCompatActivity {
         getForums();
     }
 
+    // ChatGPT usage: No.
     private void getForums () {
         String url = getString(R.string.server_dns) + "forums";
         try {
@@ -56,6 +59,7 @@ public class ForumsListActivity extends AppCompatActivity {
                         ObjectMapper mapper = new ObjectMapper();
                         forums = Arrays.asList(mapper.readValue(responseBody, Forum[].class));
                         runOnUiThread(new Runnable() {
+                            // ChatGPT usage: No.
                             @Override
                             public void run() {
                                 viewForum.setLayoutManager(new LinearLayoutManager(ForumsListActivity.this));
@@ -64,7 +68,7 @@ public class ForumsListActivity extends AppCompatActivity {
                         });
                     }
                 }
-
+                // ChatGPT usage: No.
                 @Override
                 public void onFailure(Exception e) {
                     Log.e(TAG, "exception", e);
