@@ -34,12 +34,13 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         this.context = context;
         this.articles = articles;
     }
-
+    // ChatGPT usage: No.
     @NonNull
     @Override
     public ArticleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ArticleViewHolder holder = new ArticleViewHolder(LayoutInflater.from(context).inflate(R.layout.view_article, parent, false));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 Log.d(TAG, holder.articleTitle.getText().toString());
@@ -59,6 +60,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         });
 
         holder.redirectButton.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
                 Uri uri = Uri.parse(articles.get(holder.getAbsoluteAdapterPosition()).getUrl()); // missing 'http:' will crash
@@ -69,24 +71,25 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         });
         return holder;
     }
-
+    // ChatGPT usage: No.
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         holder.articleTitle.setText(articles.get(position).getTitle());
         holder.articleSynopsis.setText(articles.get(position).getSynopsis());
     }
-
+    // ChatGPT usage: No.
     @Override
     public int getItemCount() {
         return articles.size();
     }
-
+    // ChatGPT usage: No.
     private void addArticleToHistory(Article article) {
         String url =  context.getString(R.string.server_dns) + "profile/"+ LoginActivity.getUserId() + "/history";
         try {
             JSONObject json = new JSONObject();
             json.put("articleId", article.getArticleId());
             HttpClient.putRequest(url, json.toString(), new HttpClient.ApiCallback(){
+                // ChatGPT usage: No.
                 @Override
                 public void onResponse(Response response) {
                     try{

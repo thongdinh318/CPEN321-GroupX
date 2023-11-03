@@ -22,6 +22,7 @@ public class HttpClient {
             void onResponse(Response response) throws IOException;
             void onFailure(Exception e);
         }
+        // ChatGPT usage: No.
         public static void  postRequest(String url, String json, ApiCallback callback) {
             MediaType JSON = MediaType.parse("application/json");
 
@@ -45,6 +46,7 @@ public class HttpClient {
                 });
         }
 
+    // ChatGPT usage: No.
     public static void  getRequest(String url, ApiCallback callback) {
         MediaType JSON = MediaType.parse("application/json");
 
@@ -68,6 +70,7 @@ public class HttpClient {
 
     }
 
+    // ChatGPT usage: No.
     public static void  putRequest(String url, String json, ApiCallback callback) {
         MediaType JSON = MediaType.parse("application/json");
 

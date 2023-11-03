@@ -39,6 +39,7 @@ public class HistoryActivity extends AppCompatActivity {
     private RecyclerView articleView;
     private final String TAG = "HistoryActivity";
     Context context = this;
+    // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,11 +55,12 @@ public class HistoryActivity extends AppCompatActivity {
 
         getArticleHistory();
     }
-
+    // ChatGPT usage: No.
     private void getArticleHistory() {
         // Make a get request to get the history of this user
         String getUrl = getString(R.string.server_dns) +"profile/"+ LoginActivity.getUserId() +"/history";
         HttpClient.getRequest(getUrl, new HttpClient.ApiCallback() {
+            // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {
                 try {
@@ -70,6 +72,7 @@ public class HistoryActivity extends AppCompatActivity {
                         ObjectMapper mapper = new ObjectMapper();
                         articles = Arrays.asList(mapper.readValue(responseBody, Article[].class));
                         runOnUiThread(new Runnable() {
+                            // ChatGPT usage: No.
                             @Override
                             public void run() {
                                 articleView.setLayoutManager(new LinearLayoutManager(HistoryActivity.this));

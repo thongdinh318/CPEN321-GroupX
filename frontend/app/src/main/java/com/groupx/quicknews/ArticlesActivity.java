@@ -22,6 +22,8 @@ public class ArticlesActivity extends AppCompatActivity {
 
     private ActivityArticlesBinding binding;
     private RecyclerView articleView;
+    
+    // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +40,7 @@ public class ArticlesActivity extends AppCompatActivity {
 
     }
 
+    // ChatGPT usage: No.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu resource
@@ -45,6 +48,8 @@ public class ArticlesActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_articles, menu);
         return true;
     }
+    
+    // ChatGPT usage: No.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Switching on the item id of the menu item
