@@ -25,7 +25,7 @@ public class ForumsListActivity extends AppCompatActivity {
 
     private ActivityForumsListBinding binding;
     private RecyclerView viewForum;
-    List<Forum> forums;
+    private List<Forum> forums;
     final static String TAG = "ForumsListActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {

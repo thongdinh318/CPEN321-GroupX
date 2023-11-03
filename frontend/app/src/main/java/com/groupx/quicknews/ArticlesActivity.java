@@ -1,8 +1,10 @@
 package com.groupx.quicknews;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -28,8 +30,7 @@ public class ArticlesActivity extends AppCompatActivity {
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
-        //CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
-        //toolBarLayout.setTitle(getTitle());
+
         List<Article> articlesList = MainActivity.getArticleList();
         articleView = findViewById(R.id.view_article);
         articleView.setLayoutManager(new LinearLayoutManager(this));
@@ -42,8 +43,25 @@ public class ArticlesActivity extends AppCompatActivity {
         // Inflate the menu resource
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_articles, menu);
-
         return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Switching on the item id of the menu item
+        int itemId = item.getItemId();
+        if( itemId == R.id.action_manage_subscriptions ) {
+            // Code to be executed when the add button is clicked
+            Intent intent = new Intent(ArticlesActivity.this, SubscriptionActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        else if( itemId == R.id.action_view_history ) {
+            // Code to be executed when the add button is clicked
+            Intent intent = new Intent(ArticlesActivity.this, HistoryActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     //TODO: get articles from server oncreate

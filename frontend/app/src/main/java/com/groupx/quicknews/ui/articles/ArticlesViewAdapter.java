@@ -15,9 +15,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.groupx.quicknews.LoginActivity;
 import com.groupx.quicknews.R;
+import com.groupx.quicknews.helpers.HttpClient;
+
+import org.json.JSONObject;
 
 import java.util.List;
+
+import okhttp3.Response;
 
 public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
     private Context context;
@@ -36,7 +42,10 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
             @Override
             public void onClick(View view) {
                 Log.d(TAG, holder.articleTitle.getText().toString());
-
+                Article article = articles.get(holder.getAbsoluteAdapterPosition());
+                if (!article.getArticleRead()) {
+                    addArticleToHistory(article);
+                }
                 if (holder.hiddenView.getVisibility() == View.VISIBLE) {
                     TransitionManager.beginDelayedTransition(holder.cardView, new AutoTransition());
                     holder.hiddenView.setVisibility(View.GONE);
@@ -69,6 +78,39 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
     @Override
     public int getItemCount() {
         return articles.size();
+    }
+
+    private void addArticleToHistory(Article article) {
+        String dns = "https://quicknews.canadacentral.cloudapp.azure.com:8081/";
+        String url =  dns + "profile/"+ LoginActivity.getUserId() + "/history";
+        try {
+            JSONObject json = new JSONObject();
+            json.put("articleId", article.getArticleId());
+            HttpClient.putRequest(url, json.toString(), new HttpClient.ApiCallback(){
+                @Override
+                public void onResponse(Response response) {
+                    try{
+                        Log.d(TAG, response.toString());
+                        Log.d(TAG, response.body().string());
+
+                        int statusCode = response.code();
+                        if (statusCode == 200){
+                            article.setArticleRead(true);
+                        }
+                    }catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    Log.e(TAG, "exception", e);
+                }
+            });
+        }
+        catch(Exception e) {
+            Log.e(TAG, "exception", e);
+        }
     }
 }
 

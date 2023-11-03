@@ -42,7 +42,7 @@ public class SubscriptionActivity extends AppCompatActivity {
         }
 
         //GET REQUEST GET THE SUB LIST
-        String getUrl = getString(R.string.server_client_id) +"profile/"+ userId+"/subscriptions";
+        String getUrl = getString(R.string.server_dns) +"profile/"+ userId+"/subscriptions";
         HttpClient.getRequest(getUrl, new HttpClient.ApiCallback() {
             @Override
             public void onResponse(Response response) {
@@ -117,7 +117,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                     newSubArr.put(subscriptionList.get(i));
                 }
 
-                String putUrl = getString(R.string.server_client_id)+"profile/"+userId;
+                String putUrl = getString(R.string.server_dns)+"profile/"+userId;
                 try {
                     JSONObject json = new JSONObject();
                     json.put("subscriptionList", newSubArr);
