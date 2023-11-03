@@ -119,8 +119,10 @@ public class SubscriptionActivity extends AppCompatActivity {
                                         }
                                         if (sub.contains("cbc")){
                                             cbc_sub.setChecked(true);
+                                            cbc_sub.jumpDrawablesToCurrentState();
                                         } else if (sub.contains("cnn")) {
                                             cnn_sub.setChecked(true);
+                                            cnn_sub.jumpDrawablesToCurrentState();
                                         }
                                     }
                                 }
