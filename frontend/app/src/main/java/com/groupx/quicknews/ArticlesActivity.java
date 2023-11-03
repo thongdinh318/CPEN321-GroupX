@@ -23,21 +23,17 @@ public class ArticlesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityArticlesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
+        //CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
         //toolBarLayout.setTitle(getTitle());
-
-        List<Article> palceHolderArticles = new ArrayList<Article>();
-        palceHolderArticles.add(new Article("Article1", "https://www.cbc.ca/player/play/2277156419849", "Lorem Ipsum", "CBC"));
-        palceHolderArticles.add(new Article("Article2", "https://www.cbc.ca/news/world/israel-ground-raid-gaza-city-us-strikes-syria-un-vote-eu-members-ceasefire-1.7010037", "Lorem Ipsum", "CTV"));
-
+        List<Article> articlesList = MainActivity.getArticleList();
         articleView = findViewById(R.id.view_article);
         articleView.setLayoutManager(new LinearLayoutManager(this));
-        articleView.setAdapter(new ArticlesViewAdapter(getApplicationContext(), palceHolderArticles));
+        articleView.setAdapter(new ArticlesViewAdapter(getApplicationContext(), articlesList));
 
     }
 
