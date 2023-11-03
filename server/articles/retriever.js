@@ -32,7 +32,7 @@ async function searchNews(query){
             headers:{ 'Ocp-Apim-Subscription-Key': key},
             params:{
                 q:user_query,
-                count: 15,
+                count: 1,
                 sortBy:"Date",
                 freshness:"Day",
                 mkt:'en-CA'
@@ -107,7 +107,6 @@ async function bingNewsRetriever(query){
         articleEntry.categories = article.category != undefined? [article.category]:[query]
         retrievedArticles.push(articleEntry)
     }
-    // console.log(retrievedArticles)
     addToDb(retrievedArticles)
     return retrievedArticles
 }
