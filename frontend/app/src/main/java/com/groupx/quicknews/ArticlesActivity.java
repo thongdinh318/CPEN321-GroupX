@@ -19,12 +19,14 @@ import java.util.List;
 
 public class ArticlesActivity extends AppCompatActivity {
 
-    private ActivityArticlesBinding binding;
-    private RecyclerView articleView;
+
+
     
     // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        RecyclerView articleView;
+        ActivityArticlesBinding binding;
         super.onCreate(savedInstanceState);
         binding = ActivityArticlesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

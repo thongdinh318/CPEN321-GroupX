@@ -16,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,16 +27,19 @@ public class SubscriptionActivity extends AppCompatActivity {
     final static String TAG = "SubscriptionActivity";
     private List<String> subscriptionList;
     private String userId = LoginActivity.getUserId();
-    private TextView cbc;
-    private TextView cnn;
     private Switch cbc_sub;
     private Switch cnn_sub;
-    private Button confirm;
+
     // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subscription);
+
+        Button confirm;
+        TextView cbc;
+        TextView cnn;
+
         subscriptionList = new ArrayList<>();
 
         cbc = findViewById(R.id.news_publisher_1);
@@ -115,18 +119,18 @@ public class SubscriptionActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     for (int i = 0; i < userList.length(); i++) {
-                                        String sub;
+//                                        String sub = "";
                                         try {
-                                            sub = userList.getString(i);
+                                            String sub = userList.getString(i);
+                                            if (sub.contains("cbc")){
+                                                cbc_sub.setChecked(true);
+                                                cbc_sub.jumpDrawablesToCurrentState();
+                                            } else if (sub.contains("cnn")) {
+                                                cnn_sub.setChecked(true);
+                                                cnn_sub.jumpDrawablesToCurrentState();
+                                            }
                                         } catch (JSONException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                        if (sub.contains("cbc")){
-                                            cbc_sub.setChecked(true);
-                                            cbc_sub.jumpDrawablesToCurrentState();
-                                        } else if (sub.contains("cnn")) {
-                                            cnn_sub.setChecked(true);
-                                            cnn_sub.jumpDrawablesToCurrentState();
+                                            e.printStackTrace();
                                         }
                                     }
                                 }
@@ -160,11 +164,16 @@ public class SubscriptionActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Response response) {
                         if (response.code() == 200){
-                            String result = "true";//response.body().string();
-                            if (result == "true"){
-                                //TODO: Return to original view here
-                                Log.d(TAG,result);
+                            try {
+                                String result = response.body().string();
+                                if ("true".equals(result)){
+                                    //TODO: Return to original view here
+                                    Log.d(TAG,result);
+                                }
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
                             }
+
                         }
                     }
                     @Override

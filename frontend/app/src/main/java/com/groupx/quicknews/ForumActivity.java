@@ -34,10 +34,9 @@ import okhttp3.Response;
 
 public class ForumActivity extends AppCompatActivity {
 
-    private ActivityForumBinding binding;
     private RecyclerView forumView;
     private EditText commentText;
-    private Button postButton;
+
     private String forumID;
     private List<Comment> comments;
     final static String TAG = "ForumActivity";
@@ -46,6 +45,9 @@ public class ForumActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActivityForumBinding binding;
+        Button postButton;
 
         binding = ActivityForumBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

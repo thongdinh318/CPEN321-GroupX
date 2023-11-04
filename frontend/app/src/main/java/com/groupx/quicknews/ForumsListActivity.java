@@ -15,7 +15,6 @@ import com.groupx.quicknews.ui.forumlist.Forum;
 import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import okhttp3.Response;
 
 public class ForumsListActivity extends AppCompatActivity {
 
-    private ActivityForumsListBinding binding;
+
     private RecyclerView viewForum;
     private List<Forum> forums;
     final static String TAG = "ForumsListActivity";
@@ -33,6 +32,8 @@ public class ForumsListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forums_list);
+
+        ActivityForumsListBinding binding;
 
         binding = ActivityForumsListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

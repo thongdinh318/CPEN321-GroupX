@@ -22,7 +22,7 @@ import okhttp3.Response;
 
 public class HistoryActivity extends AppCompatActivity {
 
-    private ActivityHistoryBinding binding;
+
     private List<Article> articles;
     private RecyclerView articleView;
     private final String TAG = "HistoryActivity";
@@ -32,6 +32,8 @@ public class HistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
+
+        ActivityHistoryBinding binding;
 
         binding = ActivityHistoryBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -74,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Exception e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         });
     }
