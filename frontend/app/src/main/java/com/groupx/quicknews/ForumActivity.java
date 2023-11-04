@@ -20,8 +20,6 @@ import com.groupx.quicknews.databinding.ActivityForumBinding;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.forum.Comment;
 import com.groupx.quicknews.ui.forum.CommentsViewAdapter;
-import com.groupx.quicknews.ui.forumlist.Forum;
-import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -133,13 +131,10 @@ public class ForumActivity extends AppCompatActivity {
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) throws IOException{
-
-                    String responseBody = response.body().string();
                     int statusCode = response.code();
                     //TODO: update statusCodes so they convey more information
                     if (statusCode == 200){
                         Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
-
                         runOnUiThread(new Runnable() {
                             // ChatGPT usage: No.
                             @Override

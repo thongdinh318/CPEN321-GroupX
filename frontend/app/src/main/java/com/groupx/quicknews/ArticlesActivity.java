@@ -15,7 +15,6 @@ import com.groupx.quicknews.databinding.ActivityArticlesBinding;
 import com.groupx.quicknews.ui.articles.Article;
 import com.groupx.quicknews.ui.articles.ArticlesViewAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArticlesActivity extends AppCompatActivity {

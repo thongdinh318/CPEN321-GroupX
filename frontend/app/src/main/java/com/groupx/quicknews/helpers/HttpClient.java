@@ -2,8 +2,6 @@ package com.groupx.quicknews.helpers;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -48,8 +46,6 @@ public class HttpClient {
 
     // ChatGPT usage: No.
     public static void  getRequest(String url, ApiCallback callback) {
-        MediaType JSON = MediaType.parse("application/json");
-
         Request request = new Request.Builder()
                 .url(url)
                 .get()
