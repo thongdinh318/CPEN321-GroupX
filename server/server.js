@@ -1,12 +1,12 @@
 import express from "express";
 import * as userMod from "./user.js"
-import { MongoClient } from "mongodb";
+import MongoClient from "mongodb";
 import fs from "fs"
 import https from "https"
 import * as articleMod from "./articles/articlesMngt.js"
-import { bingNewsRetriever } from "./articles/retriever.js";
-import { collaborativeFilteringRecommendations } from "./articles/recommendation.js";
-import { ForumModule } from "./forum_module/forum_interface.js";
+import bingNewsRetriever from "./articles/retriever.js";
+import collaborativeFilteringRecommendations from "./articles/recommendation.js";
+import ForumModule from "./forum_module/forum_interface.js";
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 
@@ -18,8 +18,8 @@ var forum_id = 1;
 
 // Uncomment for https
 var options = {
- 	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
- 	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+    key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+    cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
 };
 
 const forum = new ForumModule()
@@ -30,7 +30,7 @@ var retriever = null //place holder for the retriever before init server
 //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
 // ChatGPT usage: No.
 function isErr(error){
-    return error, error.e, error.stack
+    return error && error.e && error.stack
 }
 
 
@@ -39,23 +39,18 @@ function isErr(error){
 //Verify and register users
 // ChatGPT usage: No.
 app.post("/signin", async (req,res)=>{
-    try {
-        const token = req.body.idToken;
-        const payloadPromise =  userMod.verify(token)
-        payloadPromise.then((payload)=>{
-            console.log(payload)
-            var loggedInUserPromise = userMod.registerNewUser(payload['sub'], payload['name'], payload['email'])
-            loggedInUserPromise.then((loggedInUser)=>{
-                console.log(loggedInUser)
-                res.status(200).send(loggedInUser)
-            })
-        }).catch((rejectMsg)=>{
-            res.status(400).send(rejectMsg)
+    const token = req.body.idToken;
+    const payloadPromise =  userMod.verify(token)
+    payloadPromise.then((payload)=>{
+        console.log(payload)
+        var loggedInUserPromise = userMod.registerNewUser(payload['sub'], payload['name'], payload['email'])
+        loggedInUserPromise.then((loggedInUser)=>{
+            console.log(loggedInUser)
+            res.status(200).send(loggedInUser)
         })
-        
-    } catch (error) {
-        res.status(400).send("Verification Error")
-    }
+    }).catch((rejectMsg)=>{
+        res.status(400).send(rejectMsg)
+    })
 })
 
 
@@ -138,7 +133,7 @@ app.put("/profile/:userId", async (req,res)=>{
             res.status(400).send("Cannot Update Profile/User not found")
         }
         else{
-	    res.status(200).send("Profile was updated")
+            res.status(200).send("Profile was updated")
         }
     }
 })
@@ -197,7 +192,7 @@ app.get("/article/filter/search", async(req,res)=>{
     var after = req.query.after
     var categories = req.query.categories
 
-    var query = new Object()
+    var query = {}
     if (publisher != ""){
         query.publisher = {$regex: publisher, $options:"i"}
     }
@@ -317,7 +312,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 		else{
 			if (result){
 				// make a get request to get the updated forum
-                		const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
+                const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
 				res.status(200).send(updatedForum);
 				//res.status(200).send("Comment Posted!");
 			}
@@ -330,6 +325,80 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 		res.status(400).send(err);
 	}
 } );
+
+// These are server functions for now, might be implemented as an endpoint for use after MVP
+// Add a new forum
+// app.post("/forums",async (req, res)=>{
+// 	try{
+// 		//console.log(req.body);
+// 		let forumId = req.body.id;
+// 		let forumName = req.body.name
+// 		let addedForum = await forum.createForum(forumId, forumName);
+// 		res.status(200).send(addedForum);
+// 	}catch (err){
+// 		console.log(err);
+// 		res.status(400).send("Could not add forum");
+// 	}
+// } );
+// Deletes all forums 
+// app.delete("/forums" , async (req, res)=>{
+// 	try{
+// 		const succeed = await forum.deleteForums();
+// 		if (isErr(succeed)){
+// 			res.status(400).send("Error when deleting")
+// 		}
+
+// 		if (succeed){
+// 			res.status(200).send("All forums were deleted");
+// 		}
+// 		else {
+// 			res.status(200).send("All Forum Removal Failed! Please try again")
+// 		}
+
+// 	}catch(err){
+// 		console.log(err);
+// 		res.status(400).send("Could not delete forums.");
+// 	}
+
+// });
+
+// Delete one specific forum
+// app.delete("/forums/:forum_id", async(req,res) =>{
+// 	try{
+// 		const succeed = await forum.deleteForum(req.params.forum_id);
+// 		if (isErr(succeed)){
+// 			res.status(400).send(succeed)
+// 		}
+// 		else{
+// 			if (succeed){
+// 				res.status(200).send("Remove succeed")
+// 			}
+// 			else{
+// 				res.status(200).send("Removal Failed! Please try again")
+// 			}
+// 		}
+
+// 	}catch (err){
+		
+// 	}
+// })
+
+// Clears all forums
+// app.delete("/forumComments" , async (req, res)=>{
+// 	try{
+// 		let forums = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
+// 		for(let i = 0; i < forums.length; i++){
+// 			await client.db('ForumDB').collection('forums').updateOne({ id : forums[i]["id"]}, { $set:{ comments : [] }});
+// 		}
+// 		res.status(200).send("All forums were cleared.");
+
+// 	}catch(err){
+// 		console.log(err);
+// 		res.status(400).send("Could not delete forums.");
+// 	}
+
+// });
+
 // <--- FORUM MODULE
 
 //Recommedation module --->
@@ -352,7 +421,6 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     } catch (error) {
 	    console.log(error)
         res.status(400).send("Error when recommending articles")
-        
     }
 })
 
@@ -386,8 +454,8 @@ async function run(){
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
 	    // var server = app.listen(8081, (req,res)=>{
-        //     var host = server.address().address
-        //     var port = server.address().port
+        // var host = server.address().address
+        // var port = server.address().port
         //     console.log("Server is running at https://%s:%s",host,port)
         // })
 	
@@ -395,23 +463,18 @@ async function run(){
         https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
-        
-	    client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
-        
-	    client.db("ForumDB").collection("forums").deleteMany({})
+        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        client.db("ForumDB").collection("forums").deleteMany({})
 	
-	    await userMod.initUDb()
-        
-	    await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        await userMod.initUDb()
+        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
         console.log("Retrieving some articles")
-        
-	    await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
-        
-	    console.log("Server is ready to use")
+        await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        console.log("Server is ready to use")
         retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {

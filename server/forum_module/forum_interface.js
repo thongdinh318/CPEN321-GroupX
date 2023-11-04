@@ -1,7 +1,5 @@
-import express from "express";
 import { MongoClient } from "mongodb";
 
-let app = express();
 const uri = 'mongodb://127.0.0.1:27017';
 const client = new MongoClient(uri);
 
@@ -24,18 +22,14 @@ export class ForumModule{
     // DATABASE COMMUNICATION INTERFACES
     //ChatGPT usage: No
     createForum = async function(forumId, forumName){
-        try{
-            let forum = {
-                id: forumId,
-                name : forumName,
-            };
-            forum.dateCreated = dateAdded();
-            forum.comments = [];
-            const res =  await client.db('ForumDB').collection('forums').insertOne(forum);
-            return forum;
-        }catch(err){
-            return (err);
-        }
+        let forum = {
+            id: forumId,
+            name : forumName,
+        };
+        forum.dateCreated = dateAdded();
+        forum.comments = [];
+        await client.db('ForumDB').collection('forums').insertOne(forum);
+        return forum;
     }
 
     //ChatGPT usage: No
@@ -97,9 +91,9 @@ export class ForumModule{
         try{
             var datePosted = dateAdded();
             let comment = {
-                username : username,
+                username,
                 content : commentData,
-                datePosted: datePosted
+                datePosted
             }
             const response = await client.db('ForumDB').collection('forums')
                             .updateOne({ id : forumId}, { $push:{ comments : comment }});
@@ -108,6 +102,5 @@ export class ForumModule{
             console.log(err);
             return false;
         }
-
     }
-};
+}

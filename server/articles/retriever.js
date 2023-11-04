@@ -1,8 +1,8 @@
 'use strict'
 import axios from 'axios'
 import cheerio from 'cheerio'
-import { summarizeArticle } from './summaries.js'
-import { MongoClient } from "mongodb";
+import summarizeArticle from './summaries.js'
+import  MongoClient from "mongodb";
 
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
@@ -17,31 +17,28 @@ var id = 1 //keep track of article ids in the db
 async function searchNews(query){
     var url = bing_endpoints+"/search"
     console.log(url)
-    try {
-        var user_query;
-        if (query === ""){
-            user_query = EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
-            // user_query += " " + FOCUSED_SITE.join(" OR ")
-        }
-        else{
-            user_query = query + " " + EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
-            // user_query +=" " + FOCUSED_SITE.join(" OR ")
-        }
-        console.log(user_query)
-        const res = await axios.get(url, {
-            headers:{ 'Ocp-Apim-Subscription-Key': key},
-            params:{
-                q:user_query,
-                count: 3,
-                sortBy:"Date",
-                freshness:"Day",
-                mkt:'en-CA'
-            }
-        })
-        return res.data
-    } catch (error) {
-        throw error
+    var user_query;
+    if (query === ""){
+        user_query = EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
+        // user_query += " " + FOCUSED_SITE.join(" OR ")
     }
+    else{
+        user_query = query + " " + EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
+        // user_query +=" " + FOCUSED_SITE.join(" OR ")
+    }
+    console.log(user_query)
+    const res = await axios.get(url, {
+        headers:{ 'Ocp-Apim-Subscription-Key': key},
+        params:{
+            q:user_query,
+            count: 3,
+            sortBy:"Date",
+            freshness:"Day",
+            mkt:'en-CA'
+        }
+    })
+    return res.data
+
 }
 
 
@@ -60,13 +57,19 @@ async function scrapeURL(url){
             $('p').each ((index, element)=>{
                 para.push($(element).text());
             })
-            return {title, para}
+            var retrievedArticle = {
+                title: title,
+                para: para
+            }
+            return retrievedArticle
         }
         else{
-            return {error:"Failed to retrieve"}
+            var err = new Error()
+            err.message = "Failed to retrieve"
+            return err
         }
     } catch (error) {
-        return {error: error.message}
+        return (error)
     }
 }
 
@@ -79,7 +82,7 @@ async function bingNewsRetriever(query){
     
     var retrievedArticles =[]
     for (var article of result.value){
-        var articleEntry = new Object()
+        var articleEntry = {}
         articleEntry.url = article.url;
         var content = await scrapeURL(article.url)
         //skip if cannot scrape the content
@@ -95,7 +98,7 @@ async function bingNewsRetriever(query){
             sentenceNum += 1 
         })
         var articleBody = await summarizeArticle(webContent, Math.round(sentenceNum/2))
-        if (articleBody, articleBody.e, articleBody.stack){
+        if (articleBody && articleBody.e && articleBody.stack){
             continue
         }
         else{

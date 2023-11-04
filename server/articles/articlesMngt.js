@@ -15,23 +15,19 @@ const client = new MongoClient(uri)
 //Intit DB Function-->
 // ChatGPT usage: No.
 async function initADb(){
-    try {
-        await client.db("articledb").collection("articles").insertOne(defArticle)
-        return("success\n")
-    } catch (error) {
-        return (error)
-    }
+    await client.db("articledb").collection("articles").insertOne(defArticle)
+    return("success\n")
 }
 //<--- Intit DB Function
 //Search an article based on its id 
 // ChatGPT usage: No.
 async function searchById(articleId){
     try {
-        var foundArticle  = await client.db("articledb").collection("articles").find({"articleId": articleId});
+        var foundArticle  = await client.db("articledb").collection("articles").find({articleId});
         foundArticle = await foundArticle.toArray()
         console.log(foundArticle)
         if (foundArticle == undefined || foundArticle.length == 0){
-            return (new Object())
+            return ({})
         }
         else{
             return foundArticle[0]
