@@ -1,6 +1,6 @@
 
-const  endpoint = "https://quicknewsummarymodule.cognitiveservices.azure.com/language/analyze-text/jobs?api-version=2023-04-01";
 import axios from "axios";
+const  endpoint = "https://quicknewsummarymodule.cognitiveservices.azure.com/language/analyze-text/jobs?api-version=2023-04-01";
 const key = "6e097b5470d244c092c15bfab4a42c8c";
 
 const sumReqBody = {

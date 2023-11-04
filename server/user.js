@@ -25,19 +25,15 @@ const defUser = {
 // Helper Functions --->
 //ChatGPT usage: No
 async function checkAvailable(userId){
-    try {
-        var result = client.db("userdb").collection("profile").find({"userId":userId})
-        var arr = await result.toArray()
-        if (arr == undefined || arr.length == 0){
-            return new Object()
-        }
-        else{
-            return arr[0]
-        }
-    } catch (error) {
-        throw(error)
-    }    
-
+    var result = client.db("userdb").collection("profile").find({userId})
+    var arr = await result.toArray()
+    if (arr == undefined || arr.length == 0){
+        return new Object()
+    }
+    else{
+        return arr[0]
+    }
+    
 }
 //ChatGPT usage: No
 function createNewUser(userId, userName, userEmail){
@@ -94,8 +90,7 @@ async function registerNewUser(userId, username, userEmail){
     if (userProfile.userId){
         console.log("Old User")
         return userProfile
-    }
-    else{
+    } else{
         console.log("New User")
         var newUser = createNewUser(userId, username,userEmail)
         await client.db("userdb").collection("profile").insertOne(newUser);
@@ -124,7 +119,7 @@ async function updateProfile(userId, newProfile){
         }
         else{
             //TODO: sanitize inputs before update
-            const result = await client.db("userdb").collection("profile").updateOne({"userId":userId}, {$set: newProfile})
+            const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
             return (result.acknowledged)
         }
     } catch (error) {
@@ -138,7 +133,7 @@ async function updateProfile(userId, newProfile){
 async function updateHistory(userId, newViewed){
     try {
         var user = await checkAvailable(userId)
-	    console.log(user)
+        console.log(user)
         if (user.userId == undefined){
             return false
         }
@@ -158,13 +153,11 @@ async function updateHistory(userId, newViewed){
                 updateHistory.push(newViewed)
             }
 
-            const result = await client.db("userdb").collection("profile").updateOne({"userId":userId}, 
-            {$set: {"history":updateHistory}})
-            
+            const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
             return (result.acknowledged)
         }
     } catch (error) {
-	    console.log(error)
+        console.log(error)
         return (error)
     }
 }
@@ -188,7 +181,7 @@ async function getAllUserHistory(){
         if (user.history.length > 0)
         {
             user.history.forEach((item)=>{
-                var itemData = new Object()
+                var itemData = {}
                 itemData.userId = user.userId;
                 itemData.itemId = item.articleId;
                 itemData.views = item.views;
@@ -197,7 +190,7 @@ async function getAllUserHistory(){
         }
     })
 
-    var result = new Object();
+    var result = {};
     result.users = userList;
     result.userItemData = userItemData
     console.log(result)
