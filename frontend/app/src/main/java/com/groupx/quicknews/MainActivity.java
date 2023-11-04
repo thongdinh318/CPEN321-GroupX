@@ -5,11 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 
 import android.view.Menu;
@@ -24,7 +22,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.groupx.quicknews.helpers.HttpClient;
@@ -43,11 +40,15 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button recommendedArticlesButton,  forumButton, filterSearchButton ;
+    private Button recommendedArticlesButton;
+    private Button forumButton;
+    private Button filterSearchButton;
     private SearchView searchView;
-    private EditText publisher, category;
-    private Button fromButton, toButton;
-    private DatePickerDialog datePickerDialogFrom, datePickerDialogTo;
+    private EditText category;
+    private Button fromButton;
+    private Button toButton;
+    private DatePickerDialog datePickerDialogFrom;
+    private DatePickerDialog datePickerDialogTo;
     private static List<Article> articleList = new ArrayList<>();
     final static String TAG = "MainActivity";
     // ChatGPT usage: No.
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
-                openDatePicker(view, datePickerDialogFrom);
+                openDatePicker(datePickerDialogFrom);
             }
         });
 
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
-                openDatePicker(view, datePickerDialogTo);
+                openDatePicker(datePickerDialogTo);
             }
         });
 
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Exception e) {
-
+                        throw new RuntimeException(e);
                     }
                 });
             }
@@ -346,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month = month + 1;
+                month++;
                 String date = makeDateString(day, month, year);
                 toButton.setText(date);
             }
@@ -433,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
         return monthString;
     }
     // ChatGPT usage: No.
-    private void openDatePicker(View view, DatePickerDialog datePickerDialog){
+    private void openDatePicker(DatePickerDialog datePickerDialog){
         datePickerDialog.show();
     }
 

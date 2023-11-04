@@ -1,9 +1,7 @@
 package com.groupx.quicknews;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,14 +11,12 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.groupx.quicknews.helpers.HttpClient;
-import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import okhttp3.Response;
@@ -30,8 +26,10 @@ public class SubscriptionActivity extends AppCompatActivity {
     final static String TAG = "SubscriptionActivity";
     private List<String> subscriptionList;
     private String userId = LoginActivity.getUserId();
-    private TextView cbc, cnn;
-    private Switch cbc_sub, cnn_sub;
+    private TextView cbc;
+    private TextView cnn;
+    private Switch cbc_sub;
+    private Switch cnn_sub;
     private Button confirm;
     // ChatGPT usage: No.
     @Override
@@ -142,6 +140,7 @@ public class SubscriptionActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Exception e) {
+                throw new RuntimeException(e);
             }
         });
     }

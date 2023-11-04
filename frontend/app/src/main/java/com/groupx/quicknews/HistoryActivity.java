@@ -5,36 +5,24 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.groupx.quicknews.databinding.ActivityForumBinding;
 import com.groupx.quicknews.databinding.ActivityHistoryBinding;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.articles.Article;
 import com.groupx.quicknews.ui.articles.ArticlesViewAdapter;
-import com.groupx.quicknews.ui.forumlist.Forum;
-import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Response;
 
 public class HistoryActivity extends AppCompatActivity {
 
     private ActivityHistoryBinding binding;
-    private String userId;
     private List<Article> articles;
     private RecyclerView articleView;
     private final String TAG = "HistoryActivity";
@@ -86,6 +74,7 @@ public class HistoryActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Exception e) {
+                throw new RuntimeException(e);
             }
         });
     }
