@@ -39,11 +39,6 @@ import java.util.List;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
-
-    private Button recommendedArticlesButton;
-    private Button forumButton;
-    private Button filterSearchButton;
-    private SearchView searchView;
     private EditText category;
     private Button fromButton;
     private Button toButton;
@@ -56,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button filterSearchButton;
+        SearchView searchView;
+        Button recommendedArticlesButton;
+        Button forumButton;
+
         initDatePickerFrom();
         initDatePickerTo();
         fromButton = findViewById(R.id.date_picker_from);
@@ -99,19 +100,15 @@ public class MainActivity extends AppCompatActivity {
                 String categoryName = category.getText().toString();
                 String fromDate = fromButton.getText().toString();
                 String toDate = toButton.getText().toString();
-//                Log.d(TAG, publisherName);
-//                Log.d(TAG, categoryName);
-//                Log.d(TAG, fromDate);
-//                Log.d(TAG, toDate);
                 String query = "";
-                if (publisherName == "search all"){
+                if ("search all".equals(publisherName )){
                     query +=  "publisher=";
                 }
                 else {
                     query += "publisher="+publisherName;
                 }
 
-                if (categoryName == ""){
+                if ("".equals(categoryName)){
                     query +=  "&categories=";
                 }
                 else {
@@ -165,10 +162,8 @@ public class MainActivity extends AppCompatActivity {
                                     startActivity(articleIntent);
                                 }
                             }
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
                         }
 
                     }
@@ -233,15 +228,14 @@ public class MainActivity extends AppCompatActivity {
                                     startActivity(articleIntent);
                                 }
                             }
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        } catch (IOException e) {
+                        } catch (JSONException | IOException e) {
                             throw new RuntimeException(e);
                         }
                     }
 
                     @Override
                     public void onFailure(Exception e) {
+                        e.printStackTrace();
                     }
                 });
 
@@ -347,19 +341,19 @@ public class MainActivity extends AppCompatActivity {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month++;
-                String date = makeDateString(day, month, year);
+                int realMonth = month + 1;
+                String date = makeDateString(day, realMonth, year);
                 toButton.setText(date);
             }
         };
 
         Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int calYear = cal.get(Calendar.YEAR);
+        int calMonth = cal.get(Calendar.MONTH);
+        int calDay = cal.get(Calendar.DAY_OF_MONTH);
 
         datePickerDialogTo = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
-                year, month, day);
+                calYear, calMonth, calDay);
 //        datePickerDialogTo.getDatePicker().setMaxDate(System.currentTimeMillis());
 
     }
@@ -368,19 +362,19 @@ public class MainActivity extends AppCompatActivity {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month = month + 1;
-                String date = makeDateString(day, month, year);
+                int realMonth = month + 1;
+                String date = makeDateString(day, realMonth, year);
                 fromButton.setText(date);
             }
         };
 
         Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int calYear = cal.get(Calendar.YEAR);
+        int calMonth = cal.get(Calendar.MONTH);
+        int calDay = cal.get(Calendar.DAY_OF_MONTH);
 
         datePickerDialogFrom = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
-                                                year, month, day);
+                                                calYear, calMonth, calDay);
         datePickerDialogFrom.getDatePicker().setMaxDate(System.currentTimeMillis());
     }
 

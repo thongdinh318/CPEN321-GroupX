@@ -99,7 +99,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
                             article.setArticleRead(true);
                         }
                     }catch (Exception e) {
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
                     }
                 }
 

@@ -19,17 +19,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 import okhttp3.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
-    private SignInButton googleSignInButton;
+
     private static GoogleSignInAccount account;
     private static String userId;
     private int RC_SIGN_IN = 1;
@@ -39,6 +36,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SignInButton googleSignInButton;
+
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
 
@@ -130,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
                         int statusCode = response.code();
                         if (statusCode == 200){
                             String res = response.body().string();
-                            res.replace("\"", "\'");
+                            res = res.replace("\"", "\'");
                             JSONObject user = new JSONObject(res);
 
                             if (user.has("userId")){
@@ -139,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
                     }
                 }
 
