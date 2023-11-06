@@ -26,7 +26,7 @@ async function searchById(articleId){
         var foundArticle  = await client.db("articledb").collection("articles").find({articleId});
         foundArticle = await foundArticle.toArray()
         console.log(foundArticle)
-        if (foundArticle == undefined || foundArticle.length == 0){
+        if (foundArticle == undefined || foundArticle.length === 0){
             return ({})
         }
         else{

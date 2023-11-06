@@ -86,7 +86,7 @@ async function bingNewsRetriever(query){
         articleEntry.url = article.url;
         var content = await scrapeURL(article.url)
         //skip if cannot scrape the content
-        if (content.para == undefined || content.para.length == 0){
+        if (content.para == undefined || content.para.length === 0){
             continue
         }
 

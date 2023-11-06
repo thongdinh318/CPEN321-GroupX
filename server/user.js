@@ -28,7 +28,7 @@ async function checkAvailable(userId){
     var result = client.db("userdb").collection("profile").find({userId})
     var arr = await result.toArray()
     if (arr == undefined || arr.length == 0){
-        return new Object()
+        return {}
     }
     else{
         return arr[0]
