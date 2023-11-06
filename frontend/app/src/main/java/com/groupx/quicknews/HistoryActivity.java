@@ -71,7 +71,7 @@ public class HistoryActivity extends AppCompatActivity {
                         });
                     }
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
             }
             @Override
