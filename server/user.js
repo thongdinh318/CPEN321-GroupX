@@ -110,11 +110,10 @@ async function updateProfile(userId, newProfile){
         if (user.userId == undefined){
             return false
         }
-        else{
-            //TODO: sanitize inputs before update
-            const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
-            return (result.acknowledged)
-        }
+        //TODO: sanitize inputs before update
+        const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
+        return (result.acknowledged)
+        
     // } catch (error) {
     //     return (error)
     // }
