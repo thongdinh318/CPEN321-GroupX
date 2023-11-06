@@ -1,14 +1,14 @@
 import express from "express";
 import * as userMod from "./user.js"
-import MongoClient from "mongodb";
+import * as mongo from "mongodb";
 import fs from "fs"
 import https from "https"
 import * as articleMod from "./articles/articlesMngt.js"
-import bingNewsRetriever from "./articles/retriever.js";
-import collaborativeFilteringRecommendations from "./articles/recommendation.js";
+import * as retriever from "./articles/retriever.js";
+import * as recommendation from "./articles/recommendation.js";
 import ForumModule from "./forum_module/forum_interface.js";
 const uri = "mongodb://127.0.0.1:27017"
-const client = new MongoClient(uri)
+export const client = new mongo.MongoClient(uri)
 
 var app = express()
 app.use(express.json())
@@ -258,18 +258,18 @@ app.get("/article/kwsearch/search", async(req,res)=>{
 // Get all forums
 // ChatGPT usage: No.
 app.get("/forums", async (req, res) =>{
-	try{
-		const result = await forum.getAllForums();
-		if (isErr(result)){
-			res.status(400).send("Cannot get forum list")
-		}
-		else{
-			res.status(200).send(result);
-		}
-	} catch (err){
-		console.log(err);
-		res.status(400).send("No Forums")
-	}
+	// try{
+    const result = await forum.getAllForums();
+    if (isErr(result)){
+        res.status(400).send("Cannot get forum list")
+    }
+    else{
+        res.status(200).send(result);
+    }
+	// } catch (err){
+	// 	console.log(err);
+	// 	res.status(400).send("No Forums")
+	// }
 }); 
 
 
@@ -408,7 +408,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
-        const recommeded = await collaborativeFilteringRecommendations(userId);
+        const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
         // console.log(recommeded)
         var recommededArticles = []
         for (var i = 0; i < recommeded.length; ++i){
@@ -419,7 +419,7 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         res.status(200).send(recommededArticles)
         
     } catch (error) {
-	    console.log(error)
+        console.log(error)
         res.status(400).send("Error when recommending articles")
     }
 })
@@ -428,7 +428,7 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 app.get("/recommend/publisher/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
-        const recommeded = await collaborativeFilteringRecommendations(userId);
+        const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
         var recommededPublishers = []
         for (var i = 0; i < recommeded.length; ++i){
             var articleId = recommeded[i][0]
@@ -453,12 +453,11 @@ async function run(){
         await client.connect()
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
-	    // var server = app.listen(8081, (req,res)=>{
+        // var server = app.listen(8081, (req,res)=>{
         // var host = server.address().address
         // var port = server.address().port
         //     console.log("Server is running at https://%s:%s",host,port)
         // })
-	
         // create https server
         https.createServer(options, app).listen(8081)
 
@@ -473,9 +472,9 @@ async function run(){
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
         console.log("Retrieving some articles")
-        await bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         console.log("Server is ready to use")
-        retriever = setInterval(bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
+        retriever = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
         console.log(error)

@@ -1,18 +1,16 @@
 'use strict'
 import axios from 'axios'
 import cheerio from 'cheerio'
-import summarizeArticle from './summaries.js'
-import  MongoClient from "mongodb";
-
-const uri = "mongodb://127.0.0.1:27017"
-const client = new MongoClient(uri)
+import * as summarizer from "./summaries.js"
+import * as server from "../server.js"
+import "dotenv/config.js"
 
 const bing_endpoints = "https://api.bing.microsoft.com/v7.0/news"
-const key = '56e2a381b452440abe22ce6ffb33b485'
+const key = process.env.BingKey
 const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
 var id = 1 //keep track of article ids in the db
-
+const client = server.client
 //ChatGPT usage: No
 async function searchNews(query){
     var url = bing_endpoints+"/search"
@@ -44,33 +42,33 @@ async function searchNews(query){
 
 //ChatGPT usage: Yes
 async function scrapeURL(url){
-    try {
-        const response = await axios.get(url)
+    // try {
+    const response = await axios.get(url)
 
-        if (response.status === 200){
-            const html = response.data
-            const $ = cheerio.load(html)
+    if (response.status === 200){
+        const html = response.data
+        const $ = cheerio.load(html)
 
-            var title = $('title').text();
-            var para = [];
+        var title = $('title').text();
+        var para = [];
 
-            $('p').each ((index, element)=>{
-                para.push($(element).text());
-            })
-            var retrievedArticle = {
-                title: title,
-                para: para
-            }
-            return retrievedArticle
+        $('p').each ((index, element)=>{
+            para.push($(element).text());
+        })
+        var retrievedArticle = {
+            title,
+            para
         }
-        else{
-            var err = new Error()
-            err.message = "Failed to retrieve"
-            return err
-        }
-    } catch (error) {
-        return (error)
+        return retrievedArticle
     }
+    else{
+        var err = new Error()
+        err.message = "Failed to retrieve"
+        return err
+    }
+    // } catch (error) {
+    //     return (error)
+    // }
 }
 
 // ChatGPT usage: No”
@@ -97,7 +95,7 @@ async function bingNewsRetriever(query){
             webContent += sentence
             sentenceNum += 1 
         })
-        var articleBody = await summarizeArticle(webContent, Math.round(sentenceNum/2))
+        var articleBody = await summarizer.summarizeArticle(webContent, Math.round(sentenceNum/2))
         if (articleBody && articleBody.e && articleBody.stack){
             continue
         }

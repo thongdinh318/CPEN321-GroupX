@@ -1,11 +1,9 @@
-import { MongoClient } from "mongodb";
 import {OAuth2Client} from 'google-auth-library'
-
-const uri = "mongodb://127.0.0.1:27017"
-const client = new MongoClient(uri)
-
+import * as server from "./server.js"
 const CLIENT_ID = "474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com"//TODO: replace witht the real client id
 const ggClient = new OAuth2Client(CLIENT_ID);
+const client = server.client
+
 //Default user setting
 const defUser = { 
 	"userId": '0',
@@ -30,10 +28,7 @@ async function checkAvailable(userId){
     if (arr == undefined || arr.length == 0){
         return {}
     }
-    else{
-        return arr[0]
-    }
-    
+    return arr[0]
 }
 //ChatGPT usage: No
 function createNewUser(userId, userName, userEmail){
@@ -54,12 +49,12 @@ function createNewUser(userId, userName, userEmail){
 //Init DB function --->
 //ChatGPT usage: No
 async function initUDb(){
-    try {
-        await client.db("userdb").collection("profile").insertOne(defUser)
-        return("success\n")
-    } catch (error) {
-        return (error)
-    }
+    // try {
+    await client.db("userdb").collection("profile").insertOne(defUser)
+    return("success\n")
+    // } catch (error) {
+    //     return (error)
+    // }
 }
 //<--- Init DB function
 

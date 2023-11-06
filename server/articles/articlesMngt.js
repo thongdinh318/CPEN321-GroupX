@@ -1,4 +1,5 @@
-import { MongoClient } from "mongodb";
+import * as server from "../server.js"
+const client = server.client
 
 const defArticle = {
     "articleId": 0,
@@ -9,46 +10,41 @@ const defArticle = {
     "publishedDate": null,
 }
 
-const uri = "mongodb://127.0.0.1:27017"
-const client = new MongoClient(uri)
 
 //Intit DB Function-->
 // ChatGPT usage: No.
-async function initADb(){
+export async function initADb(){
     await client.db("articledb").collection("articles").insertOne(defArticle)
     return("success\n")
 }
 //<--- Intit DB Function
+
 //Search an article based on its id 
 // ChatGPT usage: No.
-async function searchById(articleId){
-    try {
-        var foundArticle  = await client.db("articledb").collection("articles").find({articleId});
-        foundArticle = await foundArticle.toArray()
-        console.log(foundArticle)
-        if (foundArticle == undefined || foundArticle.length === 0){
-            return ({})
-        }
-        else{
-            return foundArticle[0]
-        }
-    } catch (error) {
-        return error
+export async function searchById(articleId){
+    var foundArticle  =  client.db("articledb").collection("articles").find({articleId});
+    foundArticle = await foundArticle.toArray()
+    console.log(foundArticle)
+    if (foundArticle == undefined || foundArticle.length === 0){
+        return ({})
+    }
+    else{
+        return foundArticle[0]
     }
 }
 
 //Search the database for a list of articles that match the query provided by the user
 // ChatGPT usage: No.
-async function searchByFilter(query){
+export async function searchByFilter(query){
     try {
         console.log(query)
-        var foundArticles  = await client.db("articledb").collection("articles").find(query);
+        var foundArticles  = client.db("articledb").collection("articles").find(query);
         foundArticles = await foundArticles.toArray()
         if (foundArticles.length > 10){
             foundArticles = foundArticles.slice(0,9)
         }
 	
-        if (foundArticles == undefined || foundArticles.length == 0){
+        if (foundArticles === undefined || foundArticles.length === 0){
             return []
         }
         else{
@@ -62,16 +58,16 @@ async function searchByFilter(query){
 //Rerieve a list of all article ids in the database
 //Used by the recommendation module
 // ChatGPT usage: No.
-async function getArticleIds(){
+export async function getArticleIds(){
     var articleCollection = await client.db("articledb").collection("articles").find({}).toArray()
     var articleIdList = [];
 
     articleCollection.forEach((article)=>{
-        if (article.articleId != 0){
+        if (article.articleId !== 0){
             articleIdList.push(article.articleId);
         }
     })
 
     return (articleIdList)
 }
-export {getArticleIds, searchByFilter,searchById, initADb}
+// export {getArticleIds, searchByFilter,searchById, initADb}
