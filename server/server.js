@@ -7,6 +7,8 @@ import * as articleMod from "./articles/articlesMngt.js"
 import { bingNewsRetriever } from "./articles/retriever.js";
 import { collaborativeFilteringRecommendations } from "./articles/recommendation.js";
 import { ForumModule } from "./forum_module/forum_interface.js";
+import WebSocket, {WebSocketServer} from "ws";
+
 const uri = "mongodb://127.0.0.1:27017"
 const client = new MongoClient(uri)
 
@@ -21,6 +23,10 @@ var options = {
  	key: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
  	cert: fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
 };
+
+const server = https.createServer(options, app);
+const wss = new WebSocketServer({ port: 9000 });
+
 
 const forum = new ForumModule()
 const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
@@ -302,34 +308,82 @@ app.get("/forums/:forum_id", async (req, res) =>{
 
 // Post a comment to a forum
 // ChatGPT usage: No.
-app.post("/addComment/:forum_id",async (req, res)=>{
-	try{
-		let commentData = req.body.commentData;
-		let userId = req.body.userId
-		const user = await userMod.getProfile(userId)
+// app.post("/addComment/:forum_id",async (req, res)=>{
+// 	try{
+// 		let commentData = req.body.commentData;
+// 		let userId = req.body.userId
+// 		const user = await userMod.getProfile(userId)
 		
-		const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
-		// await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
+// 		const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
+// 		// await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
 
-		if (isErr(result)){
-			res.status(400).send("Could not post comment")
-		}
-		else{
-			if (result){
-				// make a get request to get the updated forum
-                		const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
-				res.status(200).send(updatedForum);
-				//res.status(200).send("Comment Posted!");
-			}
-			else{
-				res.status(400).send("Failed Posting Comment! Please Try Again")
-			}
-		}
+// 		if (isErr(result)){
+// 			res.status(400).send("Could not post comment")
+// 		}
+// 		else{
+// 			if (result){
+// 				// make a get request to get the updated forum
+//                 		const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
+// 				res.status(200).send(updatedForum);
+// 				//res.status(200).send("Comment Posted!");
+// 			}
+// 			else{
+// 				res.status(400).send("Failed Posting Comment! Please Try Again")
+// 			}
+// 		}
 
-	}catch (err){
-		res.status(400).send(err);
-	}
-} );
+// 	}catch (err){
+// 		res.status(400).send(err);
+// 	}
+// } );
+
+
+wss.on('connection', async (ws) => {
+    console.log('A new client Connected!');
+  
+    ws.on('message', async (comment, isBinary) =>{
+  
+      comment = JSON.parse(comment);
+  
+      // console.log(comment);
+  
+      let commentData = comment.content;
+      let userId = comment.userId
+      const user = await userMod.getProfile(userId)
+      let forum_id = comment.forum_id
+      
+      const res = await forum.addCommentToForum(forum_id, commentData, user.username).then()
+  
+      // if res is err
+      if(!res) {
+  
+          ws.send("Could not post comment")
+      }else{
+          try{
+              const newForum = await forum.getForum(forum_id);
+              // console.log(newForum)
+              // ws.send(newForum, {binary : isBinary});
+              wss.clients.forEach(async (socketClient)=>{
+                // If the new comment does not appear on the user's screen
+                // try removing socketClient !== ws
+                  if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
+                      socketClient.send(newForum);
+                  }
+              });
+              
+          }catch{
+              ws.send("Could not post comment")
+          }
+      }
+      
+    });
+  });
+  
+
+
+
+
+
 // <--- FORUM MODULE
 
 //Recommedation module --->
@@ -378,6 +432,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 // <--- Recommendation module
 
 
+
 // Main Function
 // ChatGPT usage: No.
 async function run(){
@@ -392,7 +447,7 @@ async function run(){
         // })
 	
         // create https server
-        https.createServer(options, app).listen(8081)
+        server.listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
         
