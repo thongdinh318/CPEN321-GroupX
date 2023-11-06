@@ -14,7 +14,6 @@ var app = express()
 app.use(express.json())
 
 var forum_id = 1;
-// const id_token = "" // for test
 
 // Uncomment for https
 var options = {
@@ -24,7 +23,6 @@ var options = {
 
 const forum = new ForumModule()
 
-var retriever = null //place holder for the retriever before init server
 
 // Error checking function
 //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
@@ -456,13 +454,13 @@ async function run(){
         console.log("Retrieving some articles")
         await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         console.log("Server is ready to use")
-        retriever = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
+        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
         console.log(error)
 
-        if (retriever != null){
-            clearInterval(retriever)
+        if (retrieverInterval != null){
+            clearInterval(retrieverInterval)
         }
         await client.close()
     }
