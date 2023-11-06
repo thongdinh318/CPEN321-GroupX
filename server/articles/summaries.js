@@ -1,4 +1,3 @@
-
 import axios from "axios";
 const  endpoint = "https://quicknewsummarymodule.cognitiveservices.azure.com/language/analyze-text/jobs?api-version=2023-04-01";
 const key = "6e097b5470d244c092c15bfab4a42c8c";
@@ -34,7 +33,7 @@ export const summarizeArticle = async function(text, sentenceCount){
 
         const response = await axios.post(endpoint, data,
             {
-                headers :{
+                headers:{
                     "Ocp-Apim-Subscription-Key" : key
                 }
             })

@@ -243,7 +243,7 @@ app.get("/article/kwsearch/search", async(req,res)=>{
         res.status(400).send("Error when searching with search bar")
     }
     else{
-        if (foundArticles.length == 0){
+        if (foundArticles.length === 0){
             res.status(400).send("No articles matched")
         }
         else{
