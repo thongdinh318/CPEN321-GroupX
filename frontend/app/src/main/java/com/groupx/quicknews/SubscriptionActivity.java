@@ -144,7 +144,7 @@ public class SubscriptionActivity extends AppCompatActivity {
             }
             @Override
             public void onFailure(Exception e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         });
     }
@@ -171,18 +171,18 @@ public class SubscriptionActivity extends AppCompatActivity {
                                     Log.d(TAG,result);
                                 }
                             } catch (IOException e) {
-                                throw new RuntimeException(e);
+                                e.printStackTrace();
                             }
 
                         }
                     }
                     @Override
                     public void onFailure(Exception e) {
-                        Log.d(TAG,e.getMessage());
+                        e.printStackTrace();
                     }
                 });
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
 }

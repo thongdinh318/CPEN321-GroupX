@@ -86,7 +86,7 @@ export class ForumModule{
 
     //ChatGPT usage: No
     addCommentToForum = async function(forumId, commentData, username){
-        try{
+        // try{
             var datePosted = dateAdded();
             let comment = {
                 username,
@@ -96,9 +96,9 @@ export class ForumModule{
             const response = await client.db('ForumDB').collection('forums')
                             .updateOne({ id : forumId}, { $push:{ comments : comment }});
             return response.acknowledged;
-        }catch(err){
-            console.log(err);
-            return false;
-        }
+        // }catch(err){
+        //     console.log(err);
+        //     return false;
+        // }
     }
 }

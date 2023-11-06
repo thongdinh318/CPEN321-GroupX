@@ -63,7 +63,7 @@ app.get("/profile/:userId", async (req,res)=>{
         res.status(400).send("Error when getting user profile")
     }
     else{
-        if (user.userId == undefined){
+        if (user.userId === "0"){
             res.status(400).send("User Profile not Found")
         }
         else{

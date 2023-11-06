@@ -107,7 +107,7 @@ public class ForumActivity extends AppCompatActivity {
                             }
                         });
                     } catch (JSONException e) {
-                        throw new IOException(e);
+                        e.printStackTrace();
                     }
                 }
             }
@@ -150,7 +150,7 @@ public class ForumActivity extends AppCompatActivity {
                 // ChatGPT usage: No.
                 @Override
                 public void onFailure(Exception e) {
-                    Log.e(TAG, "exception", e);
+                    e.printStackTrace();
                 }
             });
         }
