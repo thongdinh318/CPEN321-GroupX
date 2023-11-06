@@ -102,17 +102,18 @@ app.get("/profile/:userId/history", async (req,res)=>{
         res.status(400).send("Error when getting reading history")
     }
     else{
-        if (userProfile.userId){
-            
+        if (userProfile.userId == undefined){
+            res.status(200).send([])
+        }
+        else{
             var articleArray = []
-		console.log(userProfile.history)
+            console.log(userProfile.history)
             for(var article of userProfile.history){
                 var foundArticle = await articleMod.searchById(article.articleId);
                 articleArray.push(foundArticle)
             }
             res.status(200).send(articleArray)
         }
-        res.status(200).send([])
     }
 })
 
