@@ -63,7 +63,7 @@ app.get("/profile/:userId", async (req,res)=>{
         res.status(400).send("Error when getting user profile")
     }
     else{
-        if (user.userId === "0"){
+        if (user.userId == undefined){
             res.status(400).send("User Profile not Found")
         }
         else{
@@ -256,7 +256,6 @@ app.get("/article/kwsearch/search", async(req,res)=>{
 // Get all forums
 // ChatGPT usage: No.
 app.get("/forums", async (req, res) =>{
-	// try{
     const result = await forum.getAllForums();
     if (isErr(result)){
         res.status(400).send("Cannot get forum list")
@@ -264,64 +263,47 @@ app.get("/forums", async (req, res) =>{
     else{
         res.status(200).send(result);
     }
-	// } catch (err){
-	// 	console.log(err);
-	// 	res.status(400).send("No Forums")
-	// }
 }); 
 
 
 // GET one specific forum, queried with forum id
 // ChatGPT usage: No.
 app.get("/forums/:forum_id", async (req, res) =>{
-	// try{
-		const result =await forum.getForum(parseInt(req.params.forum_id),10)
-		// const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
-		if (isErr(result)){
-			res.status(400).send(result)
-		}
-		else{
-			res.status(200).send(result);
-		}
-
-	// } catch (err){
-
-	// 	console.log(err);
-	// 	res.status(400).send("Forum was not found");
-
-	// }
+    const result =await forum.getForum(parseInt(req.params.forum_id),10)
+    // const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
+    if (isErr(result)){
+        res.status(400).send(result)
+    }
+    else{
+        res.status(200).send(result);
+    }
 });  
 
 
 // Post a comment to a forum
 // ChatGPT usage: No.
 app.post("/addComment/:forum_id",async (req, res)=>{
-	// try{
-		let commentData = req.body.commentData;
-		let userId = req.body.userId
-		const user = await userMod.getProfile(userId)
-		
-		const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
-		// await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
+    let commentData = req.body.commentData;
+    let userId = req.body.userId
+    const user = await userMod.getProfile(userId)
+    
+    const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
+    // await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
 
-		if (isErr(result)){
-			res.status(400).send("Could not post comment")
-		}
-		else{
-			if (result){
-				// make a get request to get the updated forum
-                const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
-				res.status(200).send(updatedForum);
-				//res.status(200).send("Comment Posted!");
-			}
-			else{
-				res.status(400).send("Failed Posting Comment! Please Try Again")
-			}
-		}
-
-	// }catch (err){
-	// 	res.status(400).send(err);
-	// }
+    if (isErr(result)){
+        res.status(400).send("Could not post comment")
+    }
+    else{
+        if (result){
+            // make a get request to get the updated forum
+            const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
+            res.status(200).send(updatedForum);
+            //res.status(200).send("Comment Posted!");
+        }
+        else{
+            res.status(400).send("Failed Posting Comment! Please Try Again")
+        }
+    }
 } );
 
 // These are server functions for now, might be implemented as an endpoint for use after MVP
@@ -405,7 +387,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 // ChatGPT usage: No.
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
-    // try {
+    try {
         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
         // console.log(recommeded)
         var recommededArticles = []
@@ -416,16 +398,16 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         }
         res.status(200).send(recommededArticles)
         
-    // } catch (error) {
-    //     console.log(error)
-    //     res.status(400).send("Error when recommending articles")
-    // }
+    } catch (error) {
+        console.log(error)
+        res.status(400).send("Error when recommending articles")
+    }
 })
 
 // ChatGPT usage: No.
 app.get("/recommend/publisher/:userId", async (req,res)=>{
     var userId = req.params.userId;
-    // try {
+    try {
         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
         var recommededPublishers = []
         for (var i = 0; i < recommeded.length; ++i){
@@ -435,11 +417,11 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
         }
         res.status(200).send(recommededPublishers)
         
-    // } catch (error) {
-	//     console.log(error)
-    //     res.status(400).send("Error when recommending publishers")
+    } catch (error) {
+	    console.log(error)
+        res.status(400).send("Error when recommending publishers")
         
-    // }
+    }
 })
 // <--- Recommendation module
 
@@ -447,6 +429,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 // Main Function
 // ChatGPT usage: No.
 async function run(){
+    console.log("Server starting")
     try {
         await client.connect()
         console.log("Successfully connect to db")

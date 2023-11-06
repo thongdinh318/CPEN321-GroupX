@@ -26,10 +26,10 @@ const sumReqBody = {
 
 // ChatGPT usage: No.
 export const summarizeArticle = async function(text, sentenceCount){
-    // try{    
-    let data = sumReqBody;
-    data.analysisInput.documents[0].text = text;
-    data.tasks[0].parameters.sentenceCount = sentenceCount;
+  let data = sumReqBody;
+  data.analysisInput.documents[0].text = text;
+  data.tasks[0].parameters.sentenceCount = sentenceCount;
+  try{    
     const apiKeyHeader = {"Ocp-Apim-Subscription-Key" : key} 
 
     const response = await axios.post(endpoint, data,
@@ -51,10 +51,10 @@ export const summarizeArticle = async function(text, sentenceCount){
     //
     return summary.tasks.items[0].results.documents[0].summaries[0].text;
 
-    // }catch(err){
-    //     // console.log(err)
-    //     return err
-    // }
+  }catch(err){
+      // console.log(err)
+      return err
+  }
 }
 
 // ChatGPT usage: No.
