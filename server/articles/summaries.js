@@ -30,10 +30,11 @@ export const summarizeArticle = async function(text, sentenceCount){
     let data = sumReqBody;
     data.analysisInput.documents[0].text = text;
     data.tasks[0].parameters.sentenceCount = sentenceCount;
+    const apiKeyHeader = {"Ocp-Apim-Subscription-Key" : key} 
 
     const response = await axios.post(endpoint, data,
         {
-            headers:{"Ocp-Apim-Subscription-Key" : key}
+            headers:apiKeyHeader
         })
 
     let path = await response.headers["operation-location"];
@@ -58,11 +59,10 @@ export const summarizeArticle = async function(text, sentenceCount){
 
 // ChatGPT usage: No.
 var getSummary = async function(path){
+  const apiKeyHeader = {"Ocp-Apim-Subscription-Key" : key} 
   const response = await axios.get(path,
    {
-      headers: {
-      "Ocp-Apim-Subscription-Key" : key
-      }
+      headers: apiKeyHeader
   });
   return response.data;
 };

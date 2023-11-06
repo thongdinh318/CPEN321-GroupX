@@ -1,7 +1,7 @@
-import {OAuth2Client} from 'google-auth-library'
+import * as OAuth2Client from 'google-auth-library'
 import * as server from "./server.js"
 const CLIENT_ID = "474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com"//TODO: replace witht the real client id
-const ggClient = new OAuth2Client(CLIENT_ID);
+const ggClient = new OAuth2Client.OAuth2Client(CLIENT_ID);
 const client = server.client
 
 //Default user setting
@@ -26,7 +26,7 @@ async function checkAvailable(userId){
     var result = client.db("userdb").collection("profile").find({userId})
     var arr = await result.toArray()
     if (arr == undefined || arr.length == 0){
-        return {}
+        return {msg:"No user created"}
     }
     return arr[0]
 }
@@ -97,12 +97,12 @@ async function registerNewUser(userId, username, userEmail){
 // get profile
 //ChatGPT usage: No
 async function getProfile(userId){
-    try {
+    // try {
         var user = await checkAvailable(userId)
         return user
-    } catch (error) {
-        return error
-    }
+    // } catch (error) {
+    //     return error
+    // }
 }
 //Update profile info
 //ChatGPT usage: No

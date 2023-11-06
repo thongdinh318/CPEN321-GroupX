@@ -32,24 +32,24 @@ export class ForumModule{
 
     //ChatGPT usage: No
     getAllForums = async function(){
-        try{
+        // try{
             const result = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
             
             return (result);
-        } catch (err){
-            return(err)
-        }
+        // } catch (err){
+        //     return(err)
+        // }
     }
     //ChatGPT usage: No
     getForum = async function (forumId){
         // const response = await axios.get(url  + "/" + forumId);
-        try{
+        // try{
             const result = await client.db("ForumDB").collection("forums").find({id : forumId}).toArray();
     
             return (result);
-        } catch (err){
-            return(err)
-        }
+        // } catch (err){
+        //     return(err)
+        // }
         // return response.data;
         
     }
@@ -59,13 +59,13 @@ export class ForumModule{
         // const response = await axios.delete(url + "/" +forumId);
         // return response.data;
 
-        try{
+        // try{
             const result = await client.db("ForumDB").collection("forums").deleteOne({id : forumId});
             return result.acknowledged
     
-        }catch(err){
-            return(err);
-        }
+        // }catch(err){
+        //     return(err);
+        // }
         
     }
 
@@ -73,15 +73,14 @@ export class ForumModule{
     deleteForums = async function(){
         // const response = await axios.delete(url);
         // return response.data;
-
-        try{
+        // try{
             const result = await client.db('ForumDB').collection('forums').drop({});
             
             return result
     
-        }catch(err){
-            return (err)
-        }
+        // }catch(err){
+        //     return (err)
+        // }
         
     }
 

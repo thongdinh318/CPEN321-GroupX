@@ -61,11 +61,11 @@ async function scrapeURL(url){
         }
         return retrievedArticle
     }
-    else{
+    // else{
         var err = new Error()
         err.message = "Failed to retrieve"
         return err
-    }
+    // }
     // } catch (error) {
     //     return (error)
     // }
