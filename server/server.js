@@ -112,9 +112,7 @@ app.get("/profile/:userId/history", async (req,res)=>{
             }
             res.status(200).send(articleArray)
         }
-        else{
-            res.status(200).send([])
-        }
+        res.status(200).send([])
     }
 })
 
@@ -276,7 +274,7 @@ app.get("/forums", async (req, res) =>{
 // GET one specific forum, queried with forum id
 // ChatGPT usage: No.
 app.get("/forums/:forum_id", async (req, res) =>{
-	try{
+	// try{
 		const result =await forum.getForum(parseInt(req.params.forum_id),10)
 		// const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
 		if (isErr(result)){
@@ -286,19 +284,19 @@ app.get("/forums/:forum_id", async (req, res) =>{
 			res.status(200).send(result);
 		}
 
-	} catch (err){
+	// } catch (err){
 
-		console.log(err);
-		res.status(400).send("Forum was not found");
+	// 	console.log(err);
+	// 	res.status(400).send("Forum was not found");
 
-	}
+	// }
 });  
 
 
 // Post a comment to a forum
 // ChatGPT usage: No.
 app.post("/addComment/:forum_id",async (req, res)=>{
-	try{
+	// try{
 		let commentData = req.body.commentData;
 		let userId = req.body.userId
 		const user = await userMod.getProfile(userId)
@@ -321,9 +319,9 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 			}
 		}
 
-	}catch (err){
-		res.status(400).send(err);
-	}
+	// }catch (err){
+	// 	res.status(400).send(err);
+	// }
 } );
 
 // These are server functions for now, might be implemented as an endpoint for use after MVP
@@ -407,7 +405,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 // ChatGPT usage: No.
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
-    try {
+    // try {
         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
         // console.log(recommeded)
         var recommededArticles = []
@@ -418,16 +416,16 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         }
         res.status(200).send(recommededArticles)
         
-    } catch (error) {
-        console.log(error)
-        res.status(400).send("Error when recommending articles")
-    }
+    // } catch (error) {
+    //     console.log(error)
+    //     res.status(400).send("Error when recommending articles")
+    // }
 })
 
 // ChatGPT usage: No.
 app.get("/recommend/publisher/:userId", async (req,res)=>{
     var userId = req.params.userId;
-    try {
+    // try {
         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
         var recommededPublishers = []
         for (var i = 0; i < recommeded.length; ++i){
@@ -437,11 +435,11 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
         }
         res.status(200).send(recommededPublishers)
         
-    } catch (error) {
-	    console.log(error)
-        res.status(400).send("Error when recommending publishers")
+    // } catch (error) {
+	//     console.log(error)
+    //     res.status(400).send("Error when recommending publishers")
         
-    }
+    // }
 })
 // <--- Recommendation module
 
