@@ -42,9 +42,9 @@ async function searchNews(query){
 
 //ChatGPT usage: Yes
 async function scrapeURL(url){
-    console.log("Scraping")
+    const response = null
     try {
-        const response = await axios.get(url)
+        response = await axios.get(url)
 
         if (response.status === 200){
             const html = response.data

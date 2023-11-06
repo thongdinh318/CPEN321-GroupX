@@ -23,7 +23,7 @@ var options = {
 };
 
 const forum = new ForumModule()
-const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
+
 var retriever = null //place holder for the retriever before init server
 
 // Error checking function
@@ -429,7 +429,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 // Main Function
 // ChatGPT usage: No.
 async function run(){
-    console.log("Server starting")
+    const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
         await client.connect()
         console.log("Successfully connect to db")

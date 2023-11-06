@@ -93,19 +93,19 @@ async function registerNewUser(userId, username, userEmail){
 // get profile
 //ChatGPT usage: No
 async function getProfile(userId){
-    console.log("Get profile of user " + userId)
-    try {
+    // console.log("Get profile of user " + userId)
+    // try {
         var user = await checkAvailable(userId)
         return user
-    } catch (error) {
-        return error
-    }
+    // } catch (error) {
+    //     return error
+    // }
 }
 //Update profile info
 //ChatGPT usage: No
 async function updateProfile(userId, newProfile){
-    console.log("Updating profile for user " + userId)
-    try {
+    // console.log("Updating profile for user " + userId)
+    // try {
         var user = await checkAvailable(userId)
         if (user.userId == undefined){
             return false
@@ -115,17 +115,17 @@ async function updateProfile(userId, newProfile){
             const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
             return (result.acknowledged)
         }
-    } catch (error) {
-        return (error)
-    }
+    // } catch (error) {
+    //     return (error)
+    // }
 }
 
 
 //Update reading history
 // ChatGPT usage: No.
 async function updateHistory(userId, newViewed){
-    console.log("Updating history for user " + userId)
-    try {
+    // console.log("Updating history for user " + userId)
+    // try {
         var user = await checkAvailable(userId)
         console.log(user)
         if (user.userId  == undefined){
@@ -150,10 +150,10 @@ async function updateHistory(userId, newViewed){
             const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
             return (result.acknowledged)
         }
-    } catch (error) {
-        console.log(error)
-        return (error)
-    }
+    // } catch (error) {
+    //     console.log(error)
+    //     return (error)
+    // }
 }
 
 // <--Interfaces with frontend 
