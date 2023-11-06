@@ -1,7 +1,5 @@
-import { MongoClient } from "mongodb";
-
-const uri = 'mongodb://127.0.0.1:27017';
-const client = new MongoClient(uri);
+import * as server from "../server.js"
+const client = server.client
 
 //const https = require("https");
 
@@ -36,6 +34,7 @@ export class ForumModule{
     getAllForums = async function(){
         try{
             const result = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
+            
             return (result);
         } catch (err){
             return(err)
