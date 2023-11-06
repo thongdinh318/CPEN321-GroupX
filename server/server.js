@@ -417,7 +417,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
         res.status(200).send(recommededPublishers)
         
     } catch (error) {
-	    console.log(error)
+        console.log(error)
         res.status(400).send("Error when recommending publishers")
         
     }
