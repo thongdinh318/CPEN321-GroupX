@@ -121,61 +121,62 @@ public class MainActivity extends AppCompatActivity {
                 query += "&before="+toDate.replace(" ", "-");
                 query+= "&after="+fromDate.replace(" ", "-");
                 String url = getString(R.string.server_dns) + "article/filter/search?"+query;
-//                Log.d(TAG,url);
+                getRequestAndSwitchViews(url, ArticlesActivity.class);
 
-                HttpClient.getRequest(url, new HttpClient.ApiCallback() {
-                    // ChatGPT usage: No.
-                    @Override
-                    public void onResponse(Response response) {
-                        String json = null;
-                        try {
-                            //Check if error occured on the server
-                            if (response.code() == 400){
-                                String msg = response.body().string();
-                                runOnUiThread(new Runnable() {
-                                    // ChatGPT usage: No.
-                                    public void run() {
-                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-                            else {
-                                json = response.body().string();
-//                            Log.d(TAG, json);
-                                JSONArray res = new JSONArray(json);
-                                //Check for any matched articles, length == 0 means no match
-                                if (res.length() == 0) {
-                                    runOnUiThread(new Runnable() {
-                                        // ChatGPT usage: No.
-                                        public void run() {
-                                            Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                } else {
-                                    articleList = new ArrayList<Article>(); //clear the articleList to refresh ArticleActivity when switching
-                                    for (int i = 0; i < res.length(); i++) {
-                                        JSONObject articleJson = res.getJSONObject(i);
-                                        Article article = new Article(articleJson.getString("title"),
-                                                articleJson.getString("url"),
-                                                articleJson.getString("content"),
-                                                articleJson.getInt("articleId"));
-                                        articleList.add(article);
-                                    }
-                                    Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);
-                                    startActivity(articleIntent);
-                                }
-                            }
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
-                        }
 
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+//                HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+//                    // ChatGPT usage: No.
+//                    @Override
+//                    public void onResponse(Response response) {
+//                        String json = null;
+//                        try {
+//                            //Check if error occurred on the server
+//                            if (response.code() == 400){
+//                                String msg = response.body().string();
+//                                runOnUiThread(new Runnable() {
+//                                    // ChatGPT usage: No.
+//                                    public void run() {
+//                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+//                                    }
+//                                });
+//                            }
+//                            else {
+//                                json = response.body().string();
+////                            Log.d(TAG, json);
+//                                JSONArray res = new JSONArray(json);
+//                                //Check for any matched articles, length == 0 means no match
+//                                if (res.length() == 0) {
+//                                    runOnUiThread(new Runnable() {
+//                                        // ChatGPT usage: No.
+//                                        public void run() {
+//                                            Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
+//                                        }
+//                                    });
+//                                } else {
+//                                    articleList = new ArrayList<Article>(); //clear the articleList to refresh ArticleActivity when switching
+//                                    for (int i = 0; i < res.length(); i++) {
+//                                        JSONObject articleJson = res.getJSONObject(i);
+//                                        Article article = new Article(articleJson.getString("title"),
+//                                                articleJson.getString("url"),
+//                                                articleJson.getString("content"),
+//                                                articleJson.getInt("articleId"));
+//                                        articleList.add(article);
+//                                    }
+//                                    Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);
+//                                    startActivity(articleIntent);
+//                                }
+//                            }
+//                        } catch (IOException | JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                });
             }
         });
         forumButton = findViewById(R.id.forum_button);
@@ -187,67 +188,67 @@ public class MainActivity extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 String url = getString(R.string.server_dns) + "article/kwsearch/search?keyWord="+query;
                 Log.d(TAG,url);
-                HttpClient.getRequest(url, new HttpClient.ApiCallback() {
-                    // ChatGPT usage: No.
-                    @Override
-                    public void onResponse(Response response) {
-                        try {
-                            //Status code check
-                            if (response.code() == 400){
-                                String msg = response.body().string();
-                                runOnUiThread(new Runnable() {
-                                    // ChatGPT usage: No.
-                                    public void run() {
-                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
-                                    }
-                                });
-
-                            }
-                            else{
-                                String json = response.body().string();
-                                Log.d(TAG, json);
-                                JSONArray res = new JSONArray(json);
-                                //Check if matched articles found
-                                if (res.length() == 0){
-                                    runOnUiThread(new Runnable() {
-                                        // ChatGPT usage: No.
-                                        public void run() {
-                                            Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-
-                                }
-                                else{
-                                    articleList = new ArrayList<Article>();
-                                    for (int i = 0; i < res.length(); i++){
-                                        JSONObject articleJson = res.getJSONObject(i);
-                                        Article article = new Article(articleJson.getString("title"),
-                                                articleJson.getString("url"),
-                                                articleJson.getString("content"),
-                                                articleJson.getInt("articleId"));
-                                        articleList.add(article);
-                                    }
-                                    Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
-                                    startActivity(articleIntent);
-                                }
-                            }
-                        } catch (JSONException | IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+                getRequestAndSwitchViews(url, ArticlesActivity.class);
+//                HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+//                    // ChatGPT usage: No.
+//                    @Override
+//                    public void onResponse(Response response) {
+//                        try {
+//                            //Status code check
+//                            if (response.code() == 400){
+//                                String msg = response.body().string();
+//                                runOnUiThread(new Runnable() {
+//                                    // ChatGPT usage: No.
+//                                    public void run() {
+//                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+//                                    }
+//                                });
+//
+//                            }
+//                            else{
+//                                String json = response.body().string();
+//                                Log.d(TAG, json);
+//                                JSONArray res = new JSONArray(json);
+//                                //Check if matched articles found
+//                                if (res.length() == 0){
+//                                    runOnUiThread(new Runnable() {
+//                                        // ChatGPT usage: No.
+//                                        public void run() {
+//                                            Toast.makeText(MainActivity.this, "No Articles Found", Toast.LENGTH_LONG).show();
+//                                        }
+//                                    });
+//
+//                                }
+//                                else{
+//                                    articleList = new ArrayList<Article>();
+//                                    for (int i = 0; i < res.length(); i++){
+//                                        JSONObject articleJson = res.getJSONObject(i);
+//                                        Article article = new Article(articleJson.getString("title"),
+//                                                articleJson.getString("url"),
+//                                                articleJson.getString("content"),
+//                                                articleJson.getInt("articleId"));
+//                                        articleList.add(article);
+//                                    }
+//                                    Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
+//                                    startActivity(articleIntent);
+//                                }
+//                            }
+//                        } catch (JSONException | IOException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                });
 
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 return false;
             }
         });
@@ -257,65 +258,63 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open articles view");
-                //TODO:Get User Id here
                 String userId = LoginActivity.getUserId();
                 String url = getString(R.string.server_dns) + "recommend/article/"+userId;
-                HttpClient.getRequest(url, new HttpClient.ApiCallback() {
-                    // ChatGPT usage: No.
-                    @Override
-                    public void onResponse(Response response) {
-                        String json = null;
-                        try {
-                            Log.d(TAG, String.valueOf(response.code()));
-                            // Status code check
-                            if (response.code() == 400){
-                                String msg = response.body().string();
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
-                                    }
-                                });
-
-                            }
-                            else {
-                                json = response.body().string();
-                                Log.d(TAG,json);
-                                JSONArray res = new JSONArray(json);
-                                //Matched articles check
-                                if (res.length() == 0){
-                                    runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            Toast.makeText(MainActivity.this, "No Recommendation", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-                                else {
-                                    articleList = new ArrayList<Article>();
-                                    for (int i = 0; i < res.length(); i++) {
-                                        JSONObject articleJson = res.getJSONObject(i);
-                                        Article article = new Article(articleJson.getString("title"),
-                                                articleJson.getString("url"),
-                                                articleJson.getString("content"),
-                                                articleJson.getInt("articleId"));
-                                        articleList.add(article);
-                                    }
-                                Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
-                                startActivity(articleIntent);
-                                }
-                            }
-
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-
-                    }
-                });
+                getRequestAndSwitchViews(url, ArticlesActivity.class);
+//                HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+//                    // ChatGPT usage: No.
+//                    @Override
+//                    public void onResponse(Response response) {
+//                        String json = null;
+//                        try {
+//                            Log.d(TAG, String.valueOf(response.code()));
+//                            // Status code check
+//                            if (response.code() == 400){
+//                                String msg = response.body().string();
+//                                runOnUiThread(new Runnable() {
+//                                    public void run() {
+//                                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+//                                    }
+//                                });
+//
+//                            }
+//                            else {
+//                                json = response.body().string();
+//                                Log.d(TAG,json);
+//                                JSONArray res = new JSONArray(json);
+//                                //Matched articles check
+//                                if (res.length() == 0){
+//                                    runOnUiThread(new Runnable() {
+//                                        public void run() {
+//                                            Toast.makeText(MainActivity.this, "No Recommendation", Toast.LENGTH_LONG).show();
+//                                        }
+//                                    });
+//                                }
+//                                else {
+//                                    articleList = new ArrayList<Article>();
+//                                    for (int i = 0; i < res.length(); i++) {
+//                                        JSONObject articleJson = res.getJSONObject(i);
+//                                        Article article = new Article(articleJson.getString("title"),
+//                                                articleJson.getString("url"),
+//                                                articleJson.getString("content"),
+//                                                articleJson.getInt("articleId"));
+//                                        articleList.add(article);
+//                                    }
+//                                Intent articleIntent = new Intent(MainActivity.this, ArticlesActivity.class);;
+//                                startActivity(articleIntent);
+//                                }
+//                            }
+//
+//                        } catch (IOException | JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                });
 
             }
         });
@@ -330,6 +329,66 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void getRequestAndSwitchViews(String url,  Class<?> targetActivity){
+        HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+            // ChatGPT usage: No.
+            @Override
+            public void onResponse(Response response) {
+                String json = null;
+                try {
+                    Log.d(TAG, String.valueOf(response.code()));
+                    // Status code check
+                    if (response.code() == 400){
+                        String msg = response.body().string();
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                    }
+                    else {
+                        json = response.body().string();
+                        Log.d(TAG,json);
+                        JSONArray res = new JSONArray(json);
+                        //Matched articles check
+                        if (res.length() == 0){
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                        else {
+                            articleList = new ArrayList<Article>();
+                            for (int i = 0; i < res.length(); i++) {
+                                JSONObject articleJson = res.getJSONObject(i);
+                                Article article = new Article(articleJson.getString("title"),
+                                        articleJson.getString("url"),
+                                        articleJson.getString("content"),
+                                        articleJson.getInt("articleId"));
+                                articleList.add(article);
+                            }
+                            Intent articleIntent = new Intent(MainActivity.this, targetActivity);;
+                            startActivity(articleIntent);
+                        }
+                    }
+
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
     //Helper functions to create date pickers --->
     // ChatGPT usage: No.
     private String getTodayDate() {
