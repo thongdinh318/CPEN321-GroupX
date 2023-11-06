@@ -350,14 +350,14 @@ wss.on('connection', async (ws) => {
       let commentData = comment.content;
       let userId = comment.userId
       const user = await userMod.getProfile(userId)
+      // forum_id must be a string
       let forum_id = comment.forum_id
       
-      const res = await forum.addCommentToForum(forum_id, commentData, user.username).then()
+      const res = await forum.addCommentToForum(forum_id, commentData, user.username)
   
-      // if res is err
-      if(!res) {
-  
+      if(isErr(res)) {
           ws.send("Could not post comment")
+	      
       }else{
           try{
               const newForum = await forum.getForum(forum_id);
