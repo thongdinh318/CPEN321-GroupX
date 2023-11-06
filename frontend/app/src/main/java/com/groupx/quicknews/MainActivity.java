@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private DatePickerDialog datePickerDialogTo;
     private static List<Article> articleList = new ArrayList<>();
     final static String TAG = "MainActivity";
+    final static int DATEPICKER_TO = 1;
+    final static int DATEPICKER_FROM = 2;
     // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
         Button recommendedArticlesButton;
         Button forumButton;
 
-        initDatePickerFrom();
-        initDatePickerTo();
+        initDatePicker(DATEPICKER_FROM);
+        initDatePicker(DATEPICKER_TO);
+
         fromButton = findViewById(R.id.date_picker_from);
         toButton = findViewById(R.id.date_picker_to);
 
@@ -337,13 +340,18 @@ public class MainActivity extends AppCompatActivity {
         return makeDateString(day, month, year);
     }
     // ChatGPT usage: No.
-    private void initDatePickerTo() {
+    private void initDatePicker( int curDatePicker ) {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                 int realMonth = month + 1;
                 String date = makeDateString(day, realMonth, year);
-                toButton.setText(date);
+                if (curDatePicker == DATEPICKER_FROM) {
+                    fromButton.setText(date);
+                }
+                else if (curDatePicker == DATEPICKER_TO) {
+                    toButton.setText(date);
+                }
             }
         };
 
@@ -352,30 +360,15 @@ public class MainActivity extends AppCompatActivity {
         int calMonth = cal.get(Calendar.MONTH);
         int calDay = cal.get(Calendar.DAY_OF_MONTH);
 
-        datePickerDialogTo = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
-                calYear, calMonth, calDay);
-//        datePickerDialogTo.getDatePicker().setMaxDate(System.currentTimeMillis());
-
-    }
-    // ChatGPT usage: No.
-    private void initDatePickerFrom() {
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                int realMonth = month + 1;
-                String date = makeDateString(day, realMonth, year);
-                fromButton.setText(date);
-            }
-        };
-
-        Calendar cal = Calendar.getInstance();
-        int calYear = cal.get(Calendar.YEAR);
-        int calMonth = cal.get(Calendar.MONTH);
-        int calDay = cal.get(Calendar.DAY_OF_MONTH);
-
-        datePickerDialogFrom = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
-                                                calYear, calMonth, calDay);
-        datePickerDialogFrom.getDatePicker().setMaxDate(System.currentTimeMillis());
+        if (curDatePicker == DATEPICKER_FROM) {
+            datePickerDialogFrom = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+                    calYear, calMonth, calDay);
+            datePickerDialogFrom.getDatePicker().setMaxDate(System.currentTimeMillis());
+        }
+        else if (curDatePicker == DATEPICKER_TO) {
+            datePickerDialogTo = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+                    calYear, calMonth, calDay);
+        }
     }
 
     // ChatGPT usage: No.
