@@ -34,8 +34,8 @@ export async function searchById(articleId){
 //Search the database for a list of articles that match the query provided by the user
 // ChatGPT usage: No.
 export async function searchByFilter(query){
-    console.log(query)
-    try {
+    // console.log(query)
+    // try {
         var foundArticles  = client.db("articledb").collection("articles").find(query);
         foundArticles = await foundArticles.toArray()
         if (foundArticles.length > 10){
@@ -48,9 +48,9 @@ export async function searchByFilter(query){
         else{
             return foundArticles
         }
-    } catch (error) {
-        return error
-    }
+    // } catch (error) {
+    //     return error
+    // }
 }
 
 //Rerieve a list of all article ids in the database
