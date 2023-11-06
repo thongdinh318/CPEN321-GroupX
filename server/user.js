@@ -26,7 +26,9 @@ async function checkAvailable(userId){
     var result = client.db("userdb").collection("profile").find({userId})
     var arr = await result.toArray()
     if (arr == undefined || arr.length == 0){
-        return {msg:"No user created"}
+        var errorUser = JSON.parse(JSON.stringify(defUser))
+        errorUser.userId = "0"
+        return errorUser
     }
     return arr[0]
 }
@@ -107,9 +109,9 @@ async function getProfile(userId){
 //Update profile info
 //ChatGPT usage: No
 async function updateProfile(userId, newProfile){
-    try {
+    // try {
         var user = await checkAvailable(userId)
-        if (user.userId == undefined){
+        if (user.userId === "0"){
             return false
         }
         else{
@@ -117,19 +119,19 @@ async function updateProfile(userId, newProfile){
             const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
             return (result.acknowledged)
         }
-    } catch (error) {
-        return (error)
-    }
+    // } catch (error) {
+    //     return (error)
+    // }
 }
 
 
 //Update reading history
 // ChatGPT usage: No.
 async function updateHistory(userId, newViewed){
-    try {
+    // try {
         var user = await checkAvailable(userId)
         console.log(user)
-        if (user.userId == undefined){
+        if (user.userId === "0"){
             return false
         }
         else{
@@ -151,10 +153,10 @@ async function updateHistory(userId, newViewed){
             const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
             return (result.acknowledged)
         }
-    } catch (error) {
-        console.log(error)
-        return (error)
-    }
+    // } catch (error) {
+    //     console.log(error)
+    //     return (error)
+    // }
 }
 
 // <--Interfaces with frontend 
