@@ -42,33 +42,34 @@ async function searchNews(query){
 
 //ChatGPT usage: Yes
 async function scrapeURL(url){
-    // try {
-    const response = await axios.get(url)
+    console.log("Scraping")
+    try {
+        const response = await axios.get(url)
 
-    if (response.status === 200){
-        const html = response.data
-        const $ = cheerio.load(html)
+        if (response.status === 200){
+            const html = response.data
+            const $ = cheerio.load(html)
 
-        var title = $('title').text();
-        var para = [];
+            var title = $('title').text();
+            var para = [];
 
-        $('p').each ((index, element)=>{
-            para.push($(element).text());
-        })
-        var retrievedArticle = {
-            title,
-            para
+            $('p').each ((index, element)=>{
+                para.push($(element).text());
+            })
+            var retrievedArticle = {
+                title,
+                para
+            }
+            return retrievedArticle
         }
-        return retrievedArticle
-    }
     // else{
         var err = new Error()
         err.message = "Failed to retrieve"
         return err
     // }
-    // } catch (error) {
-    //     return (error)
-    // }
+    } catch (error) {
+        return (error)
+    }
 }
 
 // ChatGPT usage: No”

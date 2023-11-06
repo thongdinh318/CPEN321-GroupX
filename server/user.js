@@ -26,9 +26,7 @@ async function checkAvailable(userId){
     var result = client.db("userdb").collection("profile").find({userId})
     var arr = await result.toArray()
     if (arr == undefined || arr.length == 0){
-        var errorUser = JSON.parse(JSON.stringify(defUser))
-        errorUser.userId = "0"
-        return errorUser
+        return({})
     }
     return arr[0]
 }
@@ -51,12 +49,8 @@ function createNewUser(userId, userName, userEmail){
 //Init DB function --->
 //ChatGPT usage: No
 async function initUDb(){
-    // try {
     await client.db("userdb").collection("profile").insertOne(defUser)
     return("success\n")
-    // } catch (error) {
-    //     return (error)
-    // }
 }
 //<--- Init DB function
 
@@ -99,19 +93,21 @@ async function registerNewUser(userId, username, userEmail){
 // get profile
 //ChatGPT usage: No
 async function getProfile(userId){
-    // try {
+    console.log("Get profile of user " + userId)
+    try {
         var user = await checkAvailable(userId)
         return user
-    // } catch (error) {
-    //     return error
-    // }
+    } catch (error) {
+        return error
+    }
 }
 //Update profile info
 //ChatGPT usage: No
 async function updateProfile(userId, newProfile){
-    // try {
+    console.log("Updating profile for user " + userId)
+    try {
         var user = await checkAvailable(userId)
-        if (user.userId === "0"){
+        if (user.userId == undefined){
             return false
         }
         else{
@@ -119,19 +115,20 @@ async function updateProfile(userId, newProfile){
             const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
             return (result.acknowledged)
         }
-    // } catch (error) {
-    //     return (error)
-    // }
+    } catch (error) {
+        return (error)
+    }
 }
 
 
 //Update reading history
 // ChatGPT usage: No.
 async function updateHistory(userId, newViewed){
-    // try {
+    console.log("Updating history for user " + userId)
+    try {
         var user = await checkAvailable(userId)
         console.log(user)
-        if (user.userId === "0"){
+        if (user.userId  == undefined){
             return false
         }
         else{
@@ -153,10 +150,10 @@ async function updateHistory(userId, newViewed){
             const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
             return (result.acknowledged)
         }
-    // } catch (error) {
-    //     console.log(error)
-    //     return (error)
-    // }
+    } catch (error) {
+        console.log(error)
+        return (error)
+    }
 }
 
 // <--Interfaces with frontend 
