@@ -38,16 +38,15 @@ export async function searchByFilter(query){
     // try {
         var foundArticles  = client.db("articledb").collection("articles").find(query);
         foundArticles = await foundArticles.toArray()
-        if (foundArticles.length > 10){
-            foundArticles = foundArticles.slice(0,9)
-        }
-	
+        
         if (foundArticles === undefined || foundArticles.length === 0){
             return []
         }
-        else{
-            return foundArticles
+
+        if (foundArticles.length > 10){
+            foundArticles = foundArticles.slice(0,9)
         }
+        return foundArticles
     // } catch (error) {
     //     return error
     // }

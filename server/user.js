@@ -81,12 +81,11 @@ async function registerNewUser(userId, username, userEmail){
     if (userProfile.userId){
         console.log("Old User")
         return userProfile
-    } else{
-        console.log("New User")
-        var newUser = createNewUser(userId, username,userEmail)
-        await client.db("userdb").collection("profile").insertOne(newUser);
-        return (newUser)
     }
+    console.log("New User")
+    var newUser = createNewUser(userId, username,userEmail)
+    await client.db("userdb").collection("profile").insertOne(newUser);
+    return (newUser)
 
 }
 
@@ -130,25 +129,23 @@ async function updateHistory(userId, newViewed){
         if (user.userId  == undefined){
             return false
         }
-        else{
-            var dup = false
-            var updateHistory = user.history
-            for (var pastViewed of updateHistory){
-                if (pastViewed.articleId === newViewed.articleId){
-                    pastViewed.views = pastViewed + 1
-                    dup = true
-                    break;
-                }
+        var dup = false
+        var updateHistory = user.history
+        for (var pastViewed of updateHistory){
+            if (pastViewed.articleId === newViewed.articleId){
+                pastViewed.views = pastViewed + 1
+                dup = true
+                break;
             }
-
-            if (!dup){
-                newViewed.views = 1 
-                updateHistory.push(newViewed)
-            }
-
-            const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
-            return (result.acknowledged)
         }
+
+        if (!dup){
+            newViewed.views = 1 
+            updateHistory.push(newViewed)
+        }
+
+        const result = await client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
+        return (result.acknowledged)
     // } catch (error) {
     //     console.log(error)
     //     return (error)
