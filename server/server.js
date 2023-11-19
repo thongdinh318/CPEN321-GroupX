@@ -348,16 +348,17 @@ wss.on('connection', async (ws) => {
       // console.log(comment);
   
       let commentData = comment.content;
-      let userId = comment.userId
-      const user = await userMod.getProfile(userId)
-      // forum_id must be a string
-      let forum_id = comment.forum_id
+      let userId = comment.userId;
+      const user = await userMod.getProfile(userId);
+      let forum_id = comment.forum_id;
+      let parent_id = comment.comment_id;
       
-      const res = await forum.addCommentToForum(forum_id, commentData, user.username)
+      const res = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
   
-      if(isErr(res)) {
+      // if res is err
+      if(!res) {
+  
           ws.send("Could not post comment")
-	      
       }else{
           try{
               const newForum = await forum.getForum(forum_id);
@@ -377,6 +378,7 @@ wss.on('connection', async (ws) => {
       }
       
     });
+    
   });
   
 
