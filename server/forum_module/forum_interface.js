@@ -1,9 +1,9 @@
 import express from "express";
 import { MongoClient } from "mongodb";
-
-let app = express();
 const uri = 'mongodb://127.0.0.1:27017';
 const client = new MongoClient(uri);
+
+// import client from "./server/mongoClient.js"
 
 //const https = require("https");
 
@@ -51,8 +51,10 @@ export class ForumModule{
     getForum = async function (forumId){
         // const response = await axios.get(url  + "/" + forumId);
         try{
-            const result = await client.db("ForumDB").collection("forums").find({id : forumId}).toArray();
-    
+            
+            const result = await client.db("ForumDB").collection("forums").find({"id": forumId}).toArray();
+            // console.log(result);
+
             return (result);
         } catch (err){
             return(err)
@@ -89,14 +91,16 @@ export class ForumModule{
         }catch(err){
             return (err)
         }
-        
     }
 
     //ChatGPT usage: No
-    addCommentToForum = async function(forumId, commentData, username){
+    addCommentToForum = async function(forumId, commentData, username, parent_id){
         try{
             var datePosted = dateAdded();
+            let date = new Date();
             let comment = {
+                comment_id : forumId + "_" + date,
+                parent_id : parent_id, // NULL if it has no parent
                 username : username,
                 content : commentData,
                 datePosted: datePosted
