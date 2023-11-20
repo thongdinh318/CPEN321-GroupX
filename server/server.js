@@ -10,16 +10,16 @@ import ForumModule from "./forum_module/forum_interface.js";
 const uri = "mongodb://127.0.0.1:27017"
 export const client = new mongo.MongoClient(uri)
 
-var app = express()
+export var app = express()
 app.use(express.json())
 
 var forum_id = 1;
 
 // Uncomment for https
-var options = {
-    key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-    cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-};
+// var options = {
+//     key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+//     cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+// };
 
 const forum = new ForumModule()
 
@@ -44,6 +44,7 @@ app.post("/signin", async (req,res)=>{
         var loggedInUserPromise = userMod.registerNewUser(payload['sub'], payload['name'], payload['email'])
         loggedInUserPromise.then((loggedInUser)=>{
             console.log(loggedInUser)
+            delete loggedInUser._id
             res.status(200).send(loggedInUser)
         })
     }).catch((rejectMsg)=>{
@@ -65,6 +66,7 @@ app.get("/profile/:userId", async (req,res)=>{
             res.status(400).send("User Profile not Found")
         }
         else{
+            delete user._id
             res.status(200).send(user)
         }
     }
@@ -84,7 +86,7 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
             res.status(200).send(userProfile.subscriptionList)
         }
         else{
-            res.status(200).send([])
+            res.status(400).send([])
         }
     }
 })
@@ -101,7 +103,7 @@ app.get("/profile/:userId/history", async (req,res)=>{
     }
     else{
         if (userProfile.userId == undefined){
-            res.status(200).send([])
+            res.status(400).send([])
         }
         else{
             var articleArray = []
@@ -431,15 +433,15 @@ async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
         await client.connect()
-        console.log("Successfully connect to db")
+        // console.log("Successfully connect to db")
         /* Use this for localhost test*/
-        // var server = app.listen(8081, (req,res)=>{
-        //     var host = server.address().address
-        //     var port = server.address().port
-        //     console.log("Server is running at https://%s:%s",host,port)
-        // })
+        var server = app.listen(8081, (req,res)=>{
+            var host = server.address().address
+            var port = server.address().port
+            // console.log("Server is running at https://%s:%s",host,port)
+        })
         // create https server
-        https.createServer(options, app).listen(8081)
+        // https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
@@ -451,17 +453,17 @@ async function run(){
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
-        console.log("Retrieving some articles")
-        await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
-        console.log("Server is ready to use")
-        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
+        // console.log("Retrieving some articles")
+        // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        // console.log("Server is ready to use")
+        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
 
     } catch (error) {
         console.log(error)
 
-        if (retrieverInterval != null){
-            clearInterval(retrieverInterval)
-        }
+        // if (retrieverInterval != null){
+        //     clearInterval(retrieverInterval)
+        // }
         await client.close()
     }
 }

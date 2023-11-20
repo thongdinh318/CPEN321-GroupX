@@ -1,5 +1,5 @@
 import * as server from "../server.js"
-const client = server.client
+// const client = server.client
 
 //const https = require("https");
 
@@ -11,7 +11,7 @@ function dateAdded(){
 	return time;
 }
 
-export class ForumModule{
+export default class ForumModule{
     //ChatGPT usage: No
     construtor(){
         this.dateCreated = new Date();
@@ -26,7 +26,7 @@ export class ForumModule{
         };
         forum.dateCreated = dateAdded();
         forum.comments = [];
-        await client.db('ForumDB').collection('forums').insertOne(forum);
+        await server.client.db('ForumDB').collection('forums').insertOne(forum);
         return forum;
     }
 
@@ -34,7 +34,7 @@ export class ForumModule{
     getAllForums = async function(){
         // console.log("Get all forums")
         // try{
-            const result = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
+            const result = await server.client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
             
             return (result);
         // } catch (err){
@@ -46,7 +46,7 @@ export class ForumModule{
         // const response = await axios.get(url  + "/" + forumId);
         // console.log("Get forum" + forumId)
         // try{
-            const result = await client.db("ForumDB").collection("forums").find({id : forumId}).toArray();
+            const result = await server.client.db("ForumDB").collection("forums").find({id : forumId}).toArray();
     
             return (result);
         // } catch (err){
@@ -62,7 +62,7 @@ export class ForumModule{
         // return response.data;
         // console.log("Delete forum " + forumId)
         // try{
-            const result = await client.db("ForumDB").collection("forums").deleteOne({id : forumId});
+            const result = await server.client.db("ForumDB").collection("forums").deleteOne({id : forumId});
             return result.acknowledged
     
         // }catch(err){
@@ -77,7 +77,7 @@ export class ForumModule{
         // return response.data;
         // console.log("Delete all forums")
         // try{
-            const result = await client.db('ForumDB').collection('forums').drop({});
+            const result = await server.client.db('ForumDB').collection('forums').drop({});
             
             return result
     
@@ -97,7 +97,7 @@ export class ForumModule{
         }
         
         try{
-            const response = await client.db('ForumDB').collection('forums')
+            const response = await server.client.db('ForumDB').collection('forums')
                             .updateOne({ id : forumId}, { $push:{ comments : comment }});
             return response.acknowledged;
         }catch(err){
