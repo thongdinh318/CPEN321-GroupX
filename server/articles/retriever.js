@@ -10,7 +10,7 @@ const key = process.env.BingKey
 const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
 var id = 1 //keep track of article ids in the db
-const client = server.client
+// const client = server.client
 //ChatGPT usage: No
 async function searchNews(query){
     var url = bing_endpoints+"/search"
@@ -119,7 +119,7 @@ async function addToDb(articleList){
         article.articleId = id
         id += 1
 	console.log(article)
-        await client.db("articledb").collection("articles").insertOne(article)
+        await server.client.db("articledb").collection("articles").insertOne(article)
     }
 }
 // bingNewsRetriever("")

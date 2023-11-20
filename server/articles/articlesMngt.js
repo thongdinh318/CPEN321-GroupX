@@ -1,5 +1,5 @@
 import * as server from "../server.js"
-const client = server.client
+// const client = server.client
 
 const defArticle = {
     "articleId": 0,
@@ -14,7 +14,7 @@ const defArticle = {
 //Intit DB Function-->
 // ChatGPT usage: No.
 export async function initADb(){
-    await client.db("articledb").collection("articles").insertOne(defArticle)
+    await server.client.db("articledb").collection("articles").insertOne(defArticle)
     return("success\n")
 }
 //<--- Intit DB Function
@@ -22,9 +22,9 @@ export async function initADb(){
 //Search an article based on its id 
 // ChatGPT usage: No.
 export async function searchById(articleId){
-    var foundArticle  =  client.db("articledb").collection("articles").find({articleId});
+    var foundArticle  =  server.client.db("articledb").collection("articles").find({articleId});
     foundArticle = await foundArticle.toArray()
-    console.log(foundArticle)
+    // console.log(foundArticle)
     if (foundArticle == undefined || foundArticle.length === 0){
         return ({})
     }
@@ -36,7 +36,7 @@ export async function searchById(articleId){
 export async function searchByFilter(query){
     // console.log(query)
     // try {
-        var foundArticles  = client.db("articledb").collection("articles").find(query);
+        var foundArticles  = server.client.db("articledb").collection("articles").find(query);
         foundArticles = await foundArticles.toArray()
         
         if (foundArticles === undefined || foundArticles.length === 0){
@@ -56,7 +56,7 @@ export async function searchByFilter(query){
 //Used by the recommendation module
 // ChatGPT usage: No.
 export async function getArticleIds(){
-    var articleCollection = await client.db("articledb").collection("articles").find({}).toArray()
+    var articleCollection = await server.client.db("articledb").collection("articles").find({}).toArray()
     var articleIdList = [];
 
     articleCollection.forEach((article)=>{
