@@ -70,7 +70,5 @@ public class ArticlesActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO: get articles from server oncreate
     //TODO: need someway to refresh articles. possibly on pulldown
-    //TODO: get recommended articles and create new adapter when selected
 }

@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.groupx.quicknews.databinding.ActivityForumsListBinding;
-import com.groupx.quicknews.databinding.ActivityMainBinding;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.forumlist.Forum;
 import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
@@ -46,6 +45,14 @@ public class ForumsListActivity extends AppCompatActivity {
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
+        initNavigationBar();
+
+        viewForum = findViewById(R.id.view_forum);
+        getForums();
+    }
+
+    //ChatGPT usage: No
+    private void initNavigationBar() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
 
         bottomNavigationView.setSelectedItemId(R.id.action_forums);
@@ -64,9 +71,6 @@ public class ForumsListActivity extends AppCompatActivity {
             }
             return false;
         });
-
-        viewForum = findViewById(R.id.view_forum);
-        getForums();
     }
 
     // ChatGPT usage: No.
@@ -76,22 +80,7 @@ public class ForumsListActivity extends AppCompatActivity {
             HttpClient.getRequest(url, new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) throws IOException {
-                    int statusCode = response.code();
-                    if (statusCode == 200){
-                        String responseBody = response.body().string();
-                        Log.d(TAG, responseBody);
-                        //update forums list
-                        ObjectMapper mapper = new ObjectMapper();
-                        forums = Arrays.asList(mapper.readValue(responseBody, Forum[].class));
-                        runOnUiThread(new Runnable() {
-                            // ChatGPT usage: No.
-                            @Override
-                            public void run() {
-                                viewForum.setLayoutManager(new LinearLayoutManager(ForumsListActivity.this));
-                                viewForum.setAdapter(new ForumsViewAdapter(getApplicationContext(), forums));
-                            }
-                        });
-                    }
+                    handleForumResponse(response);
                 }
                 // ChatGPT usage: No.
                 @Override
@@ -103,5 +92,25 @@ public class ForumsListActivity extends AppCompatActivity {
         catch(Exception e) {
             Log.e(TAG, "exception", e);
         }
+    }
+
+    //ChatGPT usage: No
+    private void handleForumResponse(Response response) throws IOException {
+        int statusCode = response.code();
+        if (statusCode == 200) {
+            String responseBody = response.body().string();
+            Log.d(TAG, responseBody);
+            updateForumsList(responseBody);
+        }
+    }
+
+    //ChatGPT usage: No
+    private void updateForumsList(String responseBody) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        forums = Arrays.asList(mapper.readValue(responseBody, Forum[].class));
+        runOnUiThread(() -> {
+            viewForum.setLayoutManager(new LinearLayoutManager(ForumsListActivity.this));
+            viewForum.setAdapter(new ForumsViewAdapter(getApplicationContext(), forums));
+        });
     }
 }

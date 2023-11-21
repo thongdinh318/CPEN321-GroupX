@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
         int day = cal.get(Calendar.DAY_OF_MONTH);
         return makeDateString(day, month, year);
     }
+
     // ChatGPT usage: No.
     private void initDatePicker( int curDatePicker ) {
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -379,5 +380,4 @@ public class MainActivity extends AppCompatActivity {
     public static List<Article> getArticleList(){
         return articleList;
     }
-    //TODO: push notifications for when someone posts to a followed forum
 }
