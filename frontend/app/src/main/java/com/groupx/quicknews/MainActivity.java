@@ -24,8 +24,10 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.articles.Article;
+import com.groupx.quicknews.ui.forum.Comment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +35,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -362,15 +365,10 @@ public class MainActivity extends AppCompatActivity {
                             });
                         }
                         else {
-                            articleList = new ArrayList<Article>();
-                            for (int i = 0; i < res.length(); i++) {
-                                JSONObject articleJson = res.getJSONObject(i);
-                                Article article = new Article(articleJson.getString("title"),
-                                        articleJson.getString("url"),
-                                        articleJson.getString("content"),
-                                        articleJson.getInt("articleId"));
-                                articleList.add(article);
-                            }
+                            ObjectMapper mapper = new ObjectMapper();
+                            articleList = Arrays.asList(mapper.readValue(res.toString(), Article[].class));
+                            articleList = new ArrayList<>(articleList); //jacksons creates immutable list
+
                             Intent articleIntent = new Intent(MainActivity.this, targetActivity);;
                             startActivity(articleIntent);
                         }

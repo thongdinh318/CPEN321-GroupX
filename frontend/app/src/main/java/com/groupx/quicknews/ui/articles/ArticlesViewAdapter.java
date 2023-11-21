@@ -20,6 +20,7 @@ import com.groupx.quicknews.helpers.HttpClient;
 
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import okhttp3.Response;
@@ -69,12 +70,18 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         });
         return holder;
     }
+
     // ChatGPT usage: No.
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder holder, int position) {
         holder.articleTitle.setText(articles.get(position).getTitle());
+        holder.articlePublisher.setText(articles.get(position).getPublisher());
         holder.articleSynopsis.setText(articles.get(position).getSynopsis());
+
+        String date = new SimpleDateFormat("dd/MM/yyyy").format(articles.get(position).getDatePublished());
+        holder.articleDatePublished.setText(date);
     }
+
     // ChatGPT usage: No.
     @Override
     public int getItemCount() {

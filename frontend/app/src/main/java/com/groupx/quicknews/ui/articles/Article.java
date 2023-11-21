@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Article {
     String title;
     String  url;
     String synopsis;
     String publisher;
+    Date datePublished;
     int articleId;
     Boolean articleRead;
     // ChatGPT usage: No.
@@ -18,12 +21,15 @@ public class Article {
         @JsonProperty("title") String title,
         @JsonProperty("url") String url,
         @JsonProperty("content") String synopsis,
+        @JsonProperty("publisher") String publisher,
+        @JsonProperty("publishedDate") Date publishedDate,
         @JsonProperty("articleId") int articleId)
     {
         this.title = title;
         this.url = url;
         this.synopsis = synopsis;
-        //this.publisher = publisher;
+        this.publisher = publisher;
+        this.datePublished = publishedDate;
         this.articleId = articleId;
         this.articleRead = false;
     }
@@ -55,6 +61,8 @@ public class Article {
     public String getPublisher() { return publisher; }
     // ChatGPT usage: No.
     public void setPublisher(String publisher) { this.publisher = publisher; }
+    public Date getDatePublished() { return datePublished; }
+    public void setDatePublished(Date date) { this.datePublished = date; }
     // ChatGPT usage: No.
     public Boolean getArticleRead() { return articleRead; }
     // ChatGPT usage: No.
