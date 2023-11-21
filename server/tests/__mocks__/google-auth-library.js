@@ -1,9 +1,8 @@
-import {jest} from '@jest/globals'
 class MockedOAuth2Client {
     verifyIdToken (token, callback) {
       // Custom implementation for verifyIdToken
       if (token.idToken == "valid_token"){
-        console.log("resolved")
+        // console.log("resolved")
         const payload = {
             sub:"4", 
             email: 'user4@gmail.com', 
@@ -15,7 +14,7 @@ class MockedOAuth2Client {
         callback(null, login)
       }
       else if (token.idToken == "invalid_token"){
-        console.log("reject")
+        // console.log("reject")
         callback(null, null)
       }
       else{
