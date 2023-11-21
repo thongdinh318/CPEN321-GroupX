@@ -472,6 +472,7 @@ async function run(){
         //     clearInterval(retrieverInterval)
         // }
         await client.close()
+        server.close()
     }
 }
 run()
