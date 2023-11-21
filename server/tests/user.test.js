@@ -1,9 +1,8 @@
-import {jest} from '@jest/globals'
 import { app } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { testUser1, testUser2, testUser3 } from "./testUsers.js";
-import * as OAuth2Client from 'google-auth-library'
+
 //Mock userdb
 let connection
 let db
@@ -175,4 +174,43 @@ describe("PUT /profile/:userId/history", ()=>{
         expect(res.status).toBe(400);
         expect(res.text).toBe("Cannot Update History/User not found")
     });
+});
+
+describe('POST /signin', ()=>{
+    const newUser = { 
+        "userId": '4',
+        "username": "user4",
+        "dob": null,
+        "email":"user4@gmail.com",
+        "subscriptionList":[],
+        "history":[]
+    }
+    test('new user login', async()=>{
+        const res = await supertest(app).post("/signin").send({idToken:"valid_token"});
+        console.log(res.body)
+        expect(res.status).toBe(200)
+        expect(res.body).toStrictEqual(newUser)
+    })
+
+    test('old user login', async()=>{
+        const res = await supertest(app).post("/signin").send({idToken:"valid_token"});
+        // console.log(res)
+        expect(res.status).toBe(200)
+        expect(res.body).toStrictEqual(newUser)
+    })
+
+    test('invalid token', async()=>{
+        const res = await supertest(app).post("/signin").send({idToken:"invalid_token"});
+        console.log(res)
+        expect(res.status).toBe(400)
+        expect(res.text).toBe("invalid token")
+    })
+
+    test('error token', async()=>{
+        const res = await supertest(app).post("/signin").send({idToken:"error_token"});
+        console.log(res)
+        expect(res.status).toBe(400)
+        expect(res.text).toBe("error token")
+    })
+
 });
