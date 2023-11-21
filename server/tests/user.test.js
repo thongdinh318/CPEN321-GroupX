@@ -13,12 +13,12 @@ beforeAll(async()=>{
     
     db = connection.db("userdb");
     await db.collection("profile").insertMany([testUser1, testUser2, testUser3]);
-});
+}, 30000);
 
 afterAll(async ()=>{
     await db.collection('userdb').deleteMany({});
     await connection.close()
-});
+}, 30000);
 
 // Interface GET /profile/:userId 
 describe("GET /profile/:userId", ()=>{
