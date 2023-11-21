@@ -1,3 +1,5 @@
+jest.mock('../articles/articlesMngt.js');
+
 //interface GET /article/:articleId
 describe('Get article info', async () => {
     // Input: articleId is a valid id
