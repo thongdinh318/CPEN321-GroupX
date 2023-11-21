@@ -8,6 +8,20 @@ on:
 jobs:
   test:
      runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/docs-internal'] }}
+     services:
+        mongodb:
+            image: mongo
+            env:
+              MONGO_INITDB_ROOT_USERNAME: test
+              MONGO_INITDB_ROOT_PASSWORD: password
+              MONGO_INITDB_DATABASE: test
+            options: >-
+              --health-cmd mongo
+              --health-interval 10s
+              --health-timeout 5s
+              --health-retries 5
+            ports:
+              - 27017:27017
      steps:
       - name: Checkout
         uses: actions/checkout@v4
