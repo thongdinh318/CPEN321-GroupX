@@ -111,7 +111,7 @@
     <string name="to_picker">To</string>
     <string name="date">mm dd yyyy</string>
     <string name="input_box">Input</string>
-    <string name="filter_search_button">Search By Filters</string>
+    <string name="filter_search_button">Search</string>
     <string name="get_recommended_button">Recommended Articles</string>
     <string name="forum_button">Forums</string>
 </resources>

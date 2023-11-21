@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private Button toButton;
     private DatePickerDialog datePickerDialogFrom;
     private DatePickerDialog datePickerDialogTo;
+    private Button filterSearchButton;
+    private SearchView searchView;
+    private Button recommendedArticlesButton;
+    private Spinner publisher;
     private static List<Article> articleList = new ArrayList<>();
     final static String TAG = "MainActivity";
     final static int DATEPICKER_TO = 1;
@@ -59,46 +63,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button filterSearchButton;
-        SearchView searchView;
-        Button recommendedArticlesButton;
-
         initDatePicker(DATEPICKER_FROM);
         initDatePicker(DATEPICKER_TO);
 
         fromButton = findViewById(R.id.date_picker_from);
         toButton = findViewById(R.id.date_picker_to);
+        filterSearchButton = findViewById(R.id.filter_search_button);
+        searchView = findViewById(R.id.searchView);
+        publisher = findViewById(R.id.publisher_input);
 
         fromButton.setText(getTodayDate());
         toButton.setText(getTodayDate());
 
-        Spinner publisher = findViewById(R.id.publisher_input);
+
         //can replace with list from server?
         String[] items = new String[]{"search all", "cbc", "cnn"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         publisher.setAdapter(adapter);
 
-        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
-
-        bottomNavigationView.setSelectedItemId(R.id.action_home);
-        bottomNavigationView.findViewById(R.id.action_home).setEnabled(false);
-
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemID = item.getItemId();
-            if (itemID == R.id.action_home) {
-                return true;
-            }
-            else if (itemID == R.id.action_forums) {
-                Log.d(TAG, "Trying to open forum view");
-                Intent forumIntent = new Intent(MainActivity.this, ForumsListActivity.class);
-                startActivity(forumIntent);
-                overridePendingTransition(0, 0);
-                return true;
-            }
-            return false;
-        });
-
+        initNavigationBar();
 
         fromButton.setOnClickListener(new View.OnClickListener() {
             // ChatGPT usage: No.
@@ -119,57 +103,37 @@ public class MainActivity extends AppCompatActivity {
         category = findViewById(R.id.category_input);
         category.setText("");
 
-        filterSearchButton = findViewById(R.id.filter_search_button);
         filterSearchButton.setOnClickListener(new View.OnClickListener() {
             // ChatGPT usage: No.
             @Override
             public void onClick(View view) {
-                String publisherName = publisher.getSelectedItem().toString();
-                String categoryName = category.getText().toString();
-                String fromDate = fromButton.getText().toString();
-                String toDate = toButton.getText().toString();
-                String query = "";
-                if ("search all".equals(publisherName )){
-                    query +=  "publisher=";
-                }
-                else {
-                    query += "publisher="+publisherName;
-                }
-
-                if ("".equals(categoryName)){
-                    query +=  "&categories=";
-                }
-                else {
-                    query += "&categories="+categoryName;
-                }
-
-                query += "&before="+toDate.replace(" ", "-");
-                query+= "&after="+fromDate.replace(" ", "-");
+                String query = buildQuery();
                 String url = getString(R.string.server_dns) + "article/filter/search?"+query;
-                getArticlesAndSwitchViews(url, ArticlesActivity.class);
-            }
-        });
-        recommendedArticlesButton = findViewById(R.id.article_button);
-        searchView = findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            // ChatGPT usage: No.
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                String url = getString(R.string.server_dns) + "article/kwsearch/search?keyWord="+query;
                 Log.d(TAG,url);
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
-                return true;
-            }
+        }
+    });
+    recommendedArticlesButton = findViewById(R.id.article_button);
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        // ChatGPT usage: No.
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            String url = getString(R.string.server_dns) + "article/kwsearch/search?keyWord="+query;
+            Log.d(TAG,url);
+            getArticlesAndSwitchViews(url, ArticlesActivity.class);
+            return true;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            return false;
+        }
+    });
 
         recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
-            // ChatGPT usage: No.
-            @Override
+        // ChatGPT usage: No.
+        @Override
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open articles view");
                 String userId = LoginActivity.getUserId();
@@ -177,6 +141,61 @@ public class MainActivity extends AppCompatActivity {
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
             }
         });
+    }
+
+    private void initNavigationBar() {
+        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setSelectedItemId(R.id.action_home);
+        bottomNavigationView.findViewById(R.id.action_home).setEnabled(false);
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemID = item.getItemId();
+            if (itemID == R.id.action_home) {
+                return true;
+            }
+            else if (itemID == R.id.action_forums) {
+                Log.d(TAG, "Trying to open forum view");
+                Intent forumIntent = new Intent(MainActivity.this, ForumsListActivity.class);
+                startActivity(forumIntent);
+                overridePendingTransition(0, 0);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private String buildQuery() {
+        String publisherName = publisher.getSelectedItem().toString();
+        String categoryName = category.getText().toString();
+        String keywordSearch = searchView.getQuery().toString();
+        String fromDate = fromButton.getText().toString();
+        String toDate = toButton.getText().toString();
+        String query = "";
+        if ("search all".equals(publisherName )){
+            query +=  "publisher=";
+        }
+        else {
+            query += "publisher="+publisherName;
+        }
+
+        if ("".equals(categoryName)){
+            query +=  "&categories=";
+        }
+        else {
+            query += "&categories="+categoryName;
+        }
+
+        if ("".equals(keywordSearch)){
+            query +=  "&kw=";
+        }
+        else {
+            query += "&kw="+keywordSearch;
+        }
+
+        query += "&before="+toDate.replace(" ", "-");
+        query+= "&after="+fromDate.replace(" ", "-");
+        return query;
     }
 
     private void getArticlesAndSwitchViews(String url, Class<?> targetActivity){
@@ -357,25 +376,24 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_articles, menu);
         return true;
     }
+
     // ChatGPT usage: No.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Switching on the item id of the menu item
         int itemId = item.getItemId();
         if( itemId == R.id.action_manage_subscriptions ) {
-            // Code to be executed when the add button is clicked
             Intent intent = new Intent(MainActivity.this, SubscriptionActivity.class);
             startActivity(intent);
             return true;
         }
         else if( itemId == R.id.action_view_history ) {
-            // Code to be executed when the add button is clicked
             Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
             startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
     // ChatGPT usage: No.
     public static List<Article> getArticleList(){
         return articleList;

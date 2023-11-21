@@ -9,7 +9,7 @@
         app:actionViewClass="android.widget.SearchView" />
     <item
         android:id="@+id/action_manage_subscriptions"
-        android:title="Subscriptions"
+        android:title="Manage Subscriptions"
         android:orderInCategory="101"
         app:showAsAction="never" />
 </menu>
