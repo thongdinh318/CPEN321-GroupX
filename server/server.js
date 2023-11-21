@@ -190,8 +190,13 @@ app.get("/article/filter/search", async(req,res)=>{
     var before = req.query.before
     var after = req.query.after
     var categories = req.query.categories
-
+    var keyWord = req.query.kw
+    // console.log(publisher)
     var query = {}
+    if (keyWord != ""){
+        query = {$or: [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]}
+    }
+
     if (publisher != ""){
         query.publisher = {$regex: publisher, $options:"i"}
     }
@@ -213,6 +218,7 @@ app.get("/article/filter/search", async(req,res)=>{
         var list = categories.split(",")
         query.categories = {$in: list}
     }
+    console.log(query)
     var foundArticles = await articleMod.searchByFilter(query)
 	console.log(foundArticles)
     if(isErr(foundArticles)){
