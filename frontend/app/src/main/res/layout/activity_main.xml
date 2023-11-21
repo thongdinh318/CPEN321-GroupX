@@ -19,18 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.726" />
 
-    <Button
-        android:id="@+id/forum_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="72dp"
-        android:text="@string/forum_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/article_button"
-        app:layout_constraintVertical_bias="0.818" />
-
     <SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
@@ -120,21 +108,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/publisher_view"
         app:layout_constraintVertical_bias="0.456" />
-<!--
-    <EditText
-        android:id="@+id/publisher_input"
-        android:layout_width="175dp"
-        android:layout_height="56dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="@string/input_box"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.415"
-        app:layout_constraintStart_toEndOf="@+id/publisher_view"
-        app:layout_constraintTop_toBottomOf="@+id/searchView"
-        app:layout_constraintVertical_bias="0.039" />
--->
 
     <Spinner
         android:id="@+id/publisher_input"
@@ -174,4 +147,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.888" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        app:itemIconTint="@drawable/menu_selector"
+        app:itemTextColor="@drawable/menu_selector"
+        app:menu="@menu/menu_bottom_navigation"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
