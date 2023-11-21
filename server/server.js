@@ -39,17 +39,16 @@ function isErr(error){
 app.post("/signin", async (req,res)=>{
     const token = req.body.idToken;
     const payloadPromise =  userMod.verify(token)
-    console.log(payloadPromise)
     payloadPromise.then((payload)=>{
-        console.log(payload)
+        // console.log(payload)
         var loggedInUserPromise = userMod.registerNewUser(payload['sub'], payload['name'], payload['email'])
         loggedInUserPromise.then((loggedInUser)=>{
-            console.log(loggedInUser)
+            // console.log(loggedInUser)
             delete loggedInUser._id
             res.status(200).send(loggedInUser)
         })
     }).catch((rejectError)=>{
-        console.log(rejectError.message)
+        // console.log(rejectError.message)
         res.status(400).send(rejectError.message)
     })
 })

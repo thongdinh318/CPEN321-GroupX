@@ -1,3 +1,4 @@
+import {expect, test, jest} from "@jest/globals" 
 import { app } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
@@ -139,7 +140,7 @@ describe("PUT /profile/:userId/history", ()=>{
 
         let newHistory = {"articleId":5}
         const res = await supertest(app).put("/profile/1/history").send(newHistory);
-        console.log(res.body)
+        // console.log(res.body)
         expect(res.status).toBe(200);
         expect(res.text).toBe("Article added to history");
         const testUser = await db.collection("profile").findOne({"userId":"1"});
@@ -175,7 +176,7 @@ describe("PUT /profile/:userId/history", ()=>{
         expect(res.text).toBe("Cannot Update History/User not found")
     });
 });
-
+// Interface POST /signin
 describe('POST /signin', ()=>{
     const newUser = { 
         "userId": '4',
@@ -186,13 +187,21 @@ describe('POST /signin', ()=>{
         "history":[]
     }
     test('new user login', async()=>{
+        // Input:  a valid idToken
+        // Expected status code: 200 
+        // Expected behavior: create a new User and add the new user to db
+        // Expected output: return the new User just created
         const res = await supertest(app).post("/signin").send({idToken:"valid_token"});
-        console.log(res.body)
+        // console.log(res.body)
         expect(res.status).toBe(200)
         expect(res.body).toStrictEqual(newUser)
     })
 
     test('old user login', async()=>{
+        // Input:  a valid idToken of user that has registered before
+        // Expected status code: 200 
+        // Expected behavior: do nothing
+        // Expected output: return the old user from the db
         const res = await supertest(app).post("/signin").send({idToken:"valid_token"});
         // console.log(res)
         expect(res.status).toBe(200)
@@ -200,15 +209,21 @@ describe('POST /signin', ()=>{
     })
 
     test('invalid token', async()=>{
+        // Input:  an invalid idToken
+        // Expected status code: 400
+        // Expected output: return the message saying the "invalid token"
         const res = await supertest(app).post("/signin").send({idToken:"invalid_token"});
-        console.log(res)
+        // console.log(res)
         expect(res.status).toBe(400)
         expect(res.text).toBe("invalid token")
     })
 
     test('error token', async()=>{
+        // Input:  an idToken that gives error when verifying
+        // Expected status code: 400
+        // Expected output: return the message saying the "error token"
         const res = await supertest(app).post("/signin").send({idToken:"error_token"});
-        console.log(res)
+        // console.log(res)
         expect(res.status).toBe(400)
         expect(res.text).toBe("error token")
     })

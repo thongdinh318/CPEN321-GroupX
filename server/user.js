@@ -57,7 +57,7 @@ function verify(token){
             {idToken: token, audience: CLIENT_ID},
             function(err, login){
                 if (err){
-                    console.log(err)
+                    // console.log(err)
                     throw err
                 }
                 if (login){
