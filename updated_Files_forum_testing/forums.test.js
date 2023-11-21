@@ -57,7 +57,7 @@ describe("GET /forums/:forum_id",  ()=>{
     test("Successfully retrieve forum from database", async ()=>{
         // Input: forum_id that is contained in database
         // Expected status code: 200
-        // Expected behavior: forum is retrieved
+        // Expected behavior: The forum with the provided forum_id is retrieved
         // Expected output: forum object
 
         const res = await supertest(app).get("/forums/1");
