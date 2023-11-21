@@ -35,12 +35,7 @@ function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
     newUser.userId = userId;
     newUser._id = userId;
-    if (userName == undefined){
-        newUser.username = "default user name"
-    }
-    else{
-        newUser.username = userName
-    }
+    newUser.username = userName
     newUser.email = userEmail
     return newUser
 }
@@ -62,6 +57,7 @@ function verify(token){
             {idToken: token, audience: CLIENT_ID},
             function(err, login){
                 if (err){
+                    console.log(err)
                     throw err
                 }
                 if (login){
@@ -69,7 +65,7 @@ function verify(token){
                     resolve(payload)
                 }
                 else{
-                    reject("invalid token")
+                    reject(new Error("invalid token"))
                 }
             })
     })
