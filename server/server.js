@@ -257,6 +257,37 @@ app.get("/article/kwsearch/search", async(req,res)=>{
         }
     }
 })
+
+//ChatGPT Ussage: No
+app.get("/article/subscribed/:userId", async (req,res)=>{
+    const userId = req.params.userId
+
+    const userProfile = await userMod.getProfile(userId)
+
+    if (userProfile.userId == undefined){
+        res.status(400).send("User not found")
+    }
+    else{
+        const userSubList = userProfile.subscriptionList
+        // console.log(userSubList)
+        var query = new Object()
+        if (userSubList.length != 0){
+            userSubList.forEach(publisher => {
+                publisher = publisher.toLowerCase()
+            });
+            query.publisher =  {$in:userSubList}
+        }
+        // console.log(query)
+        
+        const foundArticles = await articleMod.searchByFilter(query)
+        if (foundArticles.length == 0){
+            res.status(400).send("No articles found")
+        }
+        else{
+            res.status(200).send(foundArticles)
+        }
+    }
+})
 //<--- ARTICLE MODULE
 
 //FORUM MODULE --->
@@ -313,80 +344,6 @@ app.post("/addComment/:forum_id",async (req, res)=>{
         }
     }
 } );
-
-// These are server functions for now, might be implemented as an endpoint for use after MVP
-// Add a new forum
-// app.post("/forums",async (req, res)=>{
-// 	try{
-// 		//console.log(req.body);
-// 		let forumId = req.body.id;
-// 		let forumName = req.body.name
-// 		let addedForum = await forum.createForum(forumId, forumName);
-// 		res.status(200).send(addedForum);
-// 	}catch (err){
-// 		console.log(err);
-// 		res.status(400).send("Could not add forum");
-// 	}
-// } );
-// Deletes all forums 
-// app.delete("/forums" , async (req, res)=>{
-// 	try{
-// 		const succeed = await forum.deleteForums();
-// 		if (isErr(succeed)){
-// 			res.status(400).send("Error when deleting")
-// 		}
-
-// 		if (succeed){
-// 			res.status(200).send("All forums were deleted");
-// 		}
-// 		else {
-// 			res.status(200).send("All Forum Removal Failed! Please try again")
-// 		}
-
-// 	}catch(err){
-// 		console.log(err);
-// 		res.status(400).send("Could not delete forums.");
-// 	}
-
-// });
-
-// Delete one specific forum
-// app.delete("/forums/:forum_id", async(req,res) =>{
-// 	try{
-// 		const succeed = await forum.deleteForum(req.params.forum_id);
-// 		if (isErr(succeed)){
-// 			res.status(400).send(succeed)
-// 		}
-// 		else{
-// 			if (succeed){
-// 				res.status(200).send("Remove succeed")
-// 			}
-// 			else{
-// 				res.status(200).send("Removal Failed! Please try again")
-// 			}
-// 		}
-
-// 	}catch (err){
-		
-// 	}
-// })
-
-// Clears all forums
-// app.delete("/forumComments" , async (req, res)=>{
-// 	try{
-// 		let forums = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
-// 		for(let i = 0; i < forums.length; i++){
-// 			await client.db('ForumDB').collection('forums').updateOne({ id : forums[i]["id"]}, { $set:{ comments : [] }});
-// 		}
-// 		res.status(200).send("All forums were cleared.");
-
-// 	}catch(err){
-// 		console.log(err);
-// 		res.status(400).send("Could not delete forums.");
-// 	}
-
-// });
-
 // <--- FORUM MODULE
 
 //Recommedation module --->
@@ -397,7 +354,6 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
-        // console.log(recommeded)
         var recommededArticles = []
         for (var i = 0; i < recommeded.length; ++i){
             var articleId = recommeded[i][0]
@@ -412,25 +368,6 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     }
 })
 
-// ChatGPT usage: No.
-app.get("/recommend/publisher/:userId", async (req,res)=>{
-    var userId = req.params.userId;
-    try {
-        const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
-        var recommededPublishers = []
-        for (var i = 0; i < recommeded.length; ++i){
-            var articleId = recommeded[i][0]
-            var article = await articleMod.searchById(parseInt(articleId,10))
-            recommededPublishers.push(article.publisher)
-        }
-        res.status(200).send(recommededPublishers)
-        
-    } catch (error) {
-        console.log(error)
-        res.status(400).send("Error when recommending publishers")
-        
-    }
-})
 // <--- Recommendation module
 
 
@@ -440,15 +377,16 @@ async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
         await client.connect()
-        // console.log("Successfully connect to db")
+        console.log("Successfully connect to db")
         /* Use this for localhost test*/
-        var server = app.listen(8081, (req,res)=>{
-            var host = server.address().address
-            var port = server.address().port
-            // console.log("Server is running at https://%s:%s",host,port)
-        })
+        // var server = app.listen(8081, (req,res)=>{
+        //     var host = server.address().address
+        //     var port = server.address().port
+        //     // console.log("Server is running at https://%s:%s",host,port)
+        // })
+
         // create https server
-        // https.createServer(options, app).listen(8081)
+        https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
@@ -460,11 +398,11 @@ async function run(){
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
+
         // console.log("Retrieving some articles")
         // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         // console.log("Server is ready to use")
         // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
-
     } catch (error) {
         console.log(error)
 
