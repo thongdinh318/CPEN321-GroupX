@@ -22,4 +22,4 @@ jobs:
         run: npm install
   
       - name: Run Jest tests
-        run: node --experimental-vm-modules  node_modules/jest/bin/jest.js --no-cache  --detectOpenHandles --forceExit
+        run: node --experimental-vm-modules  node_modules/jest/bin/jest.js --no-cache --detectOpenHandles --forceExit
