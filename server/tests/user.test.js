@@ -1,5 +1,5 @@
 import {expect, test, jest} from "@jest/globals" 
-import { app } from "../server.js";
+import { app, server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { testUser1, testUser2, testUser3 } from "./testUsers.js";
@@ -18,6 +18,7 @@ beforeAll(async()=>{
 afterAll(async ()=>{
     await db.collection('userdb').deleteMany({});
     await connection.close()
+    server.close()
 });
 
 // Interface GET /profile/:userId 
