@@ -310,8 +310,8 @@ app.get("/forums", async (req, res) =>{
 app.get("/forums/:forum_id", async (req, res) =>{
     const result =await forum.getForum(parseInt(req.params.forum_id),10)
     // const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
-    if (isErr(result)){
-        res.status(400).send(result)
+    if (isErr(result) || result.length === 0){
+        res.status(400).send("Forum does not exist")
     }
     else{
         res.status(200).send(result);
@@ -326,11 +326,18 @@ app.post("/addComment/:forum_id",async (req, res)=>{
     let userId = req.body.userId
     const user = await userMod.getProfile(userId)
     
+    if(user.username == null){
+        res.status(500).send("Could not post comment: Invalid UserId");
+        return;
+    }
+
+
+
     const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
     // await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
 
     if (isErr(result)){
-        res.status(400).send("Could not post comment")
+        res.status(500).send("Could not post comment")
     }
     else{
         if (result){
@@ -340,7 +347,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
             //res.status(200).send("Comment Posted!");
         }
         else{
-            res.status(400).send("Failed Posting Comment! Please Try Again")
+            res.status(500).send("Could not post comment")
         }
     }
 } );
@@ -481,12 +488,12 @@ async function run(){
         // create https server
         //https.createServer(options, app).listen(8081)
 
-        //client.db("userdb").collection("profile").deleteMany({})
-        //client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        client.db("userdb").collection("profile").deleteMany({})
+        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
 	
-        //await userMod.initUDb()
-        //await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        await userMod.initUDb()
+        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")

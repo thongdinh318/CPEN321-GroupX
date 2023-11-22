@@ -3,14 +3,16 @@ import { app } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { testUser1, testUser2, testUser3 } from "./testUsers.js";
+import { forum1, forum2, forum3, forum1_after } from "./testForum.js";
 
 //Mock userdb
 let connection
 let db
+// let fdb;
 beforeAll(async()=>{
     const uri = "mongodb://127.0.0.1:27017";
     connection = await MongoClient.connect(uri);
-    
+    // fdb = connection.db("ForumDB");
     db = connection.db("userdb");
     await db.collection("profile").insertMany([testUser1, testUser2, testUser3]);
 });
@@ -229,3 +231,4 @@ describe('POST /signin', ()=>{
     })
 
 });
+

@@ -99,7 +99,8 @@ export default class ForumModule{
         try{
             const response = await server.client.db('ForumDB').collection('forums')
                             .updateOne({ id : forumId}, { $push:{ comments : comment }});
-            return response.acknowledged;
+
+            return (response["modifiedCount"] !== 0);
         }catch(err){
             console.log(err);
             return false;
