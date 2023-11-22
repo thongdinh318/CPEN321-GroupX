@@ -465,6 +465,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
         
     } catch (error) {
         // console.log(error)
+        // console.log(error)
         res.status(400).send("Error when recommending publishers")
         
     }
@@ -489,12 +490,12 @@ async function run(){
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
 
-        // client.db("userdb").collection("profile").deleteMany({})
-        // client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        client.db("userdb").collection("profile").deleteMany({})
+        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
 	
-        // await userMod.initUDb()
-        // await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        await userMod.initUDb()
+        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
@@ -504,6 +505,7 @@ async function run(){
         console.log("Server is ready to use")
         var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min*/
     } catch (error) {
+        // console.log(error)
         // console.log(error)
 
         /*if (retrieverInterval != null){

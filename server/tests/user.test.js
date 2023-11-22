@@ -3,7 +3,6 @@ import { app, server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { testUser1, testUser2, testUser3 } from "./testUsers.js";
-import { forum1, forum2, forum3, forum1_after } from "./testForum.js";
 
 //Mock userdb
 let connection

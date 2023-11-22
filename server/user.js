@@ -75,10 +75,8 @@ async function registerNewUser(userId, username, userEmail){
     const userProfile = await checkAvailable(userId)
 
     if (userProfile.userId){
-        // console.log("Old User")
         return userProfile
     }
-    // console.log("New User")
     var newUser = createNewUser(userId, username,userEmail)
     await server.client.db("userdb").collection("profile").insertOne(newUser);
     return (newUser)

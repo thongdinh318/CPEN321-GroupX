@@ -7,7 +7,6 @@ import "dotenv/config.js"
 
 const bing_endpoints = "https://api.bing.microsoft.com/v7.0/news"
 const key = process.env.BingKey
-// console.log(key)
 const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
 var id = 1 //keep track of article ids in the db
