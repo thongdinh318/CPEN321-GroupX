@@ -7,7 +7,7 @@ import "dotenv/config.js"
 
 const bing_endpoints = "https://api.bing.microsoft.com/v7.0/news"
 const key = process.env.BingKey
-console.log(key)
+// console.log(key)
 const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
 var id = 1 //keep track of article ids in the db
@@ -15,7 +15,7 @@ var id = 1 //keep track of article ids in the db
 //ChatGPT usage: No
 async function searchNews(query){
     var url = bing_endpoints+"/search"
-    console.log(url)
+    // console.log(url)
     var user_query;
     if (query === ""){
         user_query = EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
@@ -25,7 +25,7 @@ async function searchNews(query){
         user_query = query + " " + EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
         // user_query +=" " + FOCUSED_SITE.join(" OR ")
     }
-    console.log(user_query)
+    // console.log(user_query)
     const res = await axios.get(url, {
         headers:{ 'Ocp-Apim-Subscription-Key': key},
         params:{
@@ -119,7 +119,7 @@ async function addToDb(articleList){
     for (var article of articleList){
         article.articleId = id
         id += 1
-	console.log(article)
+	// console.log(article)
         await server.client.db("articledb").collection("articles").insertOne(article)
     }
 }

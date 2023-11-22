@@ -102,7 +102,7 @@ export default class ForumModule{
 
             return (response["modifiedCount"] !== 0);
         }catch(err){
-            console.log(err);
+            // console.log(err);
             return false;
         }
     }
