@@ -1,7 +1,8 @@
 import axios from "axios";
+import "dotenv/config.js";
 const  endpoint = "https://quicknewsummarymodule.cognitiveservices.azure.com/language/analyze-text/jobs?api-version=2023-04-01";
 const key = process.env.LangServiceKey;
-
+console.log(key)
 const sumReqBody = {
   "displayName": "Document ext Summarization Task Example",
   "analysisInput": {

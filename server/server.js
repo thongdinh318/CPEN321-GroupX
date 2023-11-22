@@ -16,10 +16,10 @@ app.use(express.json())
 var forum_id = 1;
 
 // Uncomment for https
-// var options = {
-//     key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-//     cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-// };
+var options = {
+     key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+     cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+};
 
 const forum = new ForumModule()
 
@@ -257,6 +257,37 @@ app.get("/article/kwsearch/search", async(req,res)=>{
         }
     }
 })
+
+//ChatGPT Ussage: No
+app.get("/article/subscribed/:userId", async (req,res)=>{
+    const userId = req.params.userId
+
+    const userProfile = await userMod.getProfile(userId)
+
+    if (userProfile.userId == undefined){
+        res.status(400).send("User not found")
+    }
+    else{
+        const userSubList = userProfile.subscriptionList
+        // console.log(userSubList)
+        var query = new Object()
+        if (userSubList.length != 0){
+            userSubList.forEach(publisher => {
+                publisher = publisher.toLowerCase()
+            });
+            query.publisher =  {$in:userSubList}
+        }
+        // console.log(query)
+        
+        const foundArticles = await articleMod.searchByFilter(query)
+        if (foundArticles.length == 0){
+            res.status(400).send("No articles found")
+        }
+        else{
+            res.status(200).send(foundArticles)
+        }
+    }
+})
 //<--- ARTICLE MODULE
 
 //FORUM MODULE --->
@@ -397,7 +428,6 @@ app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
-        // console.log(recommeded)
         var recommededArticles = []
         for (var i = 0; i < recommeded.length; ++i){
             var articleId = recommeded[i][0]
@@ -440,37 +470,37 @@ async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
         await client.connect()
-        // console.log("Successfully connect to db")
+        console.log("Successfully connect to db")
         /* Use this for localhost test*/
-        var server = app.listen(8081, (req,res)=>{
-            var host = server.address().address
-            var port = server.address().port
-            // console.log("Server is running at https://%s:%s",host,port)
-        })
-        // create https server
-        // https.createServer(options, app).listen(8081)
+        // var server = app.listen(8081, (req,res)=>{
+        //     var host = server.address().address
+        //     var port = server.address().port
+        //     // console.log("Server is running at https://%s:%s",host,port)
+        // })
 
-        client.db("userdb").collection("profile").deleteMany({})
-        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        // create https server
+        https.createServer(options, app).listen(8081)
+
+        //client.db("userdb").collection("profile").deleteMany({})
+        //client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
 	
-        await userMod.initUDb()
-        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        //await userMod.initUDb()
+        //await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
-        // console.log("Retrieving some articles")
-        // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
-        // console.log("Server is ready to use")
-        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 minutes
-
+        /*console.log("Retrieving some articles")
+        await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        console.log("Server is ready to use")
+        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min*/
     } catch (error) {
         console.log(error)
 
-        // if (retrieverInterval != null){
-        //     clearInterval(retrieverInterval)
-        // }
+        /*if (retrieverInterval != null){
+             clearInterval(retrieverInterval)
+        }*/
         await client.close()
         server.close()
     }
