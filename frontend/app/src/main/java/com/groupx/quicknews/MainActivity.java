@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
         // ChatGPT usage: No.
         @Override
         public boolean onQueryTextSubmit(String query) {
-            String url = getString(R.string.server_dns) + "article/kwsearch/search?keyWord="+query;
+            String queryFilters = buildQuery();
+            String url = getString(R.string.server_dns) + "article/filter/search?"+queryFilters;
             Log.d(TAG,url);
             getArticlesAndSwitchViews(url, ArticlesActivity.class);
             return true;
