@@ -29,6 +29,7 @@ describe('Get article info', async () => {
         const articleId = 1;
         const res = await supertest(app).get("/article/" + articleId)
         expect(res.status).toStrictEqual(200);
+        expect(res.body).toStrictEqual(testArticle1)
     });
 
     // Input: articleId that is not contained in database
@@ -61,9 +62,10 @@ describe('Search with filter', async () => {
     // Expected behavior: articles not found, no articles is returned
     // Expected output: String saying "No articles matched"
     test('Filter not matching with anything', async () => {
-        const searchQuery = "?publisher=&after=2023-04-01&before=2023-12-31&categories=education,environment"
+        const searchQuery = "?publisher=FAKE&after=2023-04-01&before=2023-12-31&categories=education,environment"
         const res = await supertest(app).get("/article/" + searchQuery)
         expect(res.status).toStrictEqual(400);
+        expect(res.body).toStrictEqual([]);
     });
 });
 
@@ -74,9 +76,10 @@ describe('Search with keywords', async () => {
     // Expected behavior: articles with matching keyword is returned
     // Expected output: article_array
     test('Successful search', async () => {
-        const searchQuery = "?keyWord=something"
+        const searchQuery = "?keyWord=match"
         const res = await supertest(app).get("/article/kwsearch/search" + searchQuery)
         expect(res.status).toStrictEqual(200);
+        expect(res.body).toStrictEqual([testArticle1]);
     });
 
     // Input:  ‘keyword’ has special characters
@@ -84,9 +87,10 @@ describe('Search with keywords', async () => {
     // Expected behavior: articles not found, no articles is returned
     // Expected output: String saying "No articles matched"
     test('Special Characters in keyword', async () => {
-        const searchQuery = "?keyWord=something"
+        const searchQuery = "?keyWord=__!"
         const res = await supertest(app).get("/article/kwsearch/search" + searchQuery)
         expect(res.status).toStrictEqual(400);
+        expect(res.body).toStrictEqual([]);
     });
 
     // Input: ‘keyword’ does not match with anything on database
@@ -94,18 +98,9 @@ describe('Search with keywords', async () => {
     // Expected behavior: articles not found, no articles is returned
     // Expected output: String saying "No articles matched"
     test('Keywords not matching with anything', async () => {
-        const searchQuery = "?keyWord=something"
+        const searchQuery = "?keyWord=jibberjabber"
         const res = await supertest(app).get("/article/kwsearch/search" + searchQuery)
         expect(res.status).toStrictEqual(400);
-    });
-
-    // Input: -
-    // Expected status code: 400
-    // Expected behavior: Server cannot to database, an error is thrown
-    // Expected output: String saying "Error when searching with search bar"
-    test('Internal server error', async () => {
-        const searchQuery = "?keyWord=something"
-        const res = await supertest(app).get("/article/kwsearch/search" + searchQuery)
-        expect(res.status).toStrictEqual(400);
+        expect(res.body).toStrictEqual([]);
     });
 });

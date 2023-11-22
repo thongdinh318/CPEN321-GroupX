@@ -10,16 +10,16 @@ const testArticle1 = {
 const testArticle2 = {
     "articleId": 2,
     "views": 20,
-    "content": "This will be a match i hope",
-    "categories":[],
+    "content": "Filter this pleasee",
+    "categories":["education","environment"],
     "publisher":"CNN",
-    "publishedDate": null,
+    "publishedDate": "2023-04-01",
 }
 
 const testArticle3 = {
     "articleId": 3,
     "views": 20,
-    "content": "This will be a match i hope",
+    "content": "THis is a weird one",
     "categories":[],
     "publisher":"CNN",
     "publishedDate": null,
