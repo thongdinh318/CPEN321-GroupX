@@ -16,10 +16,10 @@ app.use(express.json())
 var forum_id = 1;
 
 // Uncomment for https
-/*var options = {
-     key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-     cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-};*/
+// var options = {
+//      key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+//      cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+// };
 
 const forum = new ForumModule()
 
@@ -272,9 +272,10 @@ app.get("/article/subscribed/:userId", async (req,res)=>{
         // console.log(userSubList)
         var query = new Object()
         if (userSubList.length != 0){
-            userSubList.forEach(publisher => {
-                publisher = publisher.toLowerCase()
-            });
+            for (var i = 0; i < userSubList.length; i++){
+                userSubList[i] = new RegExp(userSubList[i].toLowerCase())
+            }
+            // console.log(userSubList)
             query.publisher =  {$in:userSubList}
         }
         // console.log(query)
@@ -480,7 +481,7 @@ export var server = app.listen(8081, (req,res)=>{
 })
 
 // create https server
-//https.createServer(options, app).listen(8081)
+// export var server = https.createServer(options, app).listen(8081)
 async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
@@ -488,12 +489,12 @@ async function run(){
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
 
-        client.db("userdb").collection("profile").deleteMany({})
-        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        // client.db("userdb").collection("profile").deleteMany({})
+        // client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
 	
-        await userMod.initUDb()
-        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        // await userMod.initUDb()
+        // await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
