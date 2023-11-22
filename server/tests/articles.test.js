@@ -1,5 +1,5 @@
 import {expect, test, jest} from "@jest/globals" 
-import { app } from "../server.js";
+import { app, server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { testArticle1, testArticle2, testArticle3 } from "./testArticles.js";
@@ -17,10 +17,11 @@ beforeAll(async()=>{
 afterAll(async ()=>{
     await db.collection('articledb').deleteMany({});
     await connection.close()
+    server.close()
 });
 
 //interface GET /article/:articleId
-describe('Get article info', async () => {
+describe('Get article info', () => {
     // Input: articleId is a valid id
     // Expected status code: 200
     // Expected behavior: article is retrieved from the database
@@ -46,13 +47,13 @@ describe('Get article info', async () => {
 
 
 //interface GET /article/filter/search
-describe('Search with filter', async () => {
+describe('Search with filter', () => {
     // Input: ‘filters’ are valid and there are matching articles
     // Expected status code: 200
     // Expected behavior: articles with matching filter
     // Expected output: array of matching articles
     test('Successful search', async () => {
-        const searchQuery = "?publisher=CNN&after=2023-04-01&before=2023-12-31&categories=education,environment"
+        const searchQuery = "?publisher=CNN&after=2023-04-01&before=2023-12-31&categories=education,environment&kw="
         const res = await supertest(app).get("/article/filter/search" + searchQuery)
         expect(res.status).toStrictEqual(200);
     });
@@ -62,7 +63,7 @@ describe('Search with filter', async () => {
     // Expected behavior: articles not found, no articles is returned
     // Expected output: String saying "No articles matched"
     test('Filter not matching with anything', async () => {
-        const searchQuery = "?publisher=FAKE&after=2023-04-01&before=2023-12-31&categories=education,environment"
+        const searchQuery = "?publisher=&after=2023-04-01&before=2023-12-31&categories=education,environment&kw="
         const res = await supertest(app).get("/article/" + searchQuery)
         expect(res.status).toStrictEqual(400);
         expect(res.body).toStrictEqual([]);
@@ -70,7 +71,7 @@ describe('Search with filter', async () => {
 });
 
 //interface GET /article/kwsearch/search
-describe('Search with keywords', async () => {
+describe('Search with keywords', () => {
     // Input: ‘keyword’ is a  valid keyword with matches
     // Expected status code: 200
     // Expected behavior: articles with matching keyword is returned

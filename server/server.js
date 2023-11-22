@@ -108,7 +108,7 @@ app.get("/profile/:userId/history", async (req,res)=>{
         }
         else{
             var articleArray = []
-            console.log(userProfile.history)
+            //console.log(userProfile.history)
             for(var article of userProfile.history){
                 var foundArticle = await articleMod.searchById(article.articleId);
                 articleArray.push(foundArticle)
@@ -144,8 +144,8 @@ app.put("/profile/:userId", async (req,res)=>{
 app.put("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
     const newViewed = req.body
-	console.log(newViewed)
-	console.log(userId)
+	// console.log(newViewed)
+	// console.log(userId)
     var succeed = await userMod.updateHistory(userId, newViewed);
     if(isErr(succeed)){
         res.status(400).send("Error when updating reading history")
@@ -167,7 +167,7 @@ app.put("/profile/:userId/history", async (req,res)=>{
 // ChatGPT usage: No.
 app.get("/article/:articleId", async (req,res)=>{
     var articleId = parseInt(req.params.articleId,10);
-    console.log(articleId)
+    // console.log(articleId)
     var foundArticle = await articleMod.searchById(articleId);
 
     if(isErr(foundArticle)){
@@ -219,9 +219,9 @@ app.get("/article/filter/search", async(req,res)=>{
         var list = categories.split(",")
         query.categories = {$in: list}
     }
-    console.log(query)
+    // console.log(query)
     var foundArticles = await articleMod.searchByFilter(query)
-	console.log(foundArticles)
+	// console.log(foundArticles)
     if(isErr(foundArticles)){
         res.status(400).send("Error when Searching by filter")
     }
@@ -240,7 +240,7 @@ app.get("/article/filter/search", async(req,res)=>{
 // ChatGPT usage: No.
 app.get("/article/kwsearch/search", async(req,res)=>{
     var keyWord = req.query.keyWord
-    console.log(keyWord)
+    // console.log(keyWord)
 
     var query = {$or: [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]}
     var foundArticles = await articleMod.searchByFilter(query);
@@ -437,7 +437,7 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         res.status(200).send(recommededArticles)
         
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         res.status(400).send("Error when recommending articles")
     }
 })
@@ -456,7 +456,7 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
         res.status(200).send(recommededPublishers)
         
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         res.status(400).send("Error when recommending publishers")
         
     }
@@ -466,27 +466,27 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 
 // Main Function
 // ChatGPT usage: No.
+export var server = app.listen(8081, (req,res)=>{
+     var host = server.address().address
+     var port = server.address().port
+     // console.log("Server is running at https://%s:%s",host,port)
+})
 async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
         await client.connect()
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
-        var server = app.listen(8081, (req,res)=>{
-             var host = server.address().address
-             var port = server.address().port
-             // console.log("Server is running at https://%s:%s",host,port)
-        })
 
         // create https server
         //https.createServer(options, app).listen(8081)
 
-        //client.db("userdb").collection("profile").deleteMany({})
-        //client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        client.db("userdb").collection("profile").deleteMany({})
+        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
 	
-        //await userMod.initUDb()
-        //await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        await userMod.initUDb()
+        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
@@ -496,7 +496,7 @@ async function run(){
         console.log("Server is ready to use")
         var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min*/
     } catch (error) {
-        console.log(error)
+        // console.log(error)
 
         /*if (retrieverInterval != null){
              clearInterval(retrieverInterval)
