@@ -23,6 +23,7 @@ afterAll(async ()=>{
 
 
 //---------------------------------------------------------------
+//Interface GET /forums
 describe("GET /forums",()=>{
 
     test("Get all forums", async()=>{
@@ -52,7 +53,7 @@ describe("GET /forums",()=>{
 
 });
 
-
+//Interface GET /forums/:forum_id
 describe("GET /forums/:forum_id",  ()=>{
     
     test("Successfully retrieve forum from database", async ()=>{
@@ -71,7 +72,6 @@ describe("GET /forums/:forum_id",  ()=>{
 
     });
 
-
     test("forum_id not in database", async ()=>{
         // Input: forum_id that is not contained in database
         // Expected status code: 400
@@ -86,13 +86,14 @@ describe("GET /forums/:forum_id",  ()=>{
 
 });
 
-
+//Interface POST /addComment/:forum_id
 describe("POST /addComment/:forum_id", ()=>{
-        // Input: forum_id that is contained in database, comment content, and the userId in the database
-        // Expected status code: 200
-        // Expected behavior: comment is added to the identified forum as a reply or as a new post.
-        // Expected output: The updated forum
-        test("Successfully post a comment to a forum", async()=>{
+
+    test("Successfully post a comment to a forum", async()=>{
+            // Input: forum_id that is contained in database, comment content, and the userId in the database
+            // Expected status code: 200
+            // Expected behavior: comment is added to the identified forum as a reply or as a new post.
+            // Expected output: The updated forum
             let test_comment = {
                 userId : "0",
                 commentData : "test comment for POST /addComment"
@@ -105,21 +106,17 @@ describe("POST /addComment/:forum_id", ()=>{
             delete resBody.dateCreated; 
             delete resBody["comments"][0].datePosted;
 
-            // console.log(resBody)
-
             expect(resBody["comments"][0].content).toStrictEqual(test_comment.commentData);
             expect(resBody).toStrictEqual(forum1_after);
 
             await fdb.collection('forums').updateOne({ id : 1},{ $set:{ comments : [] }} );
         });
 
-
-
-        // Input: forum_id that is not in database, comment content, and the userId in the database.
-        // Expected status code: 500
-        // Expected behavior: Can't post comment.
-        // Expected output: Error message saying: "Could not post comment"
         test("forum_id not in db: Can't post a comment to a forum", async()=>{
+            // Input: forum_id that is not in database, comment content, and the userId in the database.
+            // Expected status code: 500
+            // Expected behavior: Can't post comment.
+            // Expected output: Error message saying: "Could not post comment"
             let test_comment = {
                 userId : "0", 
                 commentData : "test comment for POST /addComment"
@@ -131,8 +128,6 @@ describe("POST /addComment/:forum_id", ()=>{
             expect(res.text).toBe("Could not post comment");
 
         });
-
-
 
         // Input: forum_id that is contained in database, comment content, and a userId not in the database.
         // Expected status code: 500

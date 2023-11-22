@@ -14,7 +14,7 @@ function dateAdded(){
 export default class ForumModule{
     //ChatGPT usage: No
     construtor(){
-        this.dateCreated = new Date();
+        // this.dateCreated = new Date();
     }
 
     // DATABASE COMMUNICATION INTERFACES
@@ -96,14 +96,14 @@ export default class ForumModule{
             datePosted
         }
         
-        try{
-            const response = await server.client.db('ForumDB').collection('forums')
-                            .updateOne({ id : forumId}, { $push:{ comments : comment }});
+        const response = await server.client.db('ForumDB').collection('forums')
+                        .updateOne({ id : forumId}, { $push:{ comments : comment }});
 
-            return (response["modifiedCount"] !== 0);
-        }catch(err){
-            // console.log(err);
-            return false;
-        }
+        return (response["modifiedCount"] !== 0);
+        // try{
+        // }catch(err){
+        //     // console.log(err);
+        //     return false;
+        // }
     }
 }

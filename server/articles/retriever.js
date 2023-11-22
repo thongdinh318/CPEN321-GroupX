@@ -6,7 +6,14 @@ import * as server from "../server.js"
 import "dotenv/config.js"
 
 const bing_endpoints = "https://api.bing.microsoft.com/v7.0/news"
-const key = process.env.BingKey
+var key =""
+if (process.env.BingKey == undefined){
+  key = "BingKey";
+
+}
+else{
+  key = process.env.BingKey
+}
 const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
 var id = 1 //keep track of article ids in the db
@@ -14,7 +21,6 @@ var id = 1 //keep track of article ids in the db
 //ChatGPT usage: No
 async function searchNews(query){
     var url = bing_endpoints+"/search"
-    // console.log(url)
     var user_query;
     if (query === ""){
         user_query = EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
@@ -24,7 +30,6 @@ async function searchNews(query){
         user_query = query + " " + EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
         // user_query +=" " + FOCUSED_SITE.join(" OR ")
     }
-    // console.log(user_query)
     const res = await axios.get(url, {
         headers:{ 'Ocp-Apim-Subscription-Key': key},
         params:{
@@ -62,11 +67,6 @@ async function scrapeURL(url){
             }
             return retrievedArticle
         }
-    // else{
-        var err = new Error()
-        err.message = "Failed to retrieve"
-        return err
-    // }
     } catch (error) {
         return (error)
     }
@@ -97,7 +97,7 @@ async function bingNewsRetriever(query){
             sentenceNum += 1 
         })
         var articleBody = await summarizer.summarizeArticle(webContent, Math.round(sentenceNum/2))
-        if (articleBody && articleBody.e && articleBody.stack){
+        if (articleBody.message && articleBody.stack){
             continue
         }
         else{
@@ -118,9 +118,7 @@ async function addToDb(articleList){
     for (var article of articleList){
         article.articleId = id
         id += 1
-	// console.log(article)
         await server.client.db("articledb").collection("articles").insertOne(article)
     }
 }
-// bingNewsRetriever("")
 export {bingNewsRetriever}

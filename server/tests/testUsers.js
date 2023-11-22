@@ -51,7 +51,7 @@ const testUser4 = {
     "username": "test4",
 	"dob": "11/19/2024",
 	"email":"test4@gmail.com",
-	"subscriptionList":["cnn"],
+	"subscriptionList":["yahoo"],
 	"history":[
 		{
             "articleId": 1,

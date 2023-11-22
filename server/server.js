@@ -28,7 +28,7 @@ const forum = new ForumModule()
 //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
 // ChatGPT usage: No.
 function isErr(error){
-    return error && error.e && error.stack
+    return (error.message && error.stack)
 }
 
 
@@ -59,17 +59,17 @@ app.post("/signin", async (req,res)=>{
 app.get("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     var user = await userMod.getProfile(userId)
-    if (isErr(user)){ 
-        res.status(400).send("Error when getting user profile")
+    // if (isErr(user)){ 
+    //     res.status(400).send("Error when getting user profile")
+    // }
+    // else{
+    // }
+    if (user.userId == undefined){
+        res.status(400).send("User Profile not Found")
     }
     else{
-        if (user.userId == undefined){
-            res.status(400).send("User Profile not Found")
-        }
-        else{
-            delete user._id
-            res.status(200).send(user)
-        }
+        delete user._id
+        res.status(200).send(user)
     }
 })
 
@@ -79,16 +79,16 @@ app.get("/profile/:userId", async (req,res)=>{
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.params.userId
     var userProfile = await userMod.getProfile(userId);
-    if (isErr(userProfile)){
-        res.status(400).send("Error when getting subscription list")
+    // if (isErr(userProfile)){
+    //     res.status(400).send("Error when getting subscription list")
+    // }
+    // else{
+    // }
+    if (userProfile.userId){
+        res.status(200).send(userProfile.subscriptionList)
     }
     else{
-        if (userProfile.userId){
-            res.status(200).send(userProfile.subscriptionList)
-        }
-        else{
-            res.status(400).send([])
-        }
+        res.status(400).send([])
     }
 })
 
@@ -99,22 +99,22 @@ app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
 
     var userProfile = await userMod.getProfile(userId);
-    if(isErr(userProfile)){
-        res.status(400).send("Error when getting reading history")
+    // if(isErr(userProfile)){
+    //     res.status(400).send("Error when getting reading history")
+    // }
+    // else{
+    // }
+    if (userProfile.userId == undefined){
+        res.status(400).send([])
     }
     else{
-        if (userProfile.userId == undefined){
-            res.status(400).send([])
+        var articleArray = []
+        // console.log(userProfile.history)
+        for(var article of userProfile.history){
+            var foundArticle = await articleMod.searchById(article.articleId);
+            articleArray.push(foundArticle)
         }
-        else{
-            var articleArray = []
-            // console.log(userProfile.history)
-            for(var article of userProfile.history){
-                var foundArticle = await articleMod.searchById(article.articleId);
-                articleArray.push(foundArticle)
-            }
-            res.status(200).send(articleArray)
-        }
+        res.status(200).send(articleArray)
     }
 })
 
@@ -125,16 +125,16 @@ app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     const newProfile = req.body
     var succeed = await userMod.updateProfile(userId, newProfile)
-    if (isErr(succeed)){
-        res.status(400).send("Error when updating user profile")
+    // if (isErr(succeed)){
+    //     res.status(400).send("Error when updating user profile")
+    // }
+    // else{
+    // }
+    if (!succeed){
+        res.status(400).send("Cannot Update Profile/User not found")
     }
     else{
-        if (!succeed){
-            res.status(400).send("Cannot Update Profile/User not found")
-        }
-        else{
-            res.status(200).send("Profile was updated")
-        }
+        res.status(200).send("Profile was updated")
     }
 })
 
@@ -147,16 +147,16 @@ app.put("/profile/:userId/history", async (req,res)=>{
 	// console.log(newViewed)
 	// console.log(userId)
     var succeed = await userMod.updateHistory(userId, newViewed);
-    if(isErr(succeed)){
-        res.status(400).send("Error when updating reading history")
+    // if(isErr(succeed)){
+    //     res.status(400).send("Error when updating reading history")
+    // }
+    // else{
+    // }
+    if (!succeed){
+        res.status(400).send("Cannot Update History/User not found")
     }
     else{
-        if (!succeed){
-            res.status(400).send("Cannot Update History/User not found")
-        }
-        else{
-            res.status(200).send("Article added to history")
-        }
+        res.status(200).send("Article added to history")
     }
 })
 //<--- USER MODULE
@@ -170,16 +170,16 @@ app.get("/article/:articleId", async (req,res)=>{
     // console.log(articleId)
     var foundArticle = await articleMod.searchById(articleId);
 
-    if(isErr(foundArticle)){
-        res.status(400).send("Error when Searching by id")
+    // if(isErr(foundArticle)){
+    //     res.status(400).send("Error when Searching by id")
+    // }
+    // else{
+    // }
+    if (foundArticle.articleId == undefined){
+        res.status(400).send("Article Id Not Found")
     }
     else{
-        if (foundArticle.articleId == undefined){
-            res.status(400).send("Article Id Not Found")
-        }
-        else{
-            res.status(200).send(foundArticle)
-        }
+        res.status(200).send(foundArticle)
     }
 })
 
@@ -207,11 +207,12 @@ app.get("/article/filter/search", async(req,res)=>{
         query.publishedDate = {$gte:after, $lte: before}
     }
     else if (before != ""){
-        before = new Date(before).toISOString
+        before = new Date(before).toISOString()
         query.publishedDate = {$lte: before}
+        
     }
     else if (after != ""){
-        after = new Date(after).toISOString
+        after = new Date(after).toISOString()
         query.publishedDate = {$gte: after}
     }
 
@@ -221,17 +222,16 @@ app.get("/article/filter/search", async(req,res)=>{
     }
     // console.log(query)
     var foundArticles = await articleMod.searchByFilter(query)
-	// console.log(foundArticles)
-    if(isErr(foundArticles)){
-        res.status(400).send("Error when Searching by filter")
+    // if(isErr(foundArticles)){
+    //     res.status(400).send("Error when Searching by filter")
+    // }
+    // else{
+    // }
+    if (foundArticles.length == 0){
+        res.status(400).send("No articles matched")
     }
     else{
-        if (foundArticles.length == 0){
-            res.status(400).send("No articles matched")
-        }
-        else{
-            res.status(200).send(foundArticles)
-        }
+        res.status(200).send(foundArticles)
     }
 })
 
@@ -245,48 +245,44 @@ app.get("/article/kwsearch/search", async(req,res)=>{
     var query = {$or: [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]}
     var foundArticles = await articleMod.searchByFilter(query);
 
-    if(isErr(foundArticles)){
-        res.status(400).send("Error when searching with search bar")
+    // if(isErr(foundArticles)){
+    //     res.status(400).send("Error when searching with search bar")
+    // }
+    // else{
+    // }
+    if (foundArticles.length === 0){
+        res.status(400).send("No articles matched")
     }
     else{
-        if (foundArticles.length === 0){
-            res.status(400).send("No articles matched")
-        }
-        else{
-            res.status(200).send(foundArticles)
-        }
+        res.status(200).send(foundArticles)
     }
 })
 
 //ChatGPT Ussage: No
 app.get("/article/subscribed/:userId", async (req,res)=>{
     const userId = req.params.userId
-
     const userProfile = await userMod.getProfile(userId)
-
     if (userProfile.userId == undefined){
         res.status(400).send("User not found")
+        return
+    }
+    // else{
+    // }
+    const userSubList = userProfile.subscriptionList
+    var query = new Object()
+    if (userSubList.length != 0){
+        for (var i = 0; i < userSubList.length; i++){
+            userSubList[i] = new RegExp(userSubList[i].toLowerCase())
+        }
+        query.publisher =  {$in:userSubList}
+    }
+    
+    const foundArticles = await articleMod.searchByFilter(query)
+    if (foundArticles.length == 0){
+        res.status(400).send("No articles found")
     }
     else{
-        const userSubList = userProfile.subscriptionList
-        // console.log(userSubList)
-        var query = new Object()
-        if (userSubList.length != 0){
-            for (var i = 0; i < userSubList.length; i++){
-                userSubList[i] = new RegExp(userSubList[i].toLowerCase())
-            }
-            // console.log(userSubList)
-            query.publisher =  {$in:userSubList}
-        }
-        // console.log(query)
-        
-        const foundArticles = await articleMod.searchByFilter(query)
-        if (foundArticles.length == 0){
-            res.status(400).send("No articles found")
-        }
-        else{
-            res.status(200).send(foundArticles)
-        }
+        res.status(200).send(foundArticles)
     }
 })
 //<--- ARTICLE MODULE
@@ -297,12 +293,12 @@ app.get("/article/subscribed/:userId", async (req,res)=>{
 // ChatGPT usage: No.
 app.get("/forums", async (req, res) =>{
     const result = await forum.getAllForums();
-    if (isErr(result)){
-        res.status(400).send("Cannot get forum list")
-    }
-    else{
-        res.status(200).send(result);
-    }
+    // if (isErr(result)){
+    //     res.status(400).send("Cannot get forum list")
+    // }
+    // else{
+    // }
+    res.status(200).send(result);
 }); 
 
 
@@ -335,96 +331,21 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 
 
     const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
-    // await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
 
-    if (isErr(result)){
-        res.status(500).send("Could not post comment")
+    // if (isErr(result)){
+    //     res.status(500).send("Could not post comment")
+    // }
+    // else{
+    // }
+    if (result){
+        // make a get request to get the updated forum
+        const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
+        res.status(200).send(updatedForum);
     }
     else{
-        if (result){
-            // make a get request to get the updated forum
-            const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
-            res.status(200).send(updatedForum);
-            //res.status(200).send("Comment Posted!");
-        }
-        else{
-            res.status(500).send("Could not post comment")
-        }
+        res.status(500).send("Could not post comment")
     }
 } );
-
-// These are server functions for now, might be implemented as an endpoint for use after MVP
-// Add a new forum
-// app.post("/forums",async (req, res)=>{
-// 	try{
-// 		//console.log(req.body);
-// 		let forumId = req.body.id;
-// 		let forumName = req.body.name
-// 		let addedForum = await forum.createForum(forumId, forumName);
-// 		res.status(200).send(addedForum);
-// 	}catch (err){
-// 		console.log(err);
-// 		res.status(400).send("Could not add forum");
-// 	}
-// } );
-// Deletes all forums 
-// app.delete("/forums" , async (req, res)=>{
-// 	try{
-// 		const succeed = await forum.deleteForums();
-// 		if (isErr(succeed)){
-// 			res.status(400).send("Error when deleting")
-// 		}
-
-// 		if (succeed){
-// 			res.status(200).send("All forums were deleted");
-// 		}
-// 		else {
-// 			res.status(200).send("All Forum Removal Failed! Please try again")
-// 		}
-
-// 	}catch(err){
-// 		console.log(err);
-// 		res.status(400).send("Could not delete forums.");
-// 	}
-
-// });
-
-// Delete one specific forum
-// app.delete("/forums/:forum_id", async(req,res) =>{
-// 	try{
-// 		const succeed = await forum.deleteForum(req.params.forum_id);
-// 		if (isErr(succeed)){
-// 			res.status(400).send(succeed)
-// 		}
-// 		else{
-// 			if (succeed){
-// 				res.status(200).send("Remove succeed")
-// 			}
-// 			else{
-// 				res.status(200).send("Removal Failed! Please try again")
-// 			}
-// 		}
-
-// 	}catch (err){
-		
-// 	}
-// })
-
-// Clears all forums
-// app.delete("/forumComments" , async (req, res)=>{
-// 	try{
-// 		let forums = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
-// 		for(let i = 0; i < forums.length; i++){
-// 			await client.db('ForumDB').collection('forums').updateOne({ id : forums[i]["id"]}, { $set:{ comments : [] }});
-// 		}
-// 		res.status(200).send("All forums were cleared.");
-
-// 	}catch(err){
-// 		console.log(err);
-// 		res.status(400).send("Could not delete forums.");
-// 	}
-
-// });
 
 // <--- FORUM MODULE
 
@@ -434,7 +355,7 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 // ChatGPT usage: No.
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
-    try {
+    // try {
         const userProfile = await userMod.getProfile(userId)
         if (userProfile.userId == undefined){
             res.status(400).send("User not Found")
@@ -449,30 +370,12 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         }
         res.status(200).send(recommededArticles)
         
-    } catch (error) {
-        // console.log(error)
-        res.status(400).send("Error when recommending articles")
-    }
+    // } catch (error) {
+    //     // console.log(error)
+    //     res.status(400).send("Error when recommending articles")
+    // }
 })
 
-// ChatGPT usage: No.
-// app.get("/recommend/publisher/:userId", async (req,res)=>{
-//     var userId = req.params.userId;
-//     try {
-//         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
-//         var recommededPublishers = []
-//         for (var i = 0; i < recommeded.length; ++i){
-//             var articleId = recommeded[i][0]
-//             var article = await articleMod.searchById(parseInt(articleId,10))
-//             recommededPublishers.push(article.publisher)
-//         }
-//         res.status(200).send(recommededPublishers)
-        
-//     } catch (error) {
-//         res.status(400).send("Error when recommending publishers")
-        
-//     }
-// })
 // <--- Recommendation module
 
 
@@ -481,7 +384,6 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 export var server = app.listen(8081, (req,res)=>{
     var host = server.address().address
     var port = server.address().port
-    // console.log("Server is running at https://%s:%s",host,port)
 })
 
 // create https server
@@ -503,15 +405,14 @@ async function run(){
         await forum.createForum(forum_id++,"General News")
         await forum.createForum(forum_id++, "Economics")
         await forum.createForum(forum_id++, "Education")
-        /*console.log("Retrieving some articles")
-        await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        // console.log("Retrieving some articles")
+        // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
         console.log("Server is ready to use")
-        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min*/
     } catch (error) {
-
-        /*if (retrieverInterval != null){
-             clearInterval(retrieverInterval)
-        }*/
+        // if (retrieverInterval != null){
+        //      clearInterval(retrieverInterval)
+        // }
         await client.close()
         server.close()
     }

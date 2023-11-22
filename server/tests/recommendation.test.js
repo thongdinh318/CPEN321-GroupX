@@ -25,6 +25,7 @@ afterAll(async ()=>{
     server.close()
 })
 
+//Interface GET /recommend/article/:userId
 describe("GET /recommend/article/:userId", ()=>{
 
     test('user havent view anything', async ()=>{
@@ -71,12 +72,4 @@ describe("GET /recommend/article/:userId", ()=>{
         expect(res.status).toBe(400);
         expect(res.text).toStrictEqual("User not Found");
     });
-
-    // test("error happened", async ()=>{
-    //     const res = await supertest(app).get("/recommend/article/1");
-    //     console.log(res)
-    //     expect(res.status).toBe(400)
-    //     expect(res.text).toBe("Error when recommending articles")
-    //     jest.restoreAllMocks();
-    // })
 });
