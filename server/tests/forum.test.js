@@ -1,5 +1,5 @@
 import {expect, test, jest} from "@jest/globals" ;
-import { app } from "../server.js";
+import { app, server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { forum1, forum2, forum3, forum1_after } from "./testForum.js";
@@ -18,6 +18,7 @@ beforeAll(async()=>{
 afterAll(async ()=>{
     // await fdb.collection('forums').deleteMany({});
     await connection.close();
+    server.close()
 });
 
 

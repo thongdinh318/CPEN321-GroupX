@@ -473,20 +473,20 @@ app.get("/recommend/publisher/:userId", async (req,res)=>{
 
 // Main Function
 // ChatGPT usage: No.
+export var server = app.listen(8081, (req,res)=>{
+    var host = server.address().address
+    var port = server.address().port
+    // console.log("Server is running at https://%s:%s",host,port)
+})
+
+// create https server
+//https.createServer(options, app).listen(8081)
 async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
         await client.connect()
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
-        var server = app.listen(8081, (req,res)=>{
-             var host = server.address().address
-             var port = server.address().port
-             // console.log("Server is running at https://%s:%s",host,port)
-        })
-
-        // create https server
-        //https.createServer(options, app).listen(8081)
 
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup

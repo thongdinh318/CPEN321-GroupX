@@ -57,35 +57,35 @@ export default class ForumModule{
     }
 
     //ChatGPT usage: No
-    deleteForum = async function(forumId){
-        // const response = await axios.delete(url + "/" +forumId);
-        // return response.data;
-        // console.log("Delete forum " + forumId)
-        // try{
-            const result = await server.client.db("ForumDB").collection("forums").deleteOne({id : forumId});
-            return result.acknowledged
+    // deleteForum = async function(forumId){
+    //     // const response = await axios.delete(url + "/" +forumId);
+    //     // return response.data;
+    //     // console.log("Delete forum " + forumId)
+    //     // try{
+    //         const result = await server.client.db("ForumDB").collection("forums").deleteOne({id : forumId});
+    //         return result.acknowledged
     
-        // }catch(err){
-        //     return(err);
-        // }
+    //     // }catch(err){
+    //     //     return(err);
+    //     // }
         
-    }
+    // }
 
     //ChatGPT usage: No
-    deleteForums = async function(){
-        // const response = await axios.delete(url);
-        // return response.data;
-        // console.log("Delete all forums")
-        // try{
-            const result = await server.client.db('ForumDB').collection('forums').drop({});
+    // deleteForums = async function(){
+    //     // const response = await axios.delete(url);
+    //     // return response.data;
+    //     // console.log("Delete all forums")
+    //     // try{
+    //         const result = await server.client.db('ForumDB').collection('forums').drop({});
             
-            return result
+    //         return result
     
-        // }catch(err){
-        //     return (err)
-        // }
+    //     // }catch(err){
+    //     //     return (err)
+    //     // }
         
-    }
+    // }
 
     //ChatGPT usage: No
     addCommentToForum = async function(forumId, commentData, username){
