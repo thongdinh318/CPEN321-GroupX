@@ -124,14 +124,13 @@ public class LoginActivity extends AppCompatActivity {
                 // ChatGPT usage: No.
                 @Override
                 public void onResponse(Response response) {
-//                    Log.d(TAG, response.toString());
                     try{
                         int statusCode = response.code();
                         if (statusCode == 200){
                             String res = response.body().string();
                             res = res.replace("\"", "\'");
                             JSONObject user = new JSONObject(res);
-
+                            Log.d(TAG, res);
                             if (user.has("userId")){
                                 userId = user.getString("userId");
                                 updateUI();

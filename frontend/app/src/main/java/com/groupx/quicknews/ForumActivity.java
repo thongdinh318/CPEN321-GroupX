@@ -3,6 +3,8 @@ package com.groupx.quicknews;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,12 +63,27 @@ public class ForumActivity extends AppCompatActivity {
         commentText = findViewById(R.id.edit_post);
 
         postButton = findViewById(R.id.button_post);
+        postButton.setEnabled(false);
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 postComment(commentText.getText().toString());
                 commentText.getText().clear();
             }
+        });
+
+        commentText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                postButton.setEnabled(!charSequence.toString().trim().isEmpty());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
         });
     }
 

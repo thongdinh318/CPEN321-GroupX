@@ -1,6 +1,5 @@
 package com.groupx.quicknews;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -158,6 +157,13 @@ public class MainActivity extends AppCompatActivity {
             else if (itemID == R.id.action_forums) {
                 Log.d(TAG, "Trying to open forum view");
                 Intent forumIntent = new Intent(MainActivity.this, ForumsListActivity.class);
+                startActivity(forumIntent);
+                overridePendingTransition(0, 0);
+                return true;
+            }
+            else if (itemID == R.id.action_subscribed) {
+                Log.d(TAG, "Trying to open subscribed view");
+                Intent forumIntent = new Intent(MainActivity.this, SubscribedArticlesActivity.class);
                 startActivity(forumIntent);
                 overridePendingTransition(0, 0);
                 return true;

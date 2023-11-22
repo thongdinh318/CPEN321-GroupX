@@ -69,6 +69,13 @@ public class ForumsListActivity extends AppCompatActivity {
             } else if (itemID == R.id.action_forums) {
                 return true;
             }
+            else if (itemID == R.id.action_subscribed){
+                Log.d(TAG, "Trying to open subscribed view");
+                Intent forumIntent = new Intent(ForumsListActivity.this, SubscribedArticlesActivity.class);
+                startActivity(forumIntent);
+                overridePendingTransition(0, 0);
+                return true;
+            }
             return false;
         });
     }

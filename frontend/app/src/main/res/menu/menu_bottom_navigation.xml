@@ -8,4 +8,8 @@
         android:id="@+id/action_forums"
         android:title="Forums"
         android:icon="@drawable/ic_baseline_forum_24"/>
+    <item
+        android:id="@+id/action_subscribed"
+        android:title="Subscribed"
+        android:icon="@drawable/ic_baseline_article_24"/>
 </menu>
