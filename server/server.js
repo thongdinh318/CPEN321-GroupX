@@ -16,10 +16,10 @@ app.use(express.json())
 var forum_id = 1;
 
 // Uncomment for https
-var options = {
+/*var options = {
      key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
      cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-};
+};*/
 
 const forum = new ForumModule()
 
@@ -472,14 +472,14 @@ async function run(){
         await client.connect()
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
-        // var server = app.listen(8081, (req,res)=>{
-        //     var host = server.address().address
-        //     var port = server.address().port
-        //     // console.log("Server is running at https://%s:%s",host,port)
-        // })
+        var server = app.listen(8081, (req,res)=>{
+             var host = server.address().address
+             var port = server.address().port
+             // console.log("Server is running at https://%s:%s",host,port)
+        })
 
         // create https server
-        https.createServer(options, app).listen(8081)
+        //https.createServer(options, app).listen(8081)
 
         //client.db("userdb").collection("profile").deleteMany({})
         //client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
