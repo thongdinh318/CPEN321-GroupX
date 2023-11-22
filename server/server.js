@@ -435,6 +435,11 @@ app.post("/addComment/:forum_id",async (req, res)=>{
 app.get("/recommend/article/:userId", async (req,res)=>{
     var userId = req.params.userId;
     try {
+        const userProfile = await userMod.getProfile(userId)
+        if (userProfile.userId == undefined){
+            res.status(400).send("User not Found")
+            return
+        }
         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
         var recommededArticles = []
         for (var i = 0; i < recommeded.length; ++i){
@@ -451,25 +456,23 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 })
 
 // ChatGPT usage: No.
-app.get("/recommend/publisher/:userId", async (req,res)=>{
-    var userId = req.params.userId;
-    try {
-        const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
-        var recommededPublishers = []
-        for (var i = 0; i < recommeded.length; ++i){
-            var articleId = recommeded[i][0]
-            var article = await articleMod.searchById(parseInt(articleId,10))
-            recommededPublishers.push(article.publisher)
-        }
-        res.status(200).send(recommededPublishers)
+// app.get("/recommend/publisher/:userId", async (req,res)=>{
+//     var userId = req.params.userId;
+//     try {
+//         const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
+//         var recommededPublishers = []
+//         for (var i = 0; i < recommeded.length; ++i){
+//             var articleId = recommeded[i][0]
+//             var article = await articleMod.searchById(parseInt(articleId,10))
+//             recommededPublishers.push(article.publisher)
+//         }
+//         res.status(200).send(recommededPublishers)
         
-    } catch (error) {
-        // console.log(error)
-        // console.log(error)
-        res.status(400).send("Error when recommending publishers")
+//     } catch (error) {
+//         res.status(400).send("Error when recommending publishers")
         
-    }
-})
+//     }
+// })
 // <--- Recommendation module
 
 
@@ -505,8 +508,6 @@ async function run(){
         console.log("Server is ready to use")
         var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min*/
     } catch (error) {
-        // console.log(error)
-        // console.log(error)
 
         /*if (retrieverInterval != null){
              clearInterval(retrieverInterval)

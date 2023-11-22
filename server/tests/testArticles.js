@@ -1,6 +1,6 @@
 const testArticle1 = {
     "articleId": 1,
-    "views": 20,
+    "views": 102,
     "content": "This will be a match i hope",
     "categories":[],
     "publisher":"CNN",
@@ -9,7 +9,7 @@ const testArticle1 = {
 
 const testArticle2 = {
     "articleId": 2,
-    "views": 20,
+    "views": 102,
     "content": "Filter this pleasee",
     "categories":["education","environment"],
     "publisher":"CNN",
@@ -18,7 +18,7 @@ const testArticle2 = {
 
 const testArticle3 = {
     "articleId": 3,
-    "views": 20,
+    "views": 101,
     "content": "THis is a weird one",
     "categories":[],
     "publisher":"CNN",

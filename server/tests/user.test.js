@@ -14,10 +14,11 @@ beforeAll(async()=>{
     // fdb = connection.db("ForumDB");
     db = connection.db("userdb");
     await db.collection("profile").insertMany([testUser1, testUser2, testUser3]);
+    
 });
 
 afterAll(async ()=>{
-    await db.collection('userdb').deleteMany({});
+    await db.collection('profile').deleteMany({});
     await connection.close()
     server.close()
 });
@@ -181,10 +182,10 @@ describe("PUT /profile/:userId/history", ()=>{
 // Interface POST /signin
 describe('POST /signin', ()=>{
     const newUser = { 
-        "userId": '4',
-        "username": "user4",
+        "userId": '99',
+        "username": "user99",
         "dob": null,
-        "email":"user4@gmail.com",
+        "email":"user99@gmail.com",
         "subscriptionList":[],
         "history":[]
     }
