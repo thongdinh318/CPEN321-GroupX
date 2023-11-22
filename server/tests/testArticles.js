@@ -13,7 +13,7 @@ const testArticle2 = {
     "content": "Filter this pleasee",
     "categories":["education","environment"],
     "publisher":"CNN",
-    "publishedDate": "2023-04-01",
+    "publishedDate": "2023-04-02",
 }
 
 const testArticle3 = {
