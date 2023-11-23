@@ -203,7 +203,7 @@ describe('POST /signin', ()=>{
         expect(res.status).toBe(200)
         expect(res.body).toStrictEqual(newUser)
     })
-    //Chat GPT Usage: No
+    //Chat GPT Usage: Partial
     test('old user login', async()=>{
         // Input:  a valid idToken of user that has registered before
         // Expected status code: 200 
@@ -214,7 +214,7 @@ describe('POST /signin', ()=>{
         expect(res.status).toBe(200)
         expect(res.body).toStrictEqual(newUser)
     })
-    //Chat GPT Usage: No
+    //Chat GPT Usage: Partial
     test('invalid token', async()=>{
         // Input:  an invalid idToken
         // Expected status code: 400
@@ -224,7 +224,7 @@ describe('POST /signin', ()=>{
         expect(res.status).toBe(400)
         expect(res.text).toBe("invalid token")
     })
-    //Chat GPT Usage: No
+    //Chat GPT Usage: Partial
     test('error token', async()=>{
         // Input: an idToken that gives error when verifying
         // Expected status code: 400
