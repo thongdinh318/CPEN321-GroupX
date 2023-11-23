@@ -25,7 +25,7 @@ afterAll(async ()=>{
 //---------------------------------------------------------------
 //Interface GET /forums
 describe("GET /forums",()=>{
-
+    //Chat GPT Usage: No
     test("Get all forums", async()=>{
         // Input: none
         // Expected status code: 200
@@ -55,7 +55,7 @@ describe("GET /forums",()=>{
 
 //Interface GET /forums/:forum_id
 describe("GET /forums/:forum_id",  ()=>{
-    
+    //Chat GPT Usage: No
     test("Successfully retrieve forum from database", async ()=>{
         // Input: forum_id that is contained in database
         // Expected status code: 200
@@ -71,7 +71,7 @@ describe("GET /forums/:forum_id",  ()=>{
         expect(resBody).toStrictEqual(forum1);
 
     });
-
+    //Chat GPT Usage: No
     test("forum_id not in database", async ()=>{
         // Input: forum_id that is not contained in database
         // Expected status code: 400
@@ -88,7 +88,7 @@ describe("GET /forums/:forum_id",  ()=>{
 
 //Interface POST /addComment/:forum_id
 describe("POST /addComment/:forum_id", ()=>{
-
+    //Chat GPT Usage: No
     test("Successfully post a comment to a forum", async()=>{
             // Input: forum_id that is contained in database, comment content, and the userId in the database
             // Expected status code: 200
@@ -111,7 +111,7 @@ describe("POST /addComment/:forum_id", ()=>{
 
             await fdb.collection('forums').updateOne({ id : 1},{ $set:{ comments : [] }} );
         });
-
+        //Chat GPT Usage: No
         test("forum_id not in db: Can't post a comment to a forum", async()=>{
             // Input: forum_id that is not in database, comment content, and the userId in the database.
             // Expected status code: 500
@@ -133,6 +133,7 @@ describe("POST /addComment/:forum_id", ()=>{
         // Expected status code: 500
         // Expected behavior: Can't post comment.
         // Expected output: Error message saying: "Could not post comment: Invalid UserId"
+        //Chat GPT Usage: No
         test("userId not in db: Can't post a comment to a forum", async()=>{
             let test_comment = {
                 userId : "100", // inalid id

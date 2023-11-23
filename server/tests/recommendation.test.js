@@ -27,7 +27,7 @@ afterAll(async ()=>{
 
 //Interface GET /recommend/article/:userId
 describe("GET /recommend/article/:userId", ()=>{
-
+    //Chat GPT Usage: No
     test('user havent view anything', async ()=>{
         // Input: userId of user that has not viewed anything
         // Expected status code: 200
@@ -37,7 +37,7 @@ describe("GET /recommend/article/:userId", ()=>{
         expect(res.status).toBe(200);
         expect(res.body.length).toStrictEqual(3);
     });
-
+    //Chat GPT Usage: No
     test('user have viewed some of the articles', async ()=>{
         // Input: userId of user that has viewed some of the articles
         // Expected status code: 200
@@ -50,7 +50,7 @@ describe("GET /recommend/article/:userId", ()=>{
         delete testArticle3._id
         expect(res.body[0]).toStrictEqual(testArticle3);
     });
-
+    //Chat GPT Usage: No
     test('user have viewed all of the articles', async ()=>{
         // Input: userId of user that has viewed some of the articles
         // Expected status code: 200
@@ -61,7 +61,7 @@ describe("GET /recommend/article/:userId", ()=>{
         expect(res.status).toBe(200);
         expect(res.body.length).toStrictEqual(0);
     });
-
+    //Chat GPT Usage: No
     test('invalid userId', async ()=>{
         // Input: userId of user that has viewed some of the articles
         // Expected status code: 400

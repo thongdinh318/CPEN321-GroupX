@@ -24,5 +24,5 @@ class MockedOAuth2Client {
 }
   
 // Mocked module export
-export const OAuth2Client = MockedOAuth2Client; // Export the mock directly
+export const OAuth2Client = MockedOAuth2Client;
 

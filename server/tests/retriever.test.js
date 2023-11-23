@@ -19,6 +19,7 @@ afterAll(async ()=>{
 });
 
 describe('test retriever', ()=>{
+    //Chat GPT Usage: No
     test("empty query", async()=>{
         // Input: the query is empty
         // Expected behavior: a new article is retrieved
@@ -28,7 +29,7 @@ describe('test retriever', ()=>{
         expect(retrievedArticle[0].title).toStrictEqual("test html")
         expect(retrievedArticle[0].content).toStrictEqual("summary success")
     })
-
+    //Chat GPT Usage: No
     test("nonempty query", async()=>{
         // Input: the query is not empty
         // Expected behavior: a new article is retrieved
@@ -39,7 +40,7 @@ describe('test retriever', ()=>{
         expect(retrievedArticle[0].title).toStrictEqual("test html")
         expect(retrievedArticle[0].content).toStrictEqual("summary success")
     })
-
+    //Chat GPT Usage: No
     test("empty html", async()=>{
         // Input: the query results in the endpoints find an article that cannot be scrapped,
         //        causes might be because the site has anti-bot measures implemented
@@ -50,7 +51,7 @@ describe('test retriever', ()=>{
         // console.log(retrievedArticle)
         expect(retrievedArticle.length).toBe(0)
     })
-
+    //Chat GPT Usage: No
     test("error happened", async()=>{
         // Input: error happended when scrapping/ summarizing
         // Expected behavior: no article is retrieved

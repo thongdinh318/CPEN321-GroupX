@@ -25,7 +25,7 @@ afterAll(async ()=>{
 
 // Interface GET /profile/:userId 
 describe("GET /profile/:userId", ()=>{
-
+    //Chat GPT Usage: No
     test('valid user id', async ()=>{
         // Input: userId that is contained in database
         // Expected status code: 200
@@ -37,7 +37,7 @@ describe("GET /profile/:userId", ()=>{
         expect(res.status).toBe(200);
         expect(res.body).toStrictEqual(testUser1);
     });
-
+    //Chat GPT Usage: No
     test('invalid user id', async ()=>{
         // Input: userId that is not contained in database
         // Expected status code: 400
@@ -52,7 +52,7 @@ describe("GET /profile/:userId", ()=>{
 
 //Interface GET /profile/:userId/subscriptions
 describe("GET /profile/:userId/subscriptions", ()=>{
-
+    //Chat GPT Usage: No
     test('valid user id', async ()=>{
         // Input: userId that is contained in database
         // Expected status code: 200
@@ -63,7 +63,7 @@ describe("GET /profile/:userId/subscriptions", ()=>{
         expect(res.status).toBe(200);
         expect(res.body).toStrictEqual(testUser1.subscriptionList);
     });
-
+    //Chat GPT Usage: No
     test('invalid user id', async ()=>{
         // Input: userId that is not contained in database
         // Expected status code: 400
@@ -78,7 +78,7 @@ describe("GET /profile/:userId/subscriptions", ()=>{
 
 // Interface GET /profile/:userId/history 
 describe("GET /profile/:userId/history", ()=>{
-
+    //Chat GPT Usage: No
     test('valid user id', async ()=>{
         // Input: userId that is contained in database
         // Expected status code: 200
@@ -90,7 +90,7 @@ describe("GET /profile/:userId/history", ()=>{
         expect(res.status).toBe(200);
         // expect(res.body).toStrictEqual(testUser1.history);
     });
-
+    //Chat GPT Usage: No
     test('invalid user id', async ()=>{
         // Input: userId that is not contained in database
         // Expected status code: 400
@@ -107,6 +107,7 @@ describe("GET /profile/:userId/history", ()=>{
 describe("PUT /profile/:userId", ()=>{
     let newSubList = ["yahoo", "cnn"] 
     let payload = {"subscriptionList": newSubList}
+    //Chat GPT Usage: No
     test('valid user id', async ()=>{
         // Input:  a valid userId
         // Expected status code: 200 
@@ -120,7 +121,7 @@ describe("PUT /profile/:userId", ()=>{
         expect(testUser.subscriptionList).toStrictEqual(newSubList)
 
     });
-
+    //Chat GPT Usage: No
     test('invalid user id', async ()=>{
         // Input:  userId that is not contained in database
         // Expected status code: 400 
@@ -135,6 +136,7 @@ describe("PUT /profile/:userId", ()=>{
 
 // Interface PUT /profile/:userId/history
 describe("PUT /profile/:userId/history", ()=>{
+    //Chat GPT Usage: No
     test('valid user id and new article read', async ()=>{
         // Input: userId that is contained in database, and the articleId does not exist in the user’s history
         // Expected status code: 200
@@ -151,6 +153,7 @@ describe("PUT /profile/:userId/history", ()=>{
         expect(historyElement.views).toBe(1)
 
     });
+    //Chat GPT Usage: No
     test('valid user id and old article read', async ()=>{
         // Input: userId that is contained in database, and the articleId exists in the user’s history
         // Expected status code: 200
@@ -167,7 +170,7 @@ describe("PUT /profile/:userId/history", ()=>{
         expect(historyElement.views).toBe(2)
 
     });
-
+    //Chat GPT Usage: No
     test('invalid user id', async ()=>{
         // Input: userId that is not contained in database
         // Expected status code: 400
@@ -189,6 +192,7 @@ describe('POST /signin', ()=>{
         "subscriptionList":[],
         "history":[]
     }
+    //Chat GPT Usage: Partial
     test('new user login', async()=>{
         // Input:  a valid idToken
         // Expected status code: 200 
@@ -199,7 +203,7 @@ describe('POST /signin', ()=>{
         expect(res.status).toBe(200)
         expect(res.body).toStrictEqual(newUser)
     })
-
+    //Chat GPT Usage: No
     test('old user login', async()=>{
         // Input:  a valid idToken of user that has registered before
         // Expected status code: 200 
@@ -210,7 +214,7 @@ describe('POST /signin', ()=>{
         expect(res.status).toBe(200)
         expect(res.body).toStrictEqual(newUser)
     })
-
+    //Chat GPT Usage: No
     test('invalid token', async()=>{
         // Input:  an invalid idToken
         // Expected status code: 400
@@ -220,9 +224,9 @@ describe('POST /signin', ()=>{
         expect(res.status).toBe(400)
         expect(res.text).toBe("invalid token")
     })
-
+    //Chat GPT Usage: No
     test('error token', async()=>{
-        // Input:  an idToken that gives error when verifying
+        // Input: an idToken that gives error when verifying
         // Expected status code: 400
         // Expected output: return the message saying the "error token"
         const res = await supertest(app).post("/signin").send({idToken:"error_token"});
