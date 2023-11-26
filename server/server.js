@@ -285,8 +285,11 @@ app.post("/addComment/:forum_id",async (req, res)=>{
     let commentData = req.body.commentData;
     let userId = req.body.userId
     const user = await userMod.getProfile(userId)
+
+    //Null if this is the first comment of the thread
+    let parent_id = req.body.parent_id;
     
-    const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
+    const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username, parent_id)
     // await client.db('ForumDB').collection('forums').updateOne({ id : req.params.forum_id}, { $push:{ comments : comment }});
 
     if (isErr(result)){
