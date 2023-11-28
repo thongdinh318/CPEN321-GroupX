@@ -53,4 +53,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.5.1")
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.2.0")
+
 }

@@ -194,5 +194,4 @@ public class ForumActivity extends AppCompatActivity {
         }
         return super.dispatchTouchEvent(event);
     }
-
 }
