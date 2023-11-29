@@ -76,7 +76,7 @@ app.use("/signout", (req,res,next)=>{
         return;
     }
 })
-app.put("/signout", async(req, res)=>{
+app.delete("/signout", async(req, res)=>{
     var userId = req.body.userId
     var jwtFound = await client.db("tokendb").collection("jwt").findOne({userId})
     if (jwtFound){

@@ -242,7 +242,7 @@ describe("test signout", ()=>{
         //Expected status code(200)
         // Expected behavior: an success message returned
         // Expected output: a message "Signned out Success"
-        const res = await supertest(app).put("/signout").send({userId:"99"}).set("jwt","99");
+        const res = await supertest(app).delete("/signout").send({userId:"99"}).set("jwt","99");
         expect(res.status).toBe(200)
         expect(res.text).toStrictEqual("Signned out Success")
     })
@@ -252,7 +252,7 @@ describe("test signout", ()=>{
         //Expected status code(400)
         // Expected behavior: an error message returned
         // Expected output: an error message "User already signed out"
-        const res = await supertest(app).put("/signout").send({userId:"99"}).set("jwt","99");
+        const res = await supertest(app).delete("/signout").send({userId:"99"}).set("jwt","99");
         expect(res.status).toBe(400)
         expect(res.text).toStrictEqual("User already signed out")
     })
@@ -262,7 +262,7 @@ describe("test signout", ()=>{
         // Expected status code: 400
         // Expected behavior: return error message
         // Expected output: a message string: "No JWT in headers"
-        const res = await supertest(app).put("/signout").send({userId:"99"});
+        const res = await supertest(app).delete("/signout").send({userId:"99"});
         expect(res.status).toBe(400)
         expect(res.text).toStrictEqual("No JWT in headers")
     })
@@ -272,7 +272,7 @@ describe("test signout", ()=>{
         // Expected status code: 403
         // Expected behavior: return error message
         // Expected output: a message string: "Expired token"
-        const res = await supertest(app).get("/signout").send({userId:"99"}).set("jwt","expired")
+        const res = await supertest(app).delete("/signout").send({userId:"99"}).set("jwt","expired")
         expect(res.status).toBe(403)
         expect(res.text).toStrictEqual("Expired Token")
     })
@@ -282,7 +282,7 @@ describe("test signout", ()=>{
         // Expected status code: 400
         // Expected behavior: return error message
         // Expected output: a message string: "Wrong token"
-        const res = await supertest(app).get("/signout").send({userId:"99"}).set("jwt","2")
+        const res = await supertest(app).delete("/signout").send({userId:"99"}).set("jwt","2")
         expect(res.status).toBe(400)
         expect(res.text).toStrictEqual("Wrong token")
     })
