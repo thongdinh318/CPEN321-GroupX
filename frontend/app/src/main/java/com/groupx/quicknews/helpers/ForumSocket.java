@@ -1,7 +1,10 @@
 package com.groupx.quicknews.helpers;
 
+import static com.google.android.gms.common.util.CollectionUtils.listOf;
+
 import android.util.Log;
 
+import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -11,13 +14,18 @@ import okio.ByteString;
 
 public class ForumSocket extends WebSocketListener {
 
-    private static final String SOCKET_URL = "ws://quicknews.canadacentral.cloudapp.azure.com:9000/";
+    private static final String SOCKET_URL = "wss://quicknews.canadacentral.cloudapp.azure.com:9000/";
     private WebSocket webSocket;
     private String TAG = "ForumSocket";
     public void openWebSocket() {
         Log.d(TAG, "opening socket");
-        OkHttpClient client = new OkHttpClient();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
+        builder.connectionSpecs(listOf(
+                ConnectionSpec.CLEARTEXT,
+                ConnectionSpec.MODERN_TLS));
+
+        OkHttpClient client = builder.build();
         Request request = new Request.Builder()
                 .url(SOCKET_URL)
                 .build();

@@ -27,7 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +37,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
 
 public class ForumActivity extends AppCompatActivity {
 
@@ -45,7 +49,7 @@ public class ForumActivity extends AppCompatActivity {
 
     private String forumID;
     private List<Comment> comments;
-    private ForumSocket webSocket;
+    private Socket socket;
     final static String TAG = "ForumActivity";
 
     // ChatGPT usage: No.
@@ -59,7 +63,7 @@ public class ForumActivity extends AppCompatActivity {
         binding = ActivityForumBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         forumID = getIntent().getStringExtra("forumID");
-        webSocket = new ForumSocket();
+        setSocket();
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
@@ -78,13 +82,42 @@ public class ForumActivity extends AppCompatActivity {
         });
     }
 
+    private void setSocket(){
+        try {
+            socket = IO.socket(getString(R.string.server_socket));
+        } catch (URISyntaxException e) {
+            Log.d(TAG, "Error connecting to socket");
+            e.printStackTrace();
+        }
+    }
+
     // ChatGPT usage: No.
     @Override
     protected void onStart() {
         super.onStart();
         getComments();
-        webSocket.openWebSocket();
+        socket.connect();
+        socket.on(Socket.EVENT_CONNECT, onConnect);
+        socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
     }
+
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            // Handle successful connection
+            System.out.println("Socket.IO connected successfully");
+        }
+    };
+
+    private Emitter.Listener onConnectError = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            // Handle connection error
+            Exception e = (Exception) args[0];
+            e.printStackTrace();
+            System.out.println("Socket.IO connection error: " + e.getMessage());
+        }
+    };
 
     // ChatGPT usage: No.
     private void getComments () {
