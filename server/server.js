@@ -498,7 +498,7 @@ function sortRecommended(ratingArr, articleArr){
         var mostRecentArticleIndex = i
         for (var j = i; j < ratingArr.length; j++){
             if (ratingArr[j][1] == ratingArr[i][1]){
-                if (articleArr[j].publishedDate > articleArr[i]){
+                if (articleArr[j].publishedDate > articleArr[i].publishedDate){
                     mostRecentArticle = articleArr[j]
                     mostRecentArticleIndex = j
                 }
