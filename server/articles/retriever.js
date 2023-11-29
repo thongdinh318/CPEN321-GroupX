@@ -1,54 +1,55 @@
 'use strict'
 import axios from 'axios'
 import cheerio from 'cheerio'
-import { summarizeArticle } from './summaries.js'
-import { MongoClient } from "mongodb";
-
-const uri = "mongodb://127.0.0.1:27017"
-const client = new MongoClient(uri)
+import * as summarizer from "./summaries.js"
+import * as server from "../server.js"
+import "dotenv/config.js"
 
 const bing_endpoints = "https://api.bing.microsoft.com/v7.0/news"
-const key = '56e2a381b452440abe22ce6ffb33b485'
+var key =""
+if (process.env.BingKey == undefined){
+  key = "BingKey";
+
+}
+else{
+  key = process.env.BingKey
+}
 const EXCLUDED_SITE = ["-site:msn.com","-site:youtube.com", "-site:amazon.com"]
 const FOCUSED_SITE = ["site:cbc.ca", "site:cnn.com"]
 var id = 1 //keep track of article ids in the db
-
+// const client = server.client
 //ChatGPT usage: No
 async function searchNews(query){
     var url = bing_endpoints+"/search"
-    console.log(url)
-    try {
-        var user_query;
-        if (query === ""){
-            user_query = EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
-            // user_query += " " + FOCUSED_SITE.join(" OR ")
-        }
-        else{
-            user_query = query + " " + EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
-            // user_query +=" " + FOCUSED_SITE.join(" OR ")
-        }
-        console.log(user_query)
-        const res = await axios.get(url, {
-            headers:{ 'Ocp-Apim-Subscription-Key': key},
-            params:{
-                q:user_query,
-                count: 3,
-                sortBy:"Date",
-                freshness:"Day",
-                mkt:'en-CA'
-            }
-        })
-        return res.data
-    } catch (error) {
-        throw error
+    var user_query;
+    if (query === ""){
+        user_query = EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
+        // user_query += " " + FOCUSED_SITE.join(" OR ")
     }
+    else{
+        user_query = query + " " + EXCLUDED_SITE.join(" ") + " " + FOCUSED_SITE.join(" OR ")
+        // user_query +=" " + FOCUSED_SITE.join(" OR ")
+    }
+    const res = await axios.get(url, {
+        headers:{ 'Ocp-Apim-Subscription-Key': key},
+        params:{
+            q:user_query,
+            count: 3,
+            sortBy:"Date",
+            freshness:"Day",
+            mkt:'en-CA'
+        }
+    })
+    return res.data
+
 }
 
 
 //ChatGPT usage: Yes
 async function scrapeURL(url){
+    var response = null
     try {
-        const response = await axios.get(url)
+        response = await axios.get(url)
 
         if (response.status === 200){
             const html = response.data
@@ -60,13 +61,14 @@ async function scrapeURL(url){
             $('p').each ((index, element)=>{
                 para.push($(element).text());
             })
-            return {title, para}
-        }
-        else{
-            return {error:"Failed to retrieve"}
+            var retrievedArticle = {
+                title,
+                para
+            }
+            return retrievedArticle
         }
     } catch (error) {
-        return {error: error.message}
+        return (error)
     }
 }
 
@@ -79,11 +81,11 @@ async function bingNewsRetriever(query){
     
     var retrievedArticles =[]
     for (var article of result.value){
-        var articleEntry = new Object()
+        var articleEntry = {}
         articleEntry.url = article.url;
         var content = await scrapeURL(article.url)
         //skip if cannot scrape the content
-        if (content.para == undefined || content.para.length == 0){
+        if (content.para == undefined || content.para.length === 0){
             continue
         }
 
@@ -94,8 +96,8 @@ async function bingNewsRetriever(query){
             webContent += sentence
             sentenceNum += 1 
         })
-        var articleBody = await summarizeArticle(webContent, Math.round(sentenceNum/2))
-        if (articleBody, articleBody.e, articleBody.stack){
+        var articleBody = await summarizer.summarizeArticle(webContent, Math.round(sentenceNum/2))
+        if (articleBody.message && articleBody.stack){
             continue
         }
         else{
@@ -116,9 +118,7 @@ async function addToDb(articleList){
     for (var article of articleList){
         article.articleId = id
         id += 1
-	console.log(article)
-        await client.db("articledb").collection("articles").insertOne(article)
+        await server.client.db("articledb").collection("articles").insertOne(article)
     }
 }
-// bingNewsRetriever("")
 export {bingNewsRetriever}

@@ -40,10 +40,9 @@ import okhttp3.WebSocket;
 
 public class ForumActivity extends AppCompatActivity {
 
-    private ActivityForumBinding binding;
     private RecyclerView forumView;
     private EditText commentText;
-    private Button postButton;
+
     private String forumID;
     private List<Comment> comments;
     private ForumSocket webSocket;
@@ -53,6 +52,9 @@ public class ForumActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActivityForumBinding binding;
+        Button postButton;
 
         binding = ActivityForumBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -114,7 +116,7 @@ public class ForumActivity extends AppCompatActivity {
                             }
                         });
                     } catch (JSONException e) {
-                        throw new IOException(e);
+                        e.printStackTrace();
                     }
                 }
             }
@@ -140,13 +142,10 @@ public class ForumActivity extends AppCompatActivity {
             HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) throws IOException{
-
-                    String responseBody = response.body().string();
                     int statusCode = response.code();
                     //TODO: update statusCodes so they convey more information
                     if (statusCode == 200){
                         Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
-
                         runOnUiThread(new Runnable() {
                             // ChatGPT usage: No.
                             @Override
@@ -160,7 +159,7 @@ public class ForumActivity extends AppCompatActivity {
                 // ChatGPT usage: No.
                 @Override
                 public void onFailure(Exception e) {
-                    Log.e(TAG, "exception", e);
+                    e.printStackTrace();
                 }
             });
         }

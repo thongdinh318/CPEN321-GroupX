@@ -1,7 +1,5 @@
 package com.groupx.quicknews.ui.articles;
 
-import static android.app.PendingIntent.getActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -101,7 +99,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
                             article.setArticleRead(true);
                         }
                     }catch (Exception e) {
-                        throw new RuntimeException(e);
+                        e.printStackTrace();
                     }
                 }
 
