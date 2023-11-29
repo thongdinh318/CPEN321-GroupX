@@ -83,11 +83,12 @@ public class ForumActivity extends AppCompatActivity {
         });
     }
 
+    // ChatGPT usage: Yes
     private void setSocket(){
         try {
             socket = IO.socket(getString(R.string.server_socket));
         } catch (URISyntaxException e) {
-            Log.d(TAG, "Error connecting to socket");
+            Log.d(TAG, "Error connecting to socket:" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -106,8 +107,7 @@ public class ForumActivity extends AppCompatActivity {
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            // Handle successful connection
-            System.out.println("Socket.IO connected successfully");
+            Log.d(TAG, "Socket connected");
         }
     };
 
@@ -119,13 +119,14 @@ public class ForumActivity extends AppCompatActivity {
             getComments();
         }
     };
+
+    //ChatGPT usage: Yes
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            // Handle connection error
             Exception e = (Exception) args[0];
+            Log.d(TAG, "Socket.IO connection error: " + e.getMessage());
             e.printStackTrace();
-            System.out.println("Socket.IO connection error: " + e.getMessage());
         }
     };
 
