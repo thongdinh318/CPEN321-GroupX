@@ -19,7 +19,7 @@ app.use(express.json())
 
 const wss = new WebSocketServer({ port: 9000 });
 
-export const key = "super_secret_key"
+export const key = "super_secret_key" //replace this with the private key on the server
 
 var forum_id = 1;
 export var forumTheme = new Set(["General News", "Economics", "Education"])
@@ -119,11 +119,7 @@ app.use("/profile/:userId", (req,res,next)=>{
 app.get("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     var user = await userMod.getProfile(userId)
-    // if (isErr(user)){ 
-    //     res.status(400).send("Error when getting user profile")
-    // }
-    // else{
-    // }
+
     if (user.userId == undefined){
         res.status(400).send("User Profile not Found")
     }
@@ -139,11 +135,7 @@ app.get("/profile/:userId", async (req,res)=>{
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.params.userId
     var userProfile = await userMod.getProfile(userId);
-    // if (isErr(userProfile)){
-    //     res.status(400).send("Error when getting subscription list")
-    // }
-    // else{
-    // }
+
     if (userProfile.userId){
         res.status(200).send(userProfile.subscriptionList)
     }
@@ -159,11 +151,6 @@ app.get("/profile/:userId/history", async (req,res)=>{
     var userId = req.params.userId
 
     var userProfile = await userMod.getProfile(userId);
-    // if(isErr(userProfile)){
-    //     res.status(400).send("Error when getting reading history")
-    // }
-    // else{
-    // }
     if (userProfile.userId == undefined){
         res.status(400).send([])
     }
@@ -185,11 +172,7 @@ app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     const newProfile = req.body
     var succeed = await userMod.updateProfile(userId, newProfile)
-    // if (isErr(succeed)){
-    //     res.status(400).send("Error when updating user profile")
-    // }
-    // else{
-    // }
+
     if (!succeed){
         res.status(400).send("Cannot Update Profile/User not found")
     }
@@ -207,11 +190,6 @@ app.put("/profile/:userId/history", async (req,res)=>{
 	// console.log(newViewed)
 	// console.log(userId)
     var succeed = await userMod.updateHistory(userId, newViewed);
-    // if(isErr(succeed)){
-    //     res.status(400).send("Error when updating reading history")
-    // }
-    // else{
-    // }
     if (!succeed){
         res.status(400).send("Cannot Update History/User not found")
     }
@@ -230,11 +208,6 @@ app.get("/article/:articleId", async (req,res)=>{
     // console.log(articleId)
     var foundArticle = await articleMod.searchById(articleId);
 
-    // if(isErr(foundArticle)){
-    //     res.status(400).send("Error when Searching by id")
-    // }
-    // else{
-    // }
     if (foundArticle.articleId == undefined){
         res.status(400).send("Article Id Not Found")
     }
@@ -310,11 +283,7 @@ app.get("/article/filter/search", async(req,res)=>{
     }
     console.log(query)
     var foundArticles = await articleMod.searchByFilter(query)
-    // if(isErr(foundArticles)){
-    //     res.status(400).send("Error when Searching by filter")
-    // }
-    // else{
-    // }
+
     if (foundArticles.length == 0){
         res.status(400).send("No articles matched")
     }
@@ -332,12 +301,6 @@ app.get("/article/kwsearch/search", async(req,res)=>{
 
     var query = {$or: [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]}
     var foundArticles = await articleMod.searchByFilter(query);
-
-    // if(isErr(foundArticles)){
-    //     res.status(400).send("Error when searching with search bar")
-    // }
-    // else{
-    // }
     if (foundArticles.length === 0){
         res.status(400).send("No articles matched")
     }
@@ -374,8 +337,6 @@ app.get("/article/subscribed/:userId", async (req,res)=>{
         res.status(400).send("User not found")
         return
     }
-    // else{
-    // }
     const userSubList = userProfile.subscriptionList
     var query = new Object()
     if (userSubList.length != 0){
@@ -401,11 +362,6 @@ app.get("/article/subscribed/:userId", async (req,res)=>{
 // ChatGPT usage: No.
 app.get("/forums", async (req, res) =>{
     const result = await forum.getAllForums();
-    // if (isErr(result)){
-    //     res.status(400).send("Cannot get forum list")
-    // }
-    // else{
-    // }
     res.status(200).send(result);
 }); 
 
@@ -424,26 +380,27 @@ app.get("/forums/:forum_id", async (req, res) =>{
 });  
 
 
-app.use("/addComment/:forum_id", (req,res,next)=>{
-    if (req.headers.jwt == undefined){
-        res.status(400).send("No JWT in headers")
-        return
-    }
-    try {
-        var decoded = jwt.verify(req.headers.jwt, key)
-    } catch (err) {
-        res.status(403).send(err.message)
-        return
-    }
-    if (decoded.id === req.body.userId){
-        // console.log("Rigth token, proceed")
-        next()
-    }
-    else{
-        res.status(400).send("Wrong token")
-        return;
-    }
-})
+//Doesnt need this anymore since we use ws
+// app.use("/addComment/:forum_id", (req,res,next)=>{
+//     if (req.headers.jwt == undefined){
+//         res.status(400).send("No JWT in headers")
+//         return
+//     }
+//     try {
+//         var decoded = jwt.verify(req.headers.jwt, key)
+//     } catch (err) {
+//         res.status(403).send(err.message)
+//         return
+//     }
+//     if (decoded.id === req.body.userId){
+//         // console.log("Rigth token, proceed")
+//         next()
+//     }
+//     else{
+//         res.status(400).send("Wrong token")
+//         return;
+//     }
+// })
 // Post a comment to a forum
 // ChatGPT usage: No.
 // app.post("/addComment/:forum_id",async (req, res)=>{
@@ -599,11 +556,6 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 
         var result = sortRecommended(ratings, recommededArticles)
         res.status(200).send(result)
-        
-    // } catch (error) {
-    //     console.log(error)
-    //     res.status(400).send("Error when recommending articles")
-    // }
 })
 
 // <--- Recommendation module
