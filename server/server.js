@@ -8,10 +8,14 @@ import * as retriever from "./articles/retriever.js";
 import * as recommendation from "./articles/recommendation.js";
 import ForumModule from "./forum_module/forum_interface.js";
 const uri = "mongodb://127.0.0.1:27017"
+import WebSocket, {WebSocketServer} from "ws";
 export const client = new mongo.MongoClient(uri)
 
 export var app = express()
 app.use(express.json())
+
+const wss = new WebSocketServer({ port: 9000 });
+
 
 var forum_id = 1;
 
@@ -318,34 +322,80 @@ app.get("/forums/:forum_id", async (req, res) =>{
 
 // Post a comment to a forum
 // ChatGPT usage: No.
-app.post("/addComment/:forum_id",async (req, res)=>{
-    let commentData = req.body.commentData;
-    let userId = req.body.userId
-    const user = await userMod.getProfile(userId)
+// app.post("/addComment/:forum_id",async (req, res)=>{
+//     let commentData = req.body.commentData;
+//     let userId = req.body.userId
+//     const user = await userMod.getProfile(userId)
     
-    if(user.username == null){
-        res.status(500).send("Could not post comment: Invalid UserId");
-        return;
-    }
+//     if(user.username == null){
+//         res.status(500).send("Could not post comment: Invalid UserId");
+//         return;
+//     }
 
 
 
-    const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
+//     const result = await forum.addCommentToForum(parseInt(req.params.forum_id,10), commentData, user.username)
 
-    // if (isErr(result)){
-    //     res.status(500).send("Could not post comment")
-    // }
-    // else{
-    // }
-    if (result){
-        // make a get request to get the updated forum
-        const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
-        res.status(200).send(updatedForum);
-    }
-    else{
-        res.status(500).send("Could not post comment")
-    }
-} );
+//     // if (isErr(result)){
+//     //     res.status(500).send("Could not post comment")
+//     // }
+//     // else{
+//     // }
+//     if (result){
+//         // make a get request to get the updated forum
+//         const updatedForum =await forum.getForum(parseInt(req.params.forum_id),10);
+//         res.status(200).send(updatedForum);
+//     }
+//     else{
+//         res.status(500).send("Could not post comment")
+//     }
+// } );
+
+wss.on('connection', async (ws) => {
+    console.log('A new client Connected!');
+  
+    ws.on('message', async (comment, isBinary) =>{
+  
+      comment = JSON.parse(comment);
+  
+      // console.log(comment);
+  
+      let commentData = comment.content;
+      let userId = comment.userId;
+      const user = await userMod.getProfile(userId);
+      let forum_id = comment.forum_id;
+      let parent_id = comment.comment_id;
+      
+      const res = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
+  
+      // if res is err
+      if(!res) {
+  
+          ws.send("Could not post comment")
+
+      }else{
+          try{
+              const newForum = await forum.getForum(forum_id);
+              // console.log(newForum)
+              // ws.send(newForum, {binary : isBinary});
+              wss.clients.forEach(async (socketClient)=>{
+                // If the new comment does not appear on the user's screen
+                // try removing socketClient !== ws
+                  if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
+                      socketClient.send(newForum);
+                  }
+              });
+              
+          }catch{
+              ws.send("Could not post comment")
+          }
+      }
+      
+    });
+    
+  });
+
+
 
 // <--- FORUM MODULE
 
