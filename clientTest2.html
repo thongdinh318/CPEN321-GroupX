@@ -9,9 +9,10 @@
     Client2
     <button onclick="sendMessage()">Send Msg</button>
 </body>
-<script>
+<script src="/socket.io/socket.io.js">
     // Create WebSocket connection.
-    const socket = new WebSocket('ws://localhost:9000');
+    // const socket = new WebSocket('ws://localhost:9000');
+    const socket = io('ws://localhost:9000');
 
     // Connection opened
     socket.addEventListener('open', function (event) {

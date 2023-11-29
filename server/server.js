@@ -358,9 +358,15 @@ app.get("/forums/:forum_id", async (req, res) =>{
 //     }
 // } );
 
-wss.on('connection', async (ws) => {
+wss.on('connection', async (socket) => {
+
     console.log('A new client Connected!');
-    ws.on('message_to_forum', async (comment, isBinary) =>{
+
+    // socket.on("open_forum",(forumId)=>{
+    //     socket.join(forumId);
+    // })
+
+    socket.on('message_to_forum', async (comment, isBinary) =>{
         console.log("Received new message")  
         comment = JSON.parse(comment);
 
@@ -373,10 +379,22 @@ wss.on('connection', async (ws) => {
         let parent_id = comment.parent_id;
         const result = await forum.addCommentToForumOld(parseInt(forum_id,10), commentData, user.username)
         console.log(result)
+
         if (result){
             console.log("Listen!! server emits orders")
-            wss.sockets.emit("new_message", "Make Get requests, my children")
+            const newForum = await forum.getForum(forum_id);
+            //socket.brodcast.emit("new_message", newForum);
+            // socket.to(socket.id).emit("comment_id", comment_id);
+
+            socket.emit("new_message", newForum);
+            
+        } else{
+            socket.emit("new_message", "Could not post comment");
         }
+
+
+
+
         //   console.log(user)
         // const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id)
         // console.log(result)
