@@ -11,7 +11,7 @@ import okio.ByteString;
 
 public class ForumSocket extends WebSocketListener {
 
-    private static final String SOCKET_URL = "https://quicknews.canadacentral.cloudapp.azure.com:9000/";
+    private static final String SOCKET_URL = "ws://quicknews.canadacentral.cloudapp.azure.com:9000/";
     private WebSocket webSocket;
     private String TAG = "ForumSocket";
     public void openWebSocket() {
@@ -54,7 +54,13 @@ public class ForumSocket extends WebSocketListener {
 
     @Override
     public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-        Log.d(TAG, response.toString());
+        Log.d(TAG, "failed");
+        if (t != null) {
+            Log.d(TAG, t.toString());
+        }
+        if (response != null) {
+            Log.d(TAG, response.toString());
+        }
         // Handle failure
     }
 }
