@@ -368,31 +368,32 @@ wss.on('connection', async (socket) => {
 
     socket.on('message_to_forum', async (comment, isBinary) =>{
         console.log("Received new message")  
-        comment = JSON.parse(comment);
+        // comment = JSON.parse(comment);
 
-        console.log(comment);
+        // console.log(comment);
 
-        let commentData = comment.commentData;
-        let userId = comment.userId;
-        const user = await userMod.getProfile(userId);
-        let forum_id = comment.forum_id;
-        let parent_id = comment.parent_id;
-        const result = await forum.addCommentToForumOld(parseInt(forum_id,10), commentData, user.username)
-        console.log(result)
+        // let commentData = comment.commentData;
+        // let userId = comment.userId;
+        // const user = await userMod.getProfile(userId);
+        // let forum_id = comment.forum_id;
+        // let parent_id = comment.parent_id;
+        // const result = await forum.addCommentToForumOld(parseInt(forum_id,10), commentData, user.username)
+        // console.log(result)
 
-        if (result){
-            console.log("Listen!! server emits orders")
-            const newForum = await forum.getForum(forum_id);
-            //socket.brodcast.emit("new_message", newForum);
-            // socket.to(socket.id).emit("comment_id", comment_id);
+        // if (result){
+        //     console.log("Listen!! server emits orders")
+        //     const newForum = await forum.getForum(forum_id);
+        //     //socket.brodcast.emit("new_message", newForum);
+        //     // socket.to(socket.id).emit("comment_id", comment_id);
 
-            socket.emit("new_message", newForum);
+        //     socket.emit("new_message", newForum);
             
-        } else{
-            socket.emit("new_message", "Could not post comment");
-        }
+        // } else{
+        //     socket.emit("new_message", "Could not post comment");
+        // }
 
-
+ 
+        
 
 
         //   console.log(user)
@@ -466,7 +467,10 @@ export var server = app.listen(8081, (req,res)=>{
     var port = server.address().port
 })
 
-socket_server.listen(9000);
+socket_server.listen(9000, (req,res)=>{
+    var host = server.address().address
+    var port = server.address().port
+});
 
 // create https server
 // export var server = https.createServer(options, app).listen(8081)
