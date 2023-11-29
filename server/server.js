@@ -20,10 +20,10 @@ const wss = new WebSocketServer({ port: 9000 });
 var forum_id = 1;
 
 // Uncomment for https
-// var options = {
-//      key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-//      cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-// };
+var options = {
+      key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+      cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+};
 
 const forum = new ForumModule()
 
@@ -436,13 +436,13 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 
 // Main Function
 // ChatGPT usage: No.
-export var server = app.listen(8081, (req,res)=>{
+/*export var server = app.listen(8081, (req,res)=>{
     var host = server.address().address
     var port = server.address().port
-})
+})*/
 
 // create https server
-// export var server = https.createServer(options, app).listen(8081)
+export var server = https.createServer(options, app).listen(8081)
 async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
