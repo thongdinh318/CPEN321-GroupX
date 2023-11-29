@@ -364,7 +364,7 @@ wss.on('connection', async (ws) => {
       let userId = comment.userId;
       const user = await userMod.getProfile(userId);
       let forum_id = comment.forum_id;
-      let parent_id = comment.comment_id;
+      let parent_id = comment.parent_id;
       
       const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
 
@@ -394,17 +394,7 @@ wss.on('connection', async (ws) => {
           
       }
 
-
-
 	    
-      // if res is err
-      if(!res) {
-  
-          ws.send("Could not post comment")
-
-      }else{
-          
-      }
       
     });
     
