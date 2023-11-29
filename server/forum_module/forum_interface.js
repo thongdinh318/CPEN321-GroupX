@@ -14,7 +14,7 @@ function dateAdded(){
 export default class ForumModule{
     //ChatGPT usage: No
     construtor(){
-        // this.dateCreated = new Date();
+        this.dateCreated = new Date();
     }
 
     // DATABASE COMMUNICATION INTERFACES
@@ -88,22 +88,72 @@ export default class ForumModule{
     // }
 
     //ChatGPT usage: No
-    addCommentToForum = async function(forumId, commentData, username){
+    addCommentToForum = async function(forumId, commentData, username, parent_id){
         var datePosted = dateAdded();
+
+        let commentLevel;
+        let comment_id = forumId + "_" + (Date.now());
+
+        if(parent_id == null)
+            commentLevel = 0;
+
+        else{
+            // Find the parent post and get its level
+            // this does not work right now
+            let parentForum = await server.client.db("ForumDB").collection('forums').find({comments : {$elemMatch : {comment_id : parent_id}}}).toArray();
+            let parentComment = parentForum[0].comments.find(o => o.comment_id === parent_id);
+
+            let index = parentForum[0].comments.indexOf(parentComment);
+
+            //console.log(index);
+
+            parentForum[0].comments[index].childArray.push(comment_id);
+
+            //console.log(parentForum[0].comments);
+
+            const parentUpdate = await server.client.db('ForumDB').collection('forums').updateOne({ id : forumId}, {$set : {comments : parentForum[0].comments}});
+
+
+            
+
+            // If you try to reply to a comment at level 3 then it is proccessed as a sibling comment and not a child
+            if(parentComment.commentLevel == 3){
+                commentLevel = 3;
+                parent_id = parentComment.parent_id;
+
+
+            }else{
+                commentLevel = parentComment.commentLevel + 1;
+            }
+            
+        }
+        
+
         let comment = {
+            
+            commentLevel: commentLevel, // max 3
+            parent_id: parent_id, //Null if this is the first comment of the thread
+            comment_id : comment_id,
+            childArray : [],
+
             username,
             content : commentData,
             datePosted
         }
-        
-        const response = await server.client.db('ForumDB').collection('forums')
-                        .updateOne({ id : forumId}, { $push:{ comments : comment }});
 
-        return (response["modifiedCount"] !== 0);
-        // try{
-        // }catch(err){
-        //     // console.log(err);
-        //     return false;
-        // }
+
+
+        
+        try{
+            const response = await server.client.db('ForumDB').collection('forums')
+                            .updateOne({ id : forumId}, { $push:{ comments : comment }});
+            
+
+
+            return (response["modifiedCount"] !== 0);
+        }catch(err){
+            // console.log(err);
+            return false;
+        }
     }
 }
