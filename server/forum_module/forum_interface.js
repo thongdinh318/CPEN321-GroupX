@@ -87,13 +87,26 @@ export default class ForumModule{
         
     // }
 
+    addCommentToForumOld = async function(forumId, commentData, username){
+        var datePosted = dateAdded();
+        let comment = {
+            username,
+            content : commentData,
+            datePosted
+        }
+        const response = await server.client.db('ForumDB').collection('forums')
+                        .updateOne({ id : forumId}, { $push:{ comments : comment }});
+        console.log(response)
+        return (response["modifiedCount"] !== 0);
+    }
+
     //ChatGPT usage: No
     addCommentToForum = async function(forumId, commentData, username, parent_id){
         var datePosted = dateAdded();
 
         let commentLevel;
         let comment_id = forumId + "_" + (Date.now());
-
+        console.log(parent_id)
         if(parent_id == null)
             commentLevel = 0;
 
@@ -113,9 +126,6 @@ export default class ForumModule{
 
             const parentUpdate = await server.client.db('ForumDB').collection('forums').updateOne({ id : forumId}, {$set : {comments : parentForum[0].comments}});
 
-
-            
-
             // If you try to reply to a comment at level 3 then it is proccessed as a sibling comment and not a child
             if(parentComment.commentLevel == 3){
                 commentLevel = 3;
@@ -128,7 +138,6 @@ export default class ForumModule{
             
         }
         
-
         let comment = {
             
             commentLevel: commentLevel, // max 3
@@ -141,9 +150,6 @@ export default class ForumModule{
             datePosted
         }
 
-
-
-        
         try{
             const response = await server.client.db('ForumDB').collection('forums')
                             .updateOne({ id : forumId}, { $push:{ comments : comment }});
@@ -155,7 +161,7 @@ export default class ForumModule{
                 return "err";
         }catch(err){
             // console.log(err);
-            return "err";
+            return "err in catch";
         }
     }
 }

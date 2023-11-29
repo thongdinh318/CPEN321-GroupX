@@ -46,6 +46,7 @@ function isErr(error){
 //Verify and register users
 // ChatGPT usage: No.
 app.post("/signin", async (req,res)=>{
+    console.log("Signed in")
     const token = req.body.idToken;
     const payloadPromise =  userMod.verify(token)
     payloadPromise.then((payload)=>{
@@ -314,6 +315,7 @@ app.get("/forums", async (req, res) =>{
 // GET one specific forum, queried with forum id
 // ChatGPT usage: No.
 app.get("/forums/:forum_id", async (req, res) =>{
+    console.log("Get request on forum id")
     const result =await forum.getForum(parseInt(req.params.forum_id),10)
     // const result = await client.db("ForumDB").collection("forums").find({id : req.params.forum_id}).toArray();
     if (isErr(result) || result.length === 0){
@@ -358,49 +360,49 @@ app.get("/forums/:forum_id", async (req, res) =>{
 
 wss.on('connection', async (ws) => {
     console.log('A new client Connected!');
-  
-    ws.on('message', async (comment, isBinary) =>{
-  
-      comment = JSON.parse(comment);
-  
-      // console.log(comment);
-  
-      let commentData = comment.content;
-      let userId = comment.userId;
-      const user = await userMod.getProfile(userId);
-      let forum_id = comment.forum_id;
-      let parent_id = comment.parent_id;
-      
-      const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
+    ws.on('message_to_forum', async (comment, isBinary) =>{
+        console.log("Received new message")  
+        comment = JSON.parse(comment);
 
-  
-      if (result === "err"){
-        ws.send("Could not post comment");
-      }
-      else{
-          try{
-              const newForum = await forum.getForum(forum_id);
-              // console.log(newForum)
-              // ws.send(newForum, {binary : isBinary});
-              wss.clients.forEach(async (socketClient)=>{
-                // If the new comment does not appear on the user's screen
-                  if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
-                      socketClient.send(JSON.stringify(newForum));
+        console.log(comment);
 
-                  } else if (socketClient == ws){
+        let commentData = comment.commentData;
+        let userId = comment.userId;
+        const user = await userMod.getProfile(userId);
+        let forum_id = comment.forum_id;
+        let parent_id = comment.parent_id;
+        const result = await forum.addCommentToForumOld(parseInt(forum_id,10), commentData, user.username)
+        console.log(result)
+        if (result){
+            console.log("Listen!! server emits orders")
+            wss.sockets.emit("new_message", "Make Get requests, my children")
+        }
+        //   console.log(user)
+        // const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id)
+        // console.log(result)
+        // if (result === "err"){
+        // ws.send("Could not post comment");
+        // }
+        // else{
+        //     try{
+        //         const newForum = await forum.getForum(forum_id);
+        //         console.log(newForum)
+        //         // ws.send(newForum, {binary : isBinary});
+        //         wss.clients.forEach(async (socketClient)=>{
+        //         // If the new comment does not appear on the user's screen
+        //             if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
+        //                 socketClient.send(JSON.stringify(newForum));
 
-                    socketClient.send(result);
-                  }
-              });
-              
-          }catch{
-              ws.send("Could not post comment")
-          }
-          
-      }
+        //             } else if (socketClient == ws){
 
-	    
-      
+        //             socketClient.send(result);
+        //             }
+        //         });
+                
+        //     }catch{
+        //         ws.send("Could not post comment")
+        //     }   
+        // }
     });
     
   });
@@ -457,16 +459,16 @@ async function run(){
         console.log("Successfully connect to db")
         /* Use this for localhost test*/
 
-        client.db("userdb").collection("profile").deleteMany({})
-        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
-        client.db("ForumDB").collection("forums").deleteMany({})
+        // client.db("userdb").collection("profile").deleteMany({})
+        // client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        // client.db("ForumDB").collection("forums").deleteMany({})
 	
-        await userMod.initUDb()
-        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        // await userMod.initUDb()
+        // await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
-        await forum.createForum(forum_id++,"General News")
-        await forum.createForum(forum_id++, "Economics")
-        await forum.createForum(forum_id++, "Education")
+        // await forum.createForum(forum_id++,"General News")
+        // await forum.createForum(forum_id++, "Economics")
+        // await forum.createForum(forum_id++, "Education")
         // console.log("Retrieving some articles")
         // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
