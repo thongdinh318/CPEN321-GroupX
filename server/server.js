@@ -491,6 +491,38 @@ app.use("/recommend/article/:userId", (req,res,next)=>{
     }
 })
 
+function sortRecommended(ratingArr, articleArr){
+    var result = []
+    for (var i = 0; i < ratingArr.length; i++){
+        var mostRecentArticle = articleArr[i]
+        var mostRecentArticleIndex = i
+        for (var j = i; j < ratingArr.length; j++){
+            if (ratingArr[j][1] == ratingArr[i][1]){
+                if (articleArr[j].publishedDate > articleArr[i]){
+                    mostRecentArticle = articleArr[j]
+                    mostRecentArticleIndex = j
+                }
+            }
+            if (ratingArr[j][1] > ratingArr[i][1]){
+                break;
+            }
+        }
+        result.push(mostRecentArticle)
+        if (mostRecentArticleIndex != i){
+            // Swap in ratingArr
+            var temp = ratingArr[mostRecentArticleIndex]
+            ratingArr[mostRecentArticleIndex] = ratingArr[i]
+            ratingArr[i] = temp
+    
+            //swap in articleArr
+            temp = mostRecentArticle
+            articleArr[mostRecentArticleIndex] = articleArr[i]
+            articleArr[i] = temp
+        }
+    }
+    console.log(result)
+    return result
+}
 //Get recommended list of articles for a user
 // ChatGPT usage: No.
 app.get("/recommend/article/:userId", async (req,res)=>{
@@ -501,19 +533,17 @@ app.get("/recommend/article/:userId", async (req,res)=>{
             res.status(400).send("User not Found")
             return
         }
-        const recommeded = await recommendation.collaborativeFilteringRecommendations(userId);
-        console.log(recommeded)
+        var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
+        console.log(ratings)
         var recommededArticles = []
-        for (var i = 0; i < recommeded.length; ++i){
-            var articleId = recommeded[i][0]
+        for (var i = 0; i < ratings.length; ++i){
+            var articleId = ratings[i][0]
             var article = await articleMod.searchById(parseInt(articleId,10))
             recommededArticles.push(article)
         }
 
-        recommededArticles.sort((article1,article2)=>{
-            return article1.publishedDate - article2.publishedDate
-        })
-        res.status(200).send(recommededArticles)
+        var result = sortRecommended(ratings, recommededArticles)
+        res.status(200).send(result)
         
     // } catch (error) {
     //     console.log(error)
