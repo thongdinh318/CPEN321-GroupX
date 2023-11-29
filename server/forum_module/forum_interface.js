@@ -149,11 +149,13 @@ export default class ForumModule{
                             .updateOne({ id : forumId}, { $push:{ comments : comment }});
             
 
-
-            return (response["modifiedCount"] !== 0);
+            if(response["modifiedCount"] !== 0)
+                return (comment_id);
+            else
+                return "err";
         }catch(err){
             // console.log(err);
-            return false;
+            return "err";
         }
     }
 }
