@@ -19,10 +19,10 @@ export const key = "super_secret_key"
 var forum_id = 1;
 export var forumTheme = new Set(["General News", "Economics", "Education"])
 // Uncomment for https
-// var options = {
-//      key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-//      cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-// };
+var options = {
+      key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+      cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+};
 
 const forum = new ForumModule()
 
@@ -40,6 +40,7 @@ function isErr(error){
 //Verify and register users
 // ChatGPT usage: No.
 app.post("/signin", async (req,res)=>{
+    console.log("Sign in")
     const token = req.body.idToken;
     const payloadPromise =  userMod.verify(token)
     payloadPromise.then((payload)=>{
@@ -101,7 +102,7 @@ app.use("/profile/:userId", (req,res,next)=>{
         return
     }
     if (decoded.id === req.params.userId){
-        // console.log("Rigth token, proceed")
+        console.log("Rigth token, proceed")
         next()
     }
     else{
@@ -259,7 +260,7 @@ app.get("/article/filter/search", async(req,res)=>{
     var start = req.query.after
     var categories = req.query.categories
     var keyWord = req.query.kw
-
+    console.log(req.query)
     if (publisher == undefined || end == undefined || start == undefined || keyWord == undefined){
         res.status(400).send("Invalid query. Please try again")
         return;
@@ -556,13 +557,13 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 
 // Main Function
 // ChatGPT usage: No.
-export var server = app.listen(8081, (req,res)=>{
+/*export var server = app.listen(8081, (req,res)=>{
     var host = server.address().address
     var port = server.address().port
-})
+})*/
 
 // create https server
-// export var server = https.createServer(options, app).listen(8081)
+export var server = https.createServer(options, app).listen(8081)
 async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
