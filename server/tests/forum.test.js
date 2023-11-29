@@ -16,7 +16,7 @@ beforeAll(async()=>{
 });
 
 afterAll(async ()=>{
-    await fdb.collection('forums').deleteMany({});
+    // await fdb.collection('forums').deleteMany({});
     await connection.close();
     server.close()
 });
@@ -33,7 +33,7 @@ describe("GET /forums",()=>{
         // Expected output: article_array
         const res = await supertest(app).get("/forums");
         expect(res.status).toBe(200);
-        console.log(res.body)
+
         let resBody = res.body[0];
         delete resBody._id;
         delete resBody.dateCreated; // Because the date is accurate to the second
@@ -90,92 +90,60 @@ describe("GET /forums/:forum_id",  ()=>{
 describe("POST /addComment/:forum_id", ()=>{
     //Chat GPT Usage: No
     test("Successfully post a comment to a forum", async()=>{
-        // Input: forum_id that is contained in database, comment content, and the userId in the database
-        // Expected status code: 200
-        // Expected behavior: comment is added to the identified forum as a reply or as a new post.
-        // Expected output: The updated forum
-        let test_comment = {
-            userId : "0",
-            commentData : "test comment for POST /addComment"
-        };
-        const res = await supertest(app).post("/addComment/1").set("jwt","0").send(test_comment);
-        expect(res.status).toBe(200);
-        
-        let resBody = res.body[0];
-        delete resBody._id;
-        delete resBody.dateCreated; 
-        delete resBody["comments"][0].datePosted;
+            // Input: forum_id that is contained in database, comment content, and the userId in the database
+            // Expected status code: 200
+            // Expected behavior: comment is added to the identified forum as a reply or as a new post.
+            // Expected output: The updated forum
+            let test_comment = {
+                userId : "0",
+                commentData : "test comment for POST /addComment"
+            };
+            const res = await supertest(app).post("/addComment/1").send(test_comment);
+            expect(res.status).toBe(200);
+            
+            let resBody = res.body[0];
+            delete resBody._id;
+            delete resBody.dateCreated; 
+            delete resBody["comments"][0].datePosted;
 
-        expect(resBody["comments"][0].content).toStrictEqual(test_comment.commentData);
-        expect(resBody).toStrictEqual(forum1_after);
+            expect(resBody["comments"][0].content).toStrictEqual(test_comment.commentData);
+            expect(resBody).toStrictEqual(forum1_after);
 
-        await fdb.collection('forums').updateOne({ id : 1},{ $set:{ comments : [] }} );
-    });
-    //Chat GPT Usage: No
-    test("forum_id not in db: Can't post a comment to a forum", async()=>{
-        // Input: forum_id that is not in database, comment content, and the userId in the database.
+            await fdb.collection('forums').updateOne({ id : 1},{ $set:{ comments : [] }} );
+        });
+        //Chat GPT Usage: No
+        test("forum_id not in db: Can't post a comment to a forum", async()=>{
+            // Input: forum_id that is not in database, comment content, and the userId in the database.
+            // Expected status code: 500
+            // Expected behavior: Can't post comment.
+            // Expected output: Error message saying: "Could not post comment"
+            let test_comment = {
+                userId : "0", 
+                commentData : "test comment for POST /addComment"
+            };
+            
+                                                // invalid forum_id
+            const res = await supertest(app).post("/addComment/900").send(test_comment);
+            expect(res.status).toBe(500);
+            expect(res.text).toBe("Could not post comment");
+
+        });
+
+        // Input: forum_id that is contained in database, comment content, and a userId not in the database.
         // Expected status code: 500
         // Expected behavior: Can't post comment.
-        // Expected output: Error message saying: "Could not post comment"
-        let test_comment = {
-            userId : "0", 
-            commentData : "test comment for POST /addComment"
-        };
-        
-                                            // invalid forum_id
-        const res = await supertest(app).post("/addComment/900").set("jwt","0").send(test_comment);
-        expect(res.status).toBe(500);
-        expect(res.text).toBe("Could not post comment");
+        // Expected output: Error message saying: "Could not post comment: Invalid UserId"
+        //Chat GPT Usage: No
+        test("userId not in db: Can't post a comment to a forum", async()=>{
+            let test_comment = {
+                userId : "100", // inalid id
+                commentData : "test comment for POST /addComment"
+            };
 
-    });
+            const res = await supertest(app).post("/addComment/1").send(test_comment);
+            expect(res.status).toBe(500);
+            expect(res.text).toBe("Could not post comment: Invalid UserId");
 
-    // Input: forum_id that is contained in database, comment content, and a userId not in the database.
-    // Expected status code: 500
-    // Expected behavior: Can't post comment.
-    // Expected output: Error message saying: "Could not post comment: Invalid UserId"
-    //Chat GPT Usage: No
-    test("userId not in db: Can't post a comment to a forum", async()=>{
-        let test_comment = {
-            userId : "100", // inalid id
-            commentData : "test comment for POST /addComment"
-        };
+        });
 
-        const res = await supertest(app).post("/addComment/1").set("jwt","100").send(test_comment);
-        expect(res.status).toBe(500);
-        expect(res.text).toBe("Could not post comment: Invalid UserId");
-    });
-    
-    let test_comment = {
-        userId : "0",
-        commentData : "test comment for POST /addComment"
-    };
-    test("no header", async()=>{
-        // Input: a request with no jwt included in header
-        // Expected status code: 400
-        // Expected behavior: return error message
-        // Expected output: a message string: "No JWT in headers"
-        const res = await supertest(app).post("/addComment/1").send(test_comment)
-        expect(res.status).toBe(400)
-        expect(res.text).toStrictEqual("No JWT in headers")
-    })
-
-    test("expired token", async()=>{
-        // Input: a request with an expired token in the header
-        // Expected status code: 403
-        // Expected behavior: return error message
-        // Expected output: a message string: "Expired token"
-        const res = await supertest(app).get("/addComment/1").set("jwt","expired").send(test_comment)
-        expect(res.status).toBe(403)
-        expect(res.text).toStrictEqual("Expired Token")
-    })
-
-    test("mismatched token", async()=>{
-        // Input: a request with jwt belongs to the other user included in header
-        // Expected status code: 400
-        // Expected behavior: return error message
-        // Expected output: a message string: "Wrong token"
-        const res = await supertest(app).get("/addComment/1").set("jwt","2").send(test_comment)
-        expect(res.status).toBe(400)
-        expect(res.text).toStrictEqual("Wrong token")
-    })
 });

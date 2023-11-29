@@ -106,7 +106,7 @@ public class SubscriptionActivity extends AppCompatActivity {
     private void getSubscriptionList () {
         //GET REQUEST GET THE SUB LIST
         String getUrl = getString(R.string.server_dns) +"profile/"+ userId+"/subscriptions";
-        HttpClient.getRequestWithJWT(getUrl, new HttpClient.ApiCallback() {
+        HttpClient.getRequest(getUrl, new HttpClient.ApiCallback() {
             @Override
             public void onResponse(Response response) {
                 try {
@@ -160,7 +160,7 @@ public class SubscriptionActivity extends AppCompatActivity {
             try {
                 JSONObject json = new JSONObject();
                 json.put("subscriptionList", newSubArr);
-                HttpClient.putRequestWithJWT(putUrl, json.toString(), new HttpClient.ApiCallback() {
+                HttpClient.putRequest(putUrl, json.toString(), new HttpClient.ApiCallback() {
                     @Override
                     public void onResponse(Response response) {
                         if (response.code() == 200){

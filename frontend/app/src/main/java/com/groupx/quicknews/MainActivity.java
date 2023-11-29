@@ -332,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getRequestAndSwitchViews(String url,  Class<?> targetActivity){
-        HttpClient.getRequestWithJWT(url, new HttpClient.ApiCallback() {
+        HttpClient.getRequest(url, new HttpClient.ApiCallback() {
             // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {

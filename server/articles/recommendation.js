@@ -9,6 +9,10 @@ export async function collaborativeFilteringRecommendations(userId) {
   const users = userInfo.users;
   const items = await getArticleIds();
 
+  // console.log(userItemData);
+  // console.log(users);
+  // console.log(items);
+
   const userItemMatrix = {};
 
   for(const user of users){
@@ -39,7 +43,7 @@ export async function collaborativeFilteringRecommendations(userId) {
   
     // Sort the recommendations by predicted rating in descending order.
     const sortedRecommendations = Object.entries(recommendations).sort((a, b) => b[1] - a[1]);
-    console.log(sortedRecommendations)
+  
     return sortedRecommendations;
   }
 

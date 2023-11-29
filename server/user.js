@@ -2,7 +2,6 @@ import * as OAuth2Client from 'google-auth-library'
 import * as server from "./server.js"
 const CLIENT_ID = "474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com"//TODO: replace witht the real client id
 const ggClient = new OAuth2Client.OAuth2Client(CLIENT_ID);
-import jwt from "jsonwebtoken";
 // const client = server.client
 
 //Default user setting
@@ -76,16 +75,11 @@ async function registerNewUser(userId, username, userEmail){
     const userProfile = await checkAvailable(userId)
 
     if (userProfile.userId){
-        await server.client.db("tokendb").collection("jwt").deleteOne({userId: userProfile.userId})
-        var token = jwt.sign({id:userId, exp:"30 days"}, server.key)
-        await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
-        return ({user: userProfile, jwt: token})
+        return userProfile
     }
     var newUser = createNewUser(userId, username,userEmail)
-    var token = jwt.sign({id:userId, exp:"30 days"}, server.key)
-    await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
     await server.client.db("userdb").collection("profile").insertOne(newUser);
-    return ({user: newUser, jwt: token})
+    return (newUser)
 
 }
 
