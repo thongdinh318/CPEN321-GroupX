@@ -104,12 +104,13 @@
     <string name="sub_button_caption">Subscribe</string>
     <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
     <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
+    <string name="server_socket">https://quicknews.canadacentral.cloudapp.azure.com:9000/</string>
     <string name="search_hint">Search articles</string>
     <string name="publisher_box">Publisher</string>
     <string name="categories_box">Category</string>
     <string name="from_picker">From</string>
     <string name="to_picker">To</string>
-    <string name="date">mm dd yyyy</string>
+    <string name="date">mm/dd/yyyy</string>
     <string name="input_box">Input</string>
     <string name="filter_search_button">Search By Filters</string>
     <string name="get_recommended_button">Recommended Articles</string>

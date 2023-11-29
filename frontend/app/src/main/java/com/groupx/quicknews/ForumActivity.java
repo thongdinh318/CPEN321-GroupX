@@ -17,22 +17,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groupx.quicknews.databinding.ActivityForumBinding;
+import com.groupx.quicknews.helpers.ForumSocket;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.forum.Comment;
 import com.groupx.quicknews.ui.forum.CommentsViewAdapter;
-import com.groupx.quicknews.ui.forumlist.Forum;
-import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.WebSocket;
+
 
 public class ForumActivity extends AppCompatActivity {
 
@@ -42,6 +46,7 @@ public class ForumActivity extends AppCompatActivity {
     private Button postButton;
     private String forumID;
     private List<Comment> comments;
+    private ForumSocket webSocket;
     final static String TAG = "ForumActivity";
 
     // ChatGPT usage: No.
@@ -52,6 +57,7 @@ public class ForumActivity extends AppCompatActivity {
         binding = ActivityForumBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         forumID = getIntent().getStringExtra("forumID");
+        webSocket = new ForumSocket();
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
@@ -75,6 +81,7 @@ public class ForumActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         getComments();
+        webSocket.openWebSocket();
     }
 
     // ChatGPT usage: No.
