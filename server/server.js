@@ -368,6 +368,7 @@ wss.on('connection', async (socket) => {
 
     socket.on('message_to_forum', async (comment, isBinary) =>{
         console.log("Received new message")  
+        socket.emit("Sample text...");
         // comment = JSON.parse(comment);
 
         // console.log(comment);
