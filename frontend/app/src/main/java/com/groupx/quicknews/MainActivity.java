@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         return query;
     }
 
-    private void getRequestAndSwitchViews(String url,  Class<?> targetActivity){
+    private void getArticlesAndSwitchViews(String url,  Class<?> targetActivity){
         HttpClient.getRequestWithJWT(url, new HttpClient.ApiCallback() {
             // ChatGPT usage: No.
             @Override

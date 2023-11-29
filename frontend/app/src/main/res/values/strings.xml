@@ -108,9 +108,9 @@
     <string name="search_hint">Search articles</string>
     <string name="publisher_box">Publisher</string>
     <string name="categories_box">Category</string>
-    <string name="from_picker">From</string>
-    <string name="to_picker">To</string>
-    <string name="date">mm dd yyyy</string>
+    <string name="from_picker">From:</string>
+    <string name="to_picker">To:</string>
+    <string name="date">mm/dd/yyyy</string>
     <string name="input_box">Input</string>
     <string name="filter_search_button">Search</string>
     <string name="get_recommended_button">Recommended Articles</string>
