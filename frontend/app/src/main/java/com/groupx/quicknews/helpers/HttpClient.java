@@ -89,4 +89,25 @@ public class HttpClient {
             }
         });
     }
+
+    // ChatGPT usage: No.
+    public static void  deleteRequest(String url, ApiCallback callback) {
+
+        Request request = new Request.Builder()
+                .url(url)
+                .delete()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(response);
+            }
+        });
+    }
 }

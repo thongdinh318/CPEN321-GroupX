@@ -398,9 +398,30 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             return true;
         }
+        else if( itemId == R.id.action_logout ) {
+            signOut();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    public void signOut () {
+        String url = getString(R.string.server_dns) + "";
+        Log.d(TAG,url);
+        boolean success;
+        HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+            @Override
+            public void onResponse(Response response) throws IOException {
+                Log.d(TAG, response.body().string());
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+            }
+        });
+    }
     // ChatGPT usage: No.
     public static List<Article> getArticleList(){
         return articleList;
