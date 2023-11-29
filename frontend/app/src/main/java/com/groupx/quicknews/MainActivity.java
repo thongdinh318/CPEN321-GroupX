@@ -405,10 +405,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signOut () {
-        String url = getString(R.string.server_dns) + "";
+        String url = getString(R.string.server_dns) + "/signout";
         Log.d(TAG,url);
         boolean success;
-        HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+        HttpClient.deleteRequestWithJWT(url, new HttpClient.ApiCallback() {
             @Override
             public void onResponse(Response response) throws IOException {
                 Log.d(TAG, response.body().string());

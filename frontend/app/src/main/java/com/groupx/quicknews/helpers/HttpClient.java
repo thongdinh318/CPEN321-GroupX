@@ -116,7 +116,7 @@ public class HttpClient {
 
     }
 
-    public static void  putRequestWithJWT(String url, String json, ApiCallback callback) {
+    public static void putRequestWithJWT(String url, String json, ApiCallback callback) {
         MediaType JSON = MediaType.parse("application/json");
         String jwt = LoginActivity.getJWT();
         RequestBody requestBody = RequestBody.create(json, JSON);
@@ -165,10 +165,11 @@ public class HttpClient {
     }
 
       // ChatGPT usage: No.
-    public static void  deleteRequest(String url, ApiCallback callback) {
-
+    public static void deleteRequestWithJWT(String url, ApiCallback callback) {
+        String jwt = LoginActivity.getJWT();
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("jwt", jwt)
                 .delete()
                 .build();
 
