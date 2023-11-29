@@ -1,7 +1,14 @@
 import axios from "axios";
+import "dotenv/config.js";
 const  endpoint = "https://quicknewsummarymodule.cognitiveservices.azure.com/language/analyze-text/jobs?api-version=2023-04-01";
-const key = process.env.LangServiceKey;
+var key =""
+if (process.env.LangServiceKey == undefined){
+  key = "LangServiceKey";
 
+}
+else{
+  key = process.env.LangServiceKey
+}
 const sumReqBody = {
   "displayName": "Document ext Summarization Task Example",
   "analysisInput": {
@@ -38,13 +45,11 @@ export const summarizeArticle = async function(text, sentenceCount){
         })
 
     let path = await response.headers["operation-location"];
-    // console.log(path);
     var summary;
     
     do{
         await sleep(1000);
         summary = await getSummary(path);
-        //console.log(summary.status);
     }while(summary.status !== "succeeded" );
     
     //TODO: need to handle summary.task.item[0].result == undefined
@@ -52,7 +57,6 @@ export const summarizeArticle = async function(text, sentenceCount){
     return summary.tasks.items[0].results.documents[0].summaries[0].text;
 
   }catch(err){
-      // console.log(err)
       return err
   }
 }

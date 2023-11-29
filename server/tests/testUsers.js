@@ -16,12 +16,7 @@ const testUser1 = {
         {
             "articleId": 3,
 			"views": 1
-		},
-        {
-            "articleId": 4,
-			"views": 1
 		}
-
     ]
 }
 const testUser2 = { 
@@ -51,4 +46,26 @@ const testUser3 = {
 	"history":[]
 }
 
-export {testUser1, testUser2, testUser3}
+const testUser4 = { 
+	"userId": '4',
+    "username": "test4",
+	"dob": "11/19/2024",
+	"email":"test4@gmail.com",
+	"subscriptionList":["yahoo"],
+	"history":[
+		{
+            "articleId": 1,
+			"views": 100
+		},
+        {
+            "articleId": 2,
+			"views": 100
+		},
+        {
+            "articleId": 3,
+			"views": 100
+		}
+	]
+}
+
+export {testUser1, testUser2, testUser3, testUser4}

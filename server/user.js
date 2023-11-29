@@ -35,12 +35,7 @@ function createNewUser(userId, userName, userEmail){
     var newUser = JSON.parse(JSON.stringify(defUser))
     newUser.userId = userId;
     newUser._id = userId;
-    if (userName == undefined){
-        newUser.username = "default user name"
-    }
-    else{
-        newUser.username = userName
-    }
+    newUser.username = userName
     newUser.email = userEmail
     return newUser
 }
@@ -62,6 +57,7 @@ function verify(token){
             {idToken: token, audience: CLIENT_ID},
             function(err, login){
                 if (err){
+                    // console.log(err)
                     throw err
                 }
                 if (login){
@@ -69,7 +65,7 @@ function verify(token){
                     resolve(payload)
                 }
                 else{
-                    reject("invalid token")
+                    reject(new Error("invalid token"))
                 }
             })
     })
@@ -79,10 +75,8 @@ async function registerNewUser(userId, username, userEmail){
     const userProfile = await checkAvailable(userId)
 
     if (userProfile.userId){
-        console.log("Old User")
         return userProfile
     }
-    console.log("New User")
     var newUser = createNewUser(userId, username,userEmail)
     await server.client.db("userdb").collection("profile").insertOne(newUser);
     return (newUser)
@@ -126,7 +120,7 @@ async function updateHistory(userId, newViewed){
     // console.log("Updating history for user " + userId)
     // try {
         var user = await checkAvailable(userId)
-        console.log(user)
+        // console.log(user)
         if (user.userId  == undefined){
             return false
         }
@@ -184,7 +178,7 @@ async function getAllUserHistory(){
     var result = {};
     result.users = userList;
     result.userItemData = userItemData
-    console.log(result)
+    // console.log(result)
     return result
 }
 // <---- Interfaces with other modules

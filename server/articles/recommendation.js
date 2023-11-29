@@ -9,9 +9,9 @@ export async function collaborativeFilteringRecommendations(userId) {
   const users = userInfo.users;
   const items = await getArticleIds();
 
-  console.log(userItemData);
-  console.log(users);
-  console.log(items);
+  // console.log(userItemData);
+  // console.log(users);
+  // console.log(items);
 
   const userItemMatrix = {};
 

@@ -39,10 +39,11 @@ export async function searchByFilter(query){
         var foundArticles  = server.client.db("articledb").collection("articles").find(query);
         foundArticles = await foundArticles.toArray()
         
-        if (foundArticles === undefined || foundArticles.length === 0){
+        // console.log(foundArticles)
+        if (foundArticles == undefined || foundArticles.length == 0){
             return []
         }
-
+        
         if (foundArticles.length > 10){
             foundArticles = foundArticles.slice(0,9)
         }
