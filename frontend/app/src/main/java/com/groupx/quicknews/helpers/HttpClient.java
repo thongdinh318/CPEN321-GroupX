@@ -2,6 +2,8 @@ package com.groupx.quicknews.helpers;
 
 import android.util.Log;
 
+import com.groupx.quicknews.LoginActivity;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -90,7 +92,79 @@ public class HttpClient {
         });
     }
 
-    // ChatGPT usage: No.
+  
+    public static void  getRequestWithJWT(String url, ApiCallback callback) {
+        String jwt = LoginActivity.getJWT();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("jwt",jwt)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "exception", e);
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(response);
+            }
+        });
+
+    }
+
+    public static void  putRequestWithJWT(String url, String json, ApiCallback callback) {
+        MediaType JSON = MediaType.parse("application/json");
+        String jwt = LoginActivity.getJWT();
+        RequestBody requestBody = RequestBody.create(json, JSON);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("jwt",jwt)
+                .put(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(response);
+            }
+        });
+    }
+
+    public static void  postRequestWithJWT(String url, String json, ApiCallback callback) {
+        MediaType JSON = MediaType.parse("application/json");
+        String jwt = LoginActivity.getJWT();
+        RequestBody requestBody = RequestBody.create(json, JSON);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("jwt", jwt)
+                .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(response);
+            }
+        });
+    }
+
+      // ChatGPT usage: No.
     public static void  deleteRequest(String url, ApiCallback callback) {
 
         Request request = new Request.Builder()

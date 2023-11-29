@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static GoogleSignInAccount account;
     private static String userId;
+    private static String token;
     private int RC_SIGN_IN = 1;
     final static String TAG = "LoginActivity";
 
@@ -124,13 +125,16 @@ public class LoginActivity extends AppCompatActivity {
                 // ChatGPT usage: No.
                 @Override
                 public void onResponse(Response response) {
+//                    Log.d(TAG, response.toString());
                     try{
                         int statusCode = response.code();
                         if (statusCode == 200){
                             String res = response.body().string();
                             res = res.replace("\"", "\'");
-                            JSONObject user = new JSONObject(res);
-                            Log.d(TAG, res);
+                            JSONObject jsonRes = new JSONObject(res);
+                            JSONObject user = jsonRes.getJSONObject("user");
+                            token = jsonRes.getString("jwt");
+
                             if (user.has("userId")){
                                 userId = user.getString("userId");
                                 updateUI();
@@ -171,4 +175,5 @@ public class LoginActivity extends AppCompatActivity {
     public static String getUserId() {
         return userId;
     }
+    public static String getJWT(){return token;}
 }

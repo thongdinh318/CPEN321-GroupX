@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initNavigationBar() {
         BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
-
         bottomNavigationView.setSelectedItemId(R.id.action_home);
         bottomNavigationView.findViewById(R.id.action_home).setEnabled(false);
 
@@ -205,8 +204,8 @@ public class MainActivity extends AppCompatActivity {
         return query;
     }
 
-    private void getArticlesAndSwitchViews(String url, Class<?> targetActivity){
-        HttpClient.getRequest(url, new HttpClient.ApiCallback() {
+    private void getRequestAndSwitchViews(String url,  Class<?> targetActivity){
+        HttpClient.getRequestWithJWT(url, new HttpClient.ApiCallback() {
             // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {
