@@ -87,7 +87,7 @@ public class SubscribedArticlesActivity extends AppCompatActivity {
 
     public void getSubscribedArticles() {
         String getUrl = getString(R.string.server_dns) +"article/subscribed/"+ LoginActivity.getUserId();
-        HttpClient.getRequest(getUrl, new HttpClient.ApiCallback() {
+        HttpClient.getRequestWithJWT(getUrl, new HttpClient.ApiCallback() {
             // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {
@@ -103,8 +103,9 @@ public class SubscribedArticlesActivity extends AppCompatActivity {
                             // ChatGPT usage: No.
                             @Override
                             public void run() {
-                                articleView.setLayoutManager(new LinearLayoutManager(SubscribedArticlesActivity.this));
-                                articleView.setAdapter(new ArticlesViewAdapter(context, articles));
+                                Log.d(TAG, articles.toString());
+                                //articleView.setLayoutManager(new LinearLayoutManager(SubscribedArticlesActivity.this));
+                                //articleView.setAdapter(new ArticlesViewAdapter(context, articles));
                             }
                         });
                     }

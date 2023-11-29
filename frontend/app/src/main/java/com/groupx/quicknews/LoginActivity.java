@@ -14,6 +14,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.groupx.quicknews.helpers.HttpClient;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -133,11 +135,11 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, res);
                             res = res.replace("\"", "\'");
                             JSONObject jsonRes = new JSONObject(res);
-                            //JSONObject user = jsonRes.getJSONObject("user");
+                            JSONObject user = jsonRes.getJSONObject("user");
                             token = jsonRes.getString("jwt");
 
-                            if (jsonRes.has("userId")){
-                                userId = jsonRes.getString("userId");
+                            if (user.has("userId")){
+                                userId = user.getString("userId");
                                 updateUI();
                             }
                         }

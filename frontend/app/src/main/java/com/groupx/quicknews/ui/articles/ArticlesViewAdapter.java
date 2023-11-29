@@ -21,6 +21,7 @@ import com.groupx.quicknews.helpers.HttpClient;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import okhttp3.Response;
@@ -77,9 +78,11 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         holder.articleTitle.setText(articles.get(position).getTitle());
         holder.articlePublisher.setText(articles.get(position).getPublisher());
         holder.articleSynopsis.setText(articles.get(position).getSynopsis());
-
-        String date = new SimpleDateFormat("dd/MM/yyyy").format(articles.get(position).getDatePublished());
-        holder.articleDatePublished.setText(date);
+        Date date = articles.get(position).getDatePublished();
+        if (date != null) {
+            String formatedDate = new SimpleDateFormat("dd/MM/yyyy").format(date);
+            holder.articleDatePublished.setText(formatedDate);
+        }
     }
 
     // ChatGPT usage: No.

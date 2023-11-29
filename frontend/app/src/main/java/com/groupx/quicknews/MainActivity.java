@@ -1,5 +1,6 @@
 package com.groupx.quicknews;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -25,6 +26,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.groupx.quicknews.databinding.ActivityMainBinding;
 import com.groupx.quicknews.helpers.HttpClient;
@@ -211,10 +217,11 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Response response) {
                 String json = null;
                 try {
-                    Log.d(TAG, String.valueOf(response.code()));
+                    Log.d(TAG, "get articles:" +String.valueOf(response.code()));
                     // Status code check
                     if (response.code() == 400){
                         String msg = response.body().string();
+                        Log.d(TAG, msg);
                         runOnUiThread(new Runnable() {
                             public void run() {
                                 Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
@@ -398,22 +405,21 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if( itemId == R.id.action_logout ) {
-            signOut();
+            signOutServer();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void signOut () {
-        String url = getString(R.string.server_dns) + "/signout";
+    private void signOutServer() {
+        String url = getString(R.string.server_dns) + "signout";
         Log.d(TAG,url);
         boolean success;
         HttpClient.deleteRequestWithJWT(url, new HttpClient.ApiCallback() {
             @Override
             public void onResponse(Response response) throws IOException {
                 Log.d(TAG, response.body().string());
-                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intent);
+                signOutGoogle();
             }
 
             @Override
@@ -421,6 +427,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void signOutGoogle() {
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getApplicationContext(), GoogleSignInOptions.DEFAULT_SIGN_IN);
+        googleSignInClient.signOut()
+            .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            });
+    }
+
     // ChatGPT usage: No.
     public static List<Article> getArticleList(){
         return articleList;
