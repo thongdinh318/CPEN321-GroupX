@@ -19,8 +19,8 @@ app.use(express.json())
 
 const wss = new WebSocketServer({ port: 9000 });
 
-export const key = "super_secret_key" //replace this with the private key on the server
-
+export const key = fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem") //replace this with the private key on the server
+const cert = fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
 var forum_id = 1;
 export var forumTheme = new Set(["General News", "Economics", "Education"])
 // Uncomment for https
@@ -67,7 +67,7 @@ app.use("/signout", (req,res,next)=>{
         res.status(400).send("No JWT in headers")
     }
     try {
-        var decoded = jwt.verify(req.headers.jwt, key)
+        var decoded = jwt.verify(req.headers.jwt, cert)
     } catch (err) {
         res.status(403).send(err.message)
         return
@@ -100,7 +100,7 @@ app.use("/profile/:userId", (req,res,next)=>{
         res.status(400).send("No JWT in headers")
     }
     try {
-        var decoded = jwt.verify(req.headers.jwt, key)
+        var decoded = jwt.verify(req.headers.jwt, cert)
     } catch (err) {
         res.status(403).send(err.message)
         return
@@ -315,7 +315,7 @@ app.use("/article/subscribed/:userId", (req,res,next)=>{
         return
     }
     try {
-        var decoded = jwt.verify(req.headers.jwt, key)
+        var decoded = jwt.verify(req.headers.jwt, cert)
     } catch (err) {
         res.status(403).send(err.message)
         return
@@ -489,7 +489,7 @@ app.use("/recommend/article/:userId", (req,res,next)=>{
         res.status(400).send("No JWT in headers")
     }
     try {
-        var decoded = jwt.verify(req.headers.jwt, key)
+        var decoded = jwt.verify(req.headers.jwt, cert)
     } catch (err) {
         res.status(403).send(err.message)
         return
