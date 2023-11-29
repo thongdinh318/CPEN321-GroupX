@@ -366,29 +366,44 @@ wss.on('connection', async (ws) => {
       let forum_id = comment.forum_id;
       let parent_id = comment.comment_id;
       
-      const res = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
-  
-      // if res is err
-      if(!res) {
-  
-          ws.send("Could not post comment")
+      const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
 
-      }else{
+  
+      if (result === "err"){
+        ws.send("Could not post comment");
+      }
+      else{
           try{
               const newForum = await forum.getForum(forum_id);
               // console.log(newForum)
               // ws.send(newForum, {binary : isBinary});
               wss.clients.forEach(async (socketClient)=>{
                 // If the new comment does not appear on the user's screen
-                // try removing socketClient !== ws
                   if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
                       socketClient.send(newForum);
+
+                  } else if (socketClient == ws){
+
+                    socketClient.send(result);
                   }
               });
               
           }catch{
               ws.send("Could not post comment")
           }
+          
+      }
+
+
+
+	    
+      // if res is err
+      if(!res) {
+  
+          ws.send("Could not post comment")
+
+      }else{
+          
       }
       
     });
