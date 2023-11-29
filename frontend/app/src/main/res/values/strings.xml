@@ -103,8 +103,12 @@
     <string name="news_publisher_name">News Publisher</string>
     <string name="sub_button_caption">Subscribe</string>
     <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
-    <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
-    <string name="server_socket">https://quicknews.canadacentral.cloudapp.azure.com:9000/</string>
+<!--    <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>-->
+<!--    <string name="server_socket">https://quicknews.canadacentral.cloudapp.azure.com:9000/</string>-->
+
+    <string name="server_dns">http://10.0.2.2:8081/</string> <!-- For Local test -->
+    <string name="server_socket">http://10.0.2.2:9000/</string> <!-- For Local test -->
+
     <string name="search_hint">Search articles</string>
     <string name="publisher_box">Publisher</string>
     <string name="categories_box">Category</string>

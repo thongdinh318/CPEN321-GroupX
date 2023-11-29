@@ -59,7 +59,7 @@ public class ForumActivity extends AppCompatActivity {
 
         ActivityForumBinding binding;
         Button postButton;
-
+        Log.d(TAG, "Enter forum activity");
         binding = ActivityForumBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         forumID = getIntent().getStringExtra("forumID");
@@ -76,7 +76,8 @@ public class ForumActivity extends AppCompatActivity {
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                postComment(commentText.getText().toString());
+//                postComment(commentText.getText().toString());
+                emitComment(commentText.getText().toString());
                 commentText.getText().clear();
             }
         });
@@ -99,6 +100,7 @@ public class ForumActivity extends AppCompatActivity {
         socket.connect();
         socket.on(Socket.EVENT_CONNECT, onConnect);
         socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        socket.on("new_message", onNewMessage);
     }
 
     private Emitter.Listener onConnect = new Emitter.Listener() {
@@ -109,6 +111,14 @@ public class ForumActivity extends AppCompatActivity {
         }
     };
 
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            //TODO: do something when a new message is added to the forum
+            Log.d(TAG,"New message, update");
+            getComments();
+        }
+    };
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -135,7 +145,7 @@ public class ForumActivity extends AppCompatActivity {
                         JSONArray jsonArray = new JSONArray(responseBody);
                         JSONObject json = jsonArray.getJSONObject(0);
                         JSONArray jsonComments = json.getJSONArray("comments");
-
+                        Log.d(TAG,jsonComments.toString());
                         //update forum comment view
                         ObjectMapper mapper = new ObjectMapper();
                         comments = Arrays.asList(mapper.readValue(jsonComments.toString(), Comment[].class));
@@ -199,6 +209,19 @@ public class ForumActivity extends AppCompatActivity {
         catch(Exception e) {
             Log.e(TAG, "exception", e);
         }
+    }
+
+    private void emitComment(String comment){
+        //Posting comment to the server
+        JSONObject json = new JSONObject();
+        try {
+            json.put("userId", LoginActivity.getUserId());
+            json.put("commentData", comment);
+            json.put("forum_id", forumID);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        socket.emit("message_to_forum", json.toString());
     }
 
     //https://dev.to/ahmmedrejowan/hide-the-soft-keyboard-and-remove-focus-from-edittext-in-android-ehp
