@@ -130,7 +130,7 @@ public class ForumActivity extends AppCompatActivity {
             JSONObject json = new JSONObject();
             json.put("userId", LoginActivity.getUserId());
             json.put("commentData", comment);
-            HttpClient.postRequest(url, json.toString(), new HttpClient.ApiCallback(){
+            HttpClient.postRequestWithJWT(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
                 public void onResponse(Response response) throws IOException{
                     int statusCode = response.code();
