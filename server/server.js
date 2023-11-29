@@ -9,12 +9,13 @@ import * as recommendation from "./articles/recommendation.js";
 import ForumModule from "./forum_module/forum_interface.js";
 const uri = "mongodb://127.0.0.1:27017"
 import WebSocket, {WebSocketServer} from "ws";
+import {Server} from "socket.io";
+import http from "http"
 export const client = new mongo.MongoClient(uri)
 
 export var app = express()
 app.use(express.json())
 
-const wss = new WebSocketServer({ port: 9000 });
 
 
 var forum_id = 1;
@@ -24,6 +25,10 @@ var forum_id = 1;
 //      key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
 //      cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
 // };
+
+// const wss = new WebSocketServer({ port: 9000 });
+const socket_server = http.createServer(app);
+const wss = new Server(socket_server);
 
 const forum = new ForumModule()
 
@@ -380,7 +385,7 @@ wss.on('connection', async (ws) => {
               wss.clients.forEach(async (socketClient)=>{
                 // If the new comment does not appear on the user's screen
                   if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
-                      socketClient.send(newForum);
+                      socketClient.send(JSON.stringify(newForum));
 
                   } else if (socketClient == ws){
 
@@ -440,6 +445,8 @@ export var server = app.listen(8081, (req,res)=>{
     var host = server.address().address
     var port = server.address().port
 })
+
+socket_server.listen(9000);
 
 // create https server
 // export var server = https.createServer(options, app).listen(8081)
