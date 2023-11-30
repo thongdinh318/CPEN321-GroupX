@@ -19,47 +19,28 @@ import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static androidx.test.internal.util.Checks.checkNotNull;
 import static com.groupx.quicknews.util.Util.atPosition;
 import static com.groupx.quicknews.util.Util.childAtPosition;
 import static com.groupx.quicknews.util.Util.getCurrentActivity;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
-import androidx.test.runner.lifecycle.Stage;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.groupx.quicknews.BaseActivity;
-import com.groupx.quicknews.ForumActivity;
-import com.groupx.quicknews.ForumsListFragment;
 import com.groupx.quicknews.R;
-import com.groupx.quicknews.util.RecyclerViewIdlingResource;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -109,12 +90,10 @@ public class ForumActivityTest {
         buttonPostText = resources.getString(R.string.button_post);
     }
 
-        @Test
-    public void forumListLoadedTest() {
+    @Test
+    public void forumLoadedTest() {
         ViewInteraction commentRecyclerView = onView(withId(R.id.view_comment));
         commentRecyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
-
-
 
         ViewInteraction editText = onView(
                 allOf(withId(R.id.edit_post), withHint(editTextHint),

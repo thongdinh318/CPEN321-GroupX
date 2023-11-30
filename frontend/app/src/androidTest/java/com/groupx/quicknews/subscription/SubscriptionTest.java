@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.groupx.quicknews.util.Util.atPosition;
@@ -39,11 +40,6 @@ import com.groupx.quicknews.util.RecyclerViewMatchers;
 import com.groupx.quicknews.util.ToastMatcher;
 import com.groupx.quicknews.util.Util;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,24 +53,22 @@ public class SubscriptionTest {
             new ActivityScenarioRule<>(LoginActivity.class);
 
     @Test
-    public void subscribeAndViewCBC() {
-        ViewInteraction ic = onView(
-                allOf(withText("Sign in"),
+    public void navToSubscribeView() {
+        ViewInteraction bottomNavigationItemView = onView(
+                allOf(withId(R.id.action_subscribed), withContentDescription("Subscribed"),
                         childAtPosition(
-                                Matchers.allOf(ViewMatchers.withId(R.id.sign_in_button),
-                                        childAtPosition(
-                                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                                0)),
-                                0),
+                                childAtPosition(
+                                        withId(R.id.bottomNavigation),
+                                        0),
+                                2),
                         isDisplayed()));
-        ic.perform(click());
+        bottomNavigationItemView.perform(click());
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+        ViewInteraction recyclerView = onView(withId(R.id.view_article));
+        recyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+    }
+    @Test
+    public void subscribeAndViewCBC() {
         ViewInteraction overflowMenuButton = onView(
                 allOf(withContentDescription("More options"),
                         childAtPosition(
@@ -94,8 +88,6 @@ public class SubscriptionTest {
                                 0),
                         isDisplayed()));
         materialTextView.perform(click());
-
-
 
         ViewInteraction switch_cbc = onView(
                 allOf(withId(R.id.sub_button_1), withText("Subscribe"),
@@ -148,28 +140,10 @@ public class SubscriptionTest {
                     .check(matches(atPosition(i, hasDescendant(
                             allOf(withId(R.id.text_publisher), withText("cbc.ca"))))));
         }
-        //recyclerView.check(matches(RecyclerViewMatchers.withItemCountGreaterThan(0)));
     }
 
     @Test
     public void noSubscriptions() {
-        ViewInteraction ic = onView(
-                allOf(withText("Sign in"),
-                        childAtPosition(
-                                Matchers.allOf(ViewMatchers.withId(R.id.sign_in_button),
-                                        childAtPosition(
-                                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                                0)),
-                                0),
-                        isDisplayed()));
-        ic.perform(click());
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
         ViewInteraction overflowMenuButton = onView(
                 allOf(withContentDescription("More options"),
                         childAtPosition(
