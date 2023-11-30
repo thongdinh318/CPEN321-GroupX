@@ -100,18 +100,16 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"/>
 
-        <EditText
+        <Button
             android:id="@+id/date_picker_from"
             style="?android:spinnerStyle"
-            android:focusable="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/date"
             android:textColor="@color/black"
             android:layout_toEndOf="@id/from_view"
             android:layout_centerVertical="true"
-            android:paddingRight="30dp"
-            android:layout_marginLeft="@dimen/text_cardview_padding"/>
+            android:paddingRight="30dp"/>
 
         <TextView
             android:id="@+id/to_view"
@@ -122,10 +120,9 @@
             android:layout_centerVertical="true"
             />
 
-        <EditText
+        <Button
             android:id="@+id/date_picker_to"
             style="?android:spinnerStyle"
-            android:focusable="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/date"
@@ -133,8 +130,7 @@
             android:layout_marginRight="10dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:paddingRight="30dp"
-            android:layout_marginLeft="@dimen/text_cardview_padding"/>
+            android:paddingRight="30dp"/>
     </RelativeLayout>
 
     <Button

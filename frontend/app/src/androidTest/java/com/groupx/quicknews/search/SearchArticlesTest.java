@@ -18,8 +18,11 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 
+import android.widget.DatePicker;
+
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
@@ -29,6 +32,7 @@ import com.groupx.quicknews.LoginActivity;
 import com.groupx.quicknews.R;
 import com.groupx.quicknews.util.ToastMatcher;
 
+import org.hamcrest.Matchers;
 import org.jsoup.Connection;
 import org.junit.Rule;
 import org.junit.Test;
@@ -81,6 +85,9 @@ public class SearchArticlesTest {
                                 3),
                         isDisplayed()));
         toButton.perform(click());
+
+        onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
+                .perform(PickerActions.setDate(2023, 11, 28));
 
         ViewInteraction toConfirmButton = onView(
                 allOf(withId(android.R.id.button1), withText("OK"),

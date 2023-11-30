@@ -36,8 +36,8 @@ import okhttp3.Response;
 
 public class SearchArticlesFragment extends Fragment {
     private EditText category;
-    private EditText fromButton;
-    private EditText toButton;
+    private Button fromButton;
+    private Button toButton;
     private DatePickerDialog datePickerDialogFrom;
     private DatePickerDialog datePickerDialogTo;
     private Button filterSearchButton;
