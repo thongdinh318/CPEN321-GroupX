@@ -94,7 +94,7 @@ export default class ForumModule{
         let commentLevel;
         let comment_id = forumId + "_" + (Date.now());
 
-        if(parent_id == null)
+        if(parent_id == "none")
             commentLevel = 0;
 
         else{
