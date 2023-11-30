@@ -3,7 +3,6 @@ import * as server from "./server.js"
 const CLIENT_ID = "474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com"//TODO: replace witht the real client id
 const ggClient = new OAuth2Client.OAuth2Client(CLIENT_ID);
 import jwt from "jsonwebtoken";
-// const client = server.client
 
 //Default user setting
 const defUser = { 
@@ -12,13 +11,7 @@ const defUser = {
 	"dob": null,
 	"email":null,
 	"subscriptionList":[],
-	"history":[
-        /*{
-            "articleId":null,
-            "title": null,
-			"views":null
-		}*/
-	]
+	"history":[]
 }
 
 // Helper Functions --->
@@ -77,14 +70,20 @@ async function registerNewUser(userId, username, userEmail){
 
     if (userProfile.userId){
         await server.client.db("tokendb").collection("jwt").deleteOne({userId: userProfile.userId})
+    
         var token = jwt.sign({id:userId,}, server.key, {algorithm:'HS256'}) // local
+    
         // var token = jwt.sign({id:userId,}, server.key, {algorithm:'ES256'}) // cloud
+    
         await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
         return ({user: userProfile, jwt: token})
     }
     var newUser = createNewUser(userId, username,userEmail)
+    
     var token = jwt.sign({id:userId}, server.key, {algorithm:'HS256'}) // local
+    
     // var token = jwt.sign({id:userId}, server.key, {algorithm:'ES256'}) // cloud
+    
     await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
     await server.client.db("userdb").collection("profile").insertOne(newUser);
     return ({user: newUser, jwt: token})
@@ -95,64 +94,47 @@ async function registerNewUser(userId, username, userEmail){
 // get profile
 //ChatGPT usage: No
 async function getProfile(userId){
-    // console.log("Get profile of user " + userId)
-    // try {
-        var user = await checkAvailable(userId)
-        return user
-    // } catch (error) {
-    //     return error
-    // }
+    var user = await checkAvailable(userId)
+    return user
 }
 //Update profile info
 //ChatGPT usage: No
 async function updateProfile(userId, newProfile){
-    // console.log("Updating profile for user " + userId)
-    // try {
-        var user = await checkAvailable(userId)
-        if (user.userId == undefined){
-            return false
-        }
-        //TODO: sanitize inputs before update
-        const result = await server.client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
-        return (result.acknowledged)
-        
-    // } catch (error) {
-    //     return (error)
-    // }
+    
+    var user = await checkAvailable(userId)
+    if (user.userId == undefined){
+        return false
+    }
+    const result = await server.client.db("userdb").collection("profile").updateOne({userId}, {$set: newProfile})
+    return (result.acknowledged)
 }
 
 
 //Update reading history
 // ChatGPT usage: No.
 async function updateHistory(userId, newViewed){
-    // console.log("Updating history for user " + userId)
-    // try {
-        var user = await checkAvailable(userId)
-        // console.log(user)
-        if (user.userId  == undefined){
-            return false
+    var user = await checkAvailable(userId)
+    // console.log(user)
+    if (user.userId  == undefined){
+        return false
+    }
+    var dup = false
+    var updateHistory = user.history
+    for (var pastViewed of updateHistory){
+        if (pastViewed.articleId === newViewed.articleId){
+            pastViewed.views = pastViewed.views + 1
+            dup = true
+            break;
         }
-        var dup = false
-        var updateHistory = user.history
-        for (var pastViewed of updateHistory){
-            if (pastViewed.articleId === newViewed.articleId){
-                pastViewed.views = pastViewed.views + 1
-                dup = true
-                break;
-            }
-        }
+    }
 
-        if (!dup){
-            newViewed.views = 1 
-            updateHistory.push(newViewed)
-        }
+    if (!dup){
+        newViewed.views = 1 
+        updateHistory.push(newViewed)
+    }
 
-        const result = await server.client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
-        return (result.acknowledged)
-    // } catch (error) {
-    //     console.log(error)
-    //     return (error)
-    // }
+    const result = await server.client.db("userdb").collection("profile").updateOne({userId}, {$set: {"history":updateHistory}})
+    return (result.acknowledged)
 }
 
 // <--Interfaces with frontend 

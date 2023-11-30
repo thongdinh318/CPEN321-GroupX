@@ -13,7 +13,6 @@ import * as recommendation from "./articles/recommendation.js";
 import ForumModule from "./forum_module/forum_interface.js";
 
 const uri = "mongodb://127.0.0.1:27017"
-import WebSocket, {WebSocketServer} from "ws";
 
 export const client = new mongo.MongoClient(uri)
 
@@ -34,7 +33,8 @@ const cert = key
     //       key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
     //       cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
     // };
-    
+// export const socket_server = https.createServer(options, app);
+
 export const forum = new ForumModule()
 
 export var forumTheme = new Set(["General News", "Economics", "Education"])
@@ -430,33 +430,6 @@ wss.on('connection', async (ws) => {
             console.log("Listen!! server emits orders")
             wss.sockets.emit("new_message", "Make Get requests, my children")
         }
-      
-    //   const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
-
-  
-    //   if (result === "err"){
-    //     ws.send("Could not post comment");
-    //   }
-    //   else{
-    //       try{
-    //           const newForum = await forum.getForum(forum_id);
-    //           // console.log(newForum)
-    //           // ws.send(newForum, {binary : isBinary});
-    //           wss.clients.forEach(async (socketClient)=>{
-    //             // If the new comment does not appear on the user's screen
-    //               if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
-    //                   socketClient.send(newForum);
-
-    //               } else if (socketClient == ws){
-
-    //                 socketClient.send(result);
-    //               }
-    //           });
-              
-    //       }catch{
-    //           ws.send("Could not post comment")
-    //       }  
-    //     } 
     });
     
   });

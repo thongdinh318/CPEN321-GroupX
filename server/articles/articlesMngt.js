@@ -34,23 +34,20 @@ export async function searchById(articleId){
 //Search the database for a list of articles that match the query provided by the user
 // ChatGPT usage: No.
 export async function searchByFilter(query){
-    // console.log(query)
-    // try {
-        var foundArticles  = server.client.db("articledb").collection("articles").find(query);
-        foundArticles = await foundArticles.toArray()
-        
-        // console.log(foundArticles)
-        if (foundArticles == undefined || foundArticles.length == 0){
-            return []
-        }
-        
-        if (foundArticles.length > 10){
-            foundArticles = foundArticles.slice(0,9)
-        }
-        return foundArticles
-    // } catch (error) {
-    //     return error
-    // }
+
+    var foundArticles  = server.client.db("articledb").collection("articles").find(query);
+    foundArticles = await foundArticles.toArray()
+    
+    // console.log(foundArticles)
+    if (foundArticles == undefined || foundArticles.length == 0){
+        return []
+    }
+    
+    if (foundArticles.length > 10){
+        foundArticles = foundArticles.slice(0,9)
+    }
+    return foundArticles
+
 }
 
 //Rerieve a list of all article ids in the database
