@@ -1,7 +1,7 @@
 package com.groupx.quicknews;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -11,11 +11,10 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,13 +25,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.groupx.quicknews.databinding.ActivityMainBinding;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.articles.Article;
 
@@ -47,8 +39,7 @@ import java.util.List;
 
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
-    ActivityMainBinding binding;
+public class MainActivity extends Fragment {
     private EditText category;
     private Button fromButton;
     private Button toButton;
@@ -64,26 +55,29 @@ public class MainActivity extends AppCompatActivity {
     final static int DATEPICKER_FROM = 2;
     // ChatGPT usage: No.
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.activity_main, container, false);
+
 
         initDatePicker(DATEPICKER_FROM);
         initDatePicker(DATEPICKER_TO);
 
-        fromButton = findViewById(R.id.date_picker_from);
-        toButton = findViewById(R.id.date_picker_to);
-        filterSearchButton = findViewById(R.id.filter_search_button);
-        searchView = findViewById(R.id.searchView);
-        publisher = findViewById(R.id.publisher_input);
+        fromButton = rootView.findViewById(R.id.date_picker_from);
+        toButton = rootView.findViewById(R.id.date_picker_to);
+        filterSearchButton = rootView.findViewById(R.id.filter_search_button);
+        searchView = rootView.findViewById(R.id.searchView);
+        publisher = rootView.findViewById(R.id.publisher_input);
+        category = rootView.findViewById(R.id.category_input);
+        recommendedArticlesButton = rootView.findViewById(R.id.article_button);
 
+        category.setText("");
         fromButton.setText(getTodayDate());
         toButton.setText(getTodayDate());
 
 
         //can replace with list from server?
         String[] items = new String[]{"search all", "cbc", "cnn"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         publisher.setAdapter(adapter);
 
@@ -105,9 +99,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        category = findViewById(R.id.category_input);
-        category.setText("");
-
         filterSearchButton.setOnClickListener(new View.OnClickListener() {
             // ChatGPT usage: No.
             @Override
@@ -118,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
         }
     });
-    recommendedArticlesButton = findViewById(R.id.article_button);
 
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
         // ChatGPT usage: No.
@@ -147,34 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
             }
         });
-    }
-
-    private void initNavigationBar() {
-        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.action_home);
-        bottomNavigationView.findViewById(R.id.action_home).setEnabled(false);
-
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemID = item.getItemId();
-            if (itemID == R.id.action_home) {
-                return true;
-            }
-            else if (itemID == R.id.action_forums) {
-                Log.d(TAG, "Trying to open forum view");
-                Intent forumIntent = new Intent(MainActivity.this, ForumsListActivity.class);
-                startActivity(forumIntent);
-                overridePendingTransition(0, 0);
-                return true;
-            }
-            else if (itemID == R.id.action_subscribed) {
-                Log.d(TAG, "Trying to open subscribed view");
-                Intent forumIntent = new Intent(MainActivity.this, SubscribedArticlesActivity.class);
-                startActivity(forumIntent);
-                overridePendingTransition(0, 0);
-                return true;
-            }
-            return false;
-        });
+        return rootView;
     }
 
     private String buildQuery() {
@@ -222,9 +185,9 @@ public class MainActivity extends AppCompatActivity {
                     if (response.code() == 400){
                         String msg = response.body().string();
                         Log.d(TAG, msg);
-                        runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -235,9 +198,9 @@ public class MainActivity extends AppCompatActivity {
                         JSONArray res = new JSONArray(json);
                         //Matched articles check
                         if (res.length() == 0){
-                            runOnUiThread(new Runnable() {
+                            getActivity().runOnUiThread(new Runnable() {
                                 public void run() {
-                                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -246,12 +209,12 @@ public class MainActivity extends AppCompatActivity {
                             articleList = Arrays.asList(mapper.readValue(res.toString(), Article[].class));
                             articleList = new ArrayList<>(articleList); //jacksons creates immutable list
 
-                            Intent articleIntent = new Intent(MainActivity.this, targetActivity);;
+                            Intent articleIntent = new Intent(getActivity().getApplicationContext(), targetActivity);;
                             startActivity(articleIntent);
                         }
                     }
 
-                } catch (IOException | JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -296,12 +259,12 @@ public class MainActivity extends AppCompatActivity {
         int calDay = cal.get(Calendar.DAY_OF_MONTH);
 
         if (curDatePicker == DATEPICKER_FROM) {
-            datePickerDialogFrom = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+            datePickerDialogFrom = new DatePickerDialog(getActivity().getApplicationContext(), AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
                     calYear, calMonth, calDay);
             datePickerDialogFrom.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
         else if (curDatePicker == DATEPICKER_TO) {
-            datePickerDialogTo = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+            datePickerDialogTo = new DatePickerDialog(getActivity().getApplicationContext(), AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
                     calYear, calMonth, calDay);
         }
     }
@@ -358,27 +321,6 @@ public class MainActivity extends AppCompatActivity {
     // ChatGPT usage: No.
     private void openDatePicker(DatePickerDialog datePickerDialog){
         datePickerDialog.show();
-    }
-
-    //<--- Helper functions
-
-    //https://dev.to/ahmmedrejowan/hide-the-soft-keyboard-and-remove-focus-from-edittext-in-android-ehp
-    // ChatGPT usage: No.
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if (v instanceof EditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    v.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event);
     }
 
     // ChatGPT usage: No.

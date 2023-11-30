@@ -28,7 +28,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.groupx.quicknews.ForumsListActivity;
+import com.groupx.quicknews.ForumsListFragment;
 import com.groupx.quicknews.R;
 import com.groupx.quicknews.util.RecyclerViewIdlingResource;
 import com.groupx.quicknews.util.RecyclerViewMatchers;
@@ -36,7 +36,6 @@ import com.groupx.quicknews.util.RecyclerViewMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,9 +47,9 @@ import org.junit.runner.RunWith;
 public class ForumsListActivityTest {
 
     private RecyclerViewIdlingResource idlingResource;
-    @Rule
-    public ActivityScenarioRule<ForumsListActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(ForumsListActivity.class);
+    /*@Rule
+    public ActivityScenarioRule<ForumsListFragment> mActivityScenarioRule =
+            new ActivityScenarioRule<>(ForumsListFragment.class);
 
     @Before
     public void setUp() {
@@ -66,7 +65,8 @@ public class ForumsListActivityTest {
     public void tearDown() {
         // Unregister the RecyclerViewIdlingResource after the test
         IdlingRegistry.getInstance().unregister(idlingResource);
-    }
+    }*/
+
     @Test
     public void forumListLoadedTest() {
         ViewInteraction recyclerView = onView(withId(R.id.view_forum));

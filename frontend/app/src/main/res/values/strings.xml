@@ -103,8 +103,6 @@
     <string name="confirm_caption">Confirm</string>
     <string name="news_publisher_name">News Publisher</string>
     <string name="sub_button_caption">Subscribe</string>
-    <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
-    <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
     <string name="search_hint">Search articles</string>
     <string name="publisher_box">Publisher</string>
     <string name="categories_box">Category</string>
@@ -115,4 +113,14 @@
     <string name="filter_search_button">Search</string>
     <string name="get_recommended_button">Recommended Articles</string>
     <string name="forum_button">Forums</string>
+
+    <!--endpoints-->
+    <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
+    <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
+
+    <!--NavBar-->
+    <string name="title_search">Search</string>
+    <string name="title_forums">Forums</string>
+    <string name="title_view_subscribed">Subscribed</string>
+
 </resources>

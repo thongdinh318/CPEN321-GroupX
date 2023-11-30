@@ -2,7 +2,6 @@ package com.groupx.quicknews.forums;
 
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
@@ -22,46 +21,29 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
-import static kotlinx.coroutines.flow.FlowKt.withIndex;
-
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.ViewTreeObserver;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.IdlingPolicies;
-import androidx.test.espresso.IdlingRegistry;
-import androidx.test.espresso.IdlingResource;
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-import androidx.test.rule.ActivityTestRule;
 
-import com.groupx.quicknews.ForumActivity;
-import com.groupx.quicknews.ForumsListActivity;
-import com.groupx.quicknews.LoginActivity;
+import com.groupx.quicknews.ForumsListFragment;
 import com.groupx.quicknews.R;
 import com.groupx.quicknews.util.RecyclerViewIdlingResource;
-import com.groupx.quicknews.util.RecyclerViewMatchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -70,8 +52,8 @@ public class ForumActivityTest {
     private RecyclerViewIdlingResource idlingResource;
     private RecyclerView recyclerViewComments;
     @Rule
-    public ActivityScenarioRule<ForumsListActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(ForumsListActivity.class);
+    public ActivityScenarioRule<ForumsListFragment> mActivityScenarioRule =
+            new ActivityScenarioRule<>(ForumsListFragment.class);
 
     @Before
     public void setUp() {
