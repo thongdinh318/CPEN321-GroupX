@@ -54,6 +54,12 @@ public class LoginActivityTest {
                         isDisplayed()));
         ic.perform(click());
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         ViewInteraction bottomNavigationItemView = onView(
                 allOf(withId(R.id.action_forums), withContentDescription("Forums"),
                         childAtPosition(
