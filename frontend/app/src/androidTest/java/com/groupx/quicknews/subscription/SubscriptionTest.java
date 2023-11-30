@@ -1,10 +1,12 @@
-package com.groupx.quicknews;
+package com.groupx.quicknews.subscription;
 
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
@@ -12,23 +14,33 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.groupx.quicknews.util.Util.atPosition;
+import static com.groupx.quicknews.util.Util.childAtPosition;
+import static com.groupx.quicknews.util.Util.getCurrentActivity;
+import static com.groupx.quicknews.util.Util.setChecked;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.groupx.quicknews.LoginActivity;
+import com.groupx.quicknews.R;
 import com.groupx.quicknews.util.RecyclerViewMatchers;
+import com.groupx.quicknews.util.Util;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
@@ -48,13 +60,19 @@ public class SubscriptionTest {
         ViewInteraction ic = onView(
                 allOf(withText("Sign in"),
                         childAtPosition(
-                                allOf(withId(R.id.sign_in_button),
+                                Matchers.allOf(ViewMatchers.withId(R.id.sign_in_button),
                                         childAtPosition(
                                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
                                                 0)),
                                 0),
                         isDisplayed()));
         ic.perform(click());
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         ViewInteraction overflowMenuButton = onView(
                 allOf(withContentDescription("More options"),
@@ -67,7 +85,7 @@ public class SubscriptionTest {
         overflowMenuButton.perform(click());
 
         ViewInteraction materialTextView = onView(
-                allOf(withId(androidx.transition.R.id.title), withText("Manage Subscriptions"),
+                allOf(withId(androidx.core.R.id.title), withText("Manage Subscriptions"),
                         childAtPosition(
                                 childAtPosition(
                                         withId(androidx.appcompat.R.id.content),
@@ -76,7 +94,20 @@ public class SubscriptionTest {
                         isDisplayed()));
         materialTextView.perform(click());
 
-        ViewInteraction switch_ = onView(
+
+
+        ViewInteraction switch_cbc = onView(
+                allOf(withId(R.id.sub_button_1), withText("Subscribe"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(android.R.id.content),
+                                        0),
+                                0),
+                        isDisplayed()));
+            switch_cbc.perform(setChecked(true));
+
+
+        ViewInteraction switch_cnn = onView(
                 allOf(withId(R.id.sub_button_2), withText("Subscribe"),
                         childAtPosition(
                                 childAtPosition(
@@ -84,7 +115,7 @@ public class SubscriptionTest {
                                         0),
                                 3),
                         isDisplayed()));
-        switch_.perform(click());
+        switch_cnn.perform(setChecked(false));
 
         ViewInteraction materialButton = onView(
                 allOf(withId(R.id.sub_confirm_button), withText("Confirm"),
@@ -96,44 +127,26 @@ public class SubscriptionTest {
                         isDisplayed()));
         materialButton.perform(click());
 
-        pressBack();
-
-       /* ViewInteraction bottomNavigationItemView = onView(
+        ViewInteraction bottomNavigationItemView = onView(
                 allOf(withId(R.id.action_subscribed), withContentDescription("Subscribed"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.bottom_navigation),
+                                        withId(R.id.bottomNavigation),
                                         0),
                                 2),
                         isDisplayed()));
-        bottomNavigationItemView.perform(click());*/
+        bottomNavigationItemView.perform(click());
 
-        ViewInteraction textView = onView(
-                allOf(withId(R.id.text_publisher), withText("cbc.ca"),
-                        withParent(allOf(withId(R.id.fixed_layout),
-                                withParent(IsInstanceOf.<View>instanceOf(android.view.ViewGroup.class)))),
-                        isDisplayed()));
-        textView.check(matches(withText("cbc.ca")));
-        ViewInteraction recyclerView = onView(withId(R.id.view_article));
-        recyclerView.check(matches(RecyclerViewMatchers.withItemCountGreaterThan(0)));
-    }
+        Activity activity = getCurrentActivity();
+        RecyclerView recyclerView = activity.findViewById(R.id.view_article);
+        int count = recyclerView.getAdapter().getItemCount();
 
-    private static Matcher<View> childAtPosition(
-            final Matcher<View> parentMatcher, final int position) {
-
-        return new TypeSafeMatcher<View>() {
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("Child at position " + position + " in parent ");
-                parentMatcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                ViewParent parent = view.getParent();
-                return parent instanceof ViewGroup && parentMatcher.matches(parent)
-                        && view.equals(((ViewGroup) parent).getChildAt(position));
-            }
-        };
+        for (int i = 0; i < count; i ++) {
+            onView(withId(R.id.view_article))
+                    .perform(scrollToPosition(i))
+                    .check(matches(atPosition(i, hasDescendant(
+                            allOf(withId(R.id.text_publisher), withText("cbc.ca"))))));
+        }
+        //recyclerView.check(matches(RecyclerViewMatchers.withItemCountGreaterThan(0)));
     }
 }

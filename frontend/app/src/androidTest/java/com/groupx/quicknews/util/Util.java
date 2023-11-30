@@ -2,18 +2,24 @@ package com.groupx.quicknews.util;
 
 import static androidx.test.internal.util.Checks.checkNotNull;
 
+import static org.hamcrest.Matchers.isA;
+
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.Checkable;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -94,6 +100,38 @@ public class Util {
             @Override
             public boolean matchesSafely(View view) {
                 return matcher.matches(view) && currentIndex++ == index;
+            }
+        };
+    }
+
+    //https://stackoverflow.com/questions/37819278/android-espresso-click-checkbox-if-not-checked
+    public static ViewAction setChecked(final boolean checked) {
+        return new ViewAction() {
+            @Override
+            public BaseMatcher<View> getConstraints() {
+                return new BaseMatcher<View>() {
+                    @Override
+                    public boolean matches(Object item) {
+                        return isA(Checkable.class).matches(item);
+                    }
+
+                    @Override
+                    public void describeMismatch(Object item, Description mismatchDescription) {}
+
+                    @Override
+                    public void describeTo(Description description) {}
+                };
+            }
+
+            @Override
+            public String getDescription() {
+                return null;
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                Checkable checkableView = (Checkable) view;
+                checkableView.setChecked(checked);
             }
         };
     }
