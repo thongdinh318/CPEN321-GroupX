@@ -126,11 +126,13 @@ public class ForumActivityTest {
                 allOf(withId(R.id.edit_post), withHint("Enter Message"),
                         withParent(withId(R.id.layout_make_post)),
                         isDisplayed()));
-        try {
+
         editText.perform(replaceText("Test Post 1"), closeSoftKeyboard());
         button.check(matches(isEnabled()));
         button.perform(click());
-            Thread.sleep(3000);
+
+        try {
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -152,7 +154,7 @@ public class ForumActivityTest {
         button.check(matches(isNotEnabled()));
     }
 
-    //@Test
+    @Test
     public void postMultipleCommentsTest() {
         ViewInteraction commentRecyclerView = onView(withId(R.id.view_comment));
         commentRecyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -177,17 +179,19 @@ public class ForumActivityTest {
         }
 
 
-        ViewInteraction comment = onView(
-                allOf(withId(R.id.text_comment), withText("Test Post 2") ,
-                        withParent(withParent(IsInstanceOf.<View>instanceOf(android.widget.RelativeLayout.class))),
-                        isDisplayed()));
-        comment.check(matches(withText("Test Post 2")));
+        Activity activity = getCurrentActivity();
+        RecyclerView recyclerView = activity.findViewById(R.id.view_comment);
+        int count = recyclerView.getAdapter().getItemCount();
 
-        comment = onView(
-                allOf(withId(R.id.text_comment), withText("Test Post 3") ,
-                        withParent(withId(R.id.view_comment)),
-                        isDisplayed()));
-        comment.check(matches(withText("Test Post 3")));
+        onView(withId(R.id.view_comment))
+                .perform(scrollToPosition(count - 1))
+                .check(matches(atPosition(count - 1, hasDescendant(
+                        allOf(withId(R.id.text_comment), withText("Test Post 3"))))));
+
+        onView(withId(R.id.view_comment))
+                .perform(scrollToPosition(count - 1))
+                .check(matches(atPosition(count - 2, hasDescendant(
+                        allOf(withId(R.id.text_comment), withText("Test Post 2"))))));
 
         editText.check(matches(withHint("Enter Message")));
         button.check(matches(isNotEnabled()));
@@ -198,11 +202,20 @@ public class ForumActivityTest {
         ViewInteraction commentRecyclerView = onView(withId(R.id.view_comment));
         commentRecyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-        ViewInteraction comment = onView(
-                allOf(withId(R.id.text_comment), withText("Received Test Post 1") ,
-                        withParent(withId(R.id.view_comment)),
-                        isDisplayed()));
-        comment.check(matches(withText("Received Test Post 1")));
+        Activity activity = getCurrentActivity();
+        RecyclerView recyclerView = activity.findViewById(R.id.view_comment);
+        int count = recyclerView.getAdapter().getItemCount();
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        onView(withId(R.id.view_comment))
+                .perform(scrollToPosition(count - 1))
+                .check(matches(atPosition(count - 1, hasDescendant(
+                        allOf(withId(R.id.text_comment), withText("Received Test Post"))))));
     }
 
 
