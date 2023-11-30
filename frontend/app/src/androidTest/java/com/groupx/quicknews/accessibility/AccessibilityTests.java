@@ -1,36 +1,42 @@
-package com.groupx.quicknews;
+package com.groupx.quicknews.accessibility;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.groupx.quicknews.util.Util.atPosition;
+import static com.groupx.quicknews.util.Util.getCurrentActivity;
 import static com.groupx.quicknews.util.Util.setChecked;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.groupx.quicknews.LoginActivity;
+import com.groupx.quicknews.R;
 import com.groupx.quicknews.util.ToastMatcher;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,29 +49,13 @@ public class AccessibilityTests {
     public ActivityScenarioRule<LoginActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(LoginActivity.class);
 
-    @Before
-    public void logIn() {
-        ViewInteraction ic = onView(
-                allOf(withText("Sign in"),
-                        childAtPosition(
-                                Matchers.allOf(ViewMatchers.withId(R.id.sign_in_button),
-                                        childAtPosition(
-                                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                                0)),
-                                0),
-                        isDisplayed()));
-        ic.perform(click());
-
+    @Test
+    public void forumAccessTest_2Clicks() {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-
-    @Test
-    public void forumAccessTest_2Clicks() {
 
         ViewInteraction bottomNavigationItemView = onView(
                 allOf(withId(R.id.action_forums), withContentDescription("Forums"),
@@ -96,6 +86,12 @@ public class AccessibilityTests {
 
     @Test
     public void subscribedAccessTest_1Click() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         supplySubs();
         ViewInteraction bottomNavigationItemView = onView(
                 allOf(withId(R.id.action_subscribed), withContentDescription("Subscribed"),
@@ -107,12 +103,28 @@ public class AccessibilityTests {
                         isDisplayed()));
         bottomNavigationItemView.perform(click());
 
-        onView(withText(R.string.toast_no_sub)).inRoot(new ToastMatcher())
-                .check(matches(isDisplayed()));
+        Activity activity = getCurrentActivity();
+        RecyclerView recyclerView = activity.findViewById(R.id.view_article);
+        int count = recyclerView.getAdapter().getItemCount();
+
+        for (int i = 0; i < count; i ++) {
+            onView(withId(R.id.view_article))
+                    .perform(scrollToPosition(i))
+                    .check(matches(atPosition(i, hasDescendant(
+                            allOf(withId(R.id.text_publisher), withText("cbc.ca"))))));
+        }
+
+        removeSubs();
     }
 
     @Test
     public void subscribedAccessTestEmpty_1Click() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         removeSubs();
         ViewInteraction bottomNavigationItemView = onView(
                 allOf(withId(R.id.action_subscribed), withContentDescription("Subscribed"),
@@ -130,6 +142,12 @@ public class AccessibilityTests {
 
     @Test
     public void searchAccessTest_2Clicks() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         ViewInteraction bottomNavigationItemView = onView(
                 allOf(withId(R.id.action_search), withContentDescription("Search"),
                         childAtPosition(
@@ -156,25 +174,22 @@ public class AccessibilityTests {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        onView(withId(R.id.view_article)).check(matches(isDisplayed()));
     }
 
     @Test
     public void recommendationAccessTest_2Clicks() {
-        ViewInteraction bottomNavigationItemView = onView(
-                allOf(withId(R.id.action_search), withContentDescription("Search"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.bottomNavigation),
-                                        0),
-                                0),
-                        isDisplayed()));
-        bottomNavigationItemView.perform(click());
-
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        ViewInteraction bottomNavigationItemView = onView(
+                allOf(withId(R.id.action_search),
+                        isDisplayed()));
+        bottomNavigationItemView.perform(click());
 
         ViewInteraction materialButton = onView(
                 allOf(withId(R.id.article_button),
@@ -186,6 +201,40 @@ public class AccessibilityTests {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        onView(withId(R.id.view_article)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void HistoryAccessTest_2Clicks() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        ViewInteraction overflowMenuButton = onView(
+                allOf(withContentDescription("More options"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(androidx.appcompat.R.id.action_bar),
+                                        1),
+                                0),
+                        isDisplayed()));
+        overflowMenuButton.perform(click());
+
+        ViewInteraction materialTextView = onView(
+                allOf(withId(androidx.core.R.id.title), withText("History"),
+                        isDisplayed()));
+        materialTextView.perform(click());
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        onView(withId(R.id.view_article)).check(matches(isDisplayed()));
     }
 
     private static Matcher<View> childAtPosition(
