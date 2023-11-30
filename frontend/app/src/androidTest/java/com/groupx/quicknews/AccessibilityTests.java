@@ -29,8 +29,8 @@ import org.junit.runner.RunWith;
 public class AccessibilityTests {
 
     @Rule
-    public ActivityScenarioRule<SearchArticlesFragment> mActivityScenarioRule =
-            new ActivityScenarioRule<>(SearchArticlesFragment.class);
+    public ActivityScenarioRule<BaseActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(BaseActivity.class);
 
     @Test
     public void forumAccessTest() {
@@ -38,7 +38,7 @@ public class AccessibilityTests {
                 allOf(withId(R.id.action_forums), withContentDescription("Forums"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.bottom_navigation),
+                                        withId(R.id.bottomNavigation),
                                         0),
                                 1),
                         isDisplayed()));
@@ -50,12 +50,12 @@ public class AccessibilityTests {
     @Test
     public void subscribedAccessTest() {
         ViewInteraction bottomNavigationItemView = onView(
-                allOf(withId(R.id.action_subscribed), withContentDescription("Subscribed"),
+                allOf(withId(R.id.action_forums), withContentDescription("Subscribed"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.bottom_navigation),
+                                        withId(R.id.bottomNavigation),
                                         0),
-                                2),
+                                1),
                         isDisplayed()));
         bottomNavigationItemView.perform(click());
 

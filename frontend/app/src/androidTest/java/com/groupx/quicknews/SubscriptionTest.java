@@ -98,7 +98,7 @@ public class SubscriptionTest {
 
         pressBack();
 
-        ViewInteraction bottomNavigationItemView = onView(
+       /* ViewInteraction bottomNavigationItemView = onView(
                 allOf(withId(R.id.action_subscribed), withContentDescription("Subscribed"),
                         childAtPosition(
                                 childAtPosition(
@@ -106,7 +106,7 @@ public class SubscriptionTest {
                                         0),
                                 2),
                         isDisplayed()));
-        bottomNavigationItemView.perform(click());
+        bottomNavigationItemView.perform(click());*/
 
         ViewInteraction textView = onView(
                 allOf(withId(R.id.text_publisher), withText("cbc.ca"),

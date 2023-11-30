@@ -1,5 +1,7 @@
 package com.groupx.quicknews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,10 +37,13 @@ public class ForumsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_forums_list, container, false);
 
-        viewForum = rootView.findViewById(R.id.view_forum);
-        getForums();
-
         return rootView;
+    }
+    @Override
+    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        viewForum = view.findViewById(R.id.view_forum);
+        getForums();
     }
 
     // ChatGPT usage: No.

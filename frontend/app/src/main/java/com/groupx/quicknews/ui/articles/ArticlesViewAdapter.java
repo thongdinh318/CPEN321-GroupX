@@ -142,7 +142,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         Executor executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
-                Document doc = Jsoup.connect(url).get();
+                Document doc = Jsoup.connect(url).timeout(5 * 1000).get();
                 Elements ogImage = doc.select("meta[property=og:image]");
 
                 if (!ogImage.isEmpty()) {
@@ -151,7 +151,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
                     activity.runOnUiThread(() ->
                             Picasso.get().load(imageUrl).fit().centerCrop().into(imageView));
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });

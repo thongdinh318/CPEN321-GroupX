@@ -29,15 +29,11 @@ public class SubscribedArticlesFragment extends Fragment {
 
     final static String TAG = "SubscribedFragment";
 
-    public SubscribedArticlesFragment() {
-        // Required empty public constructor
-    }
+    public SubscribedArticlesFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_subscribed_articles, container, false);
-
-        articleView = rootView.findViewById(R.id.view_article);
 
         return rootView;
     }
@@ -45,7 +41,7 @@ public class SubscribedArticlesFragment extends Fragment {
     @Override
     public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        articleView = view.findViewById(R.id.view_article);
         getSubscribedArticles();
     }
 

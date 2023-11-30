@@ -53,6 +53,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.3")
+
     implementation("io.socket:socket.io-client:2.0.0") {
         // excluding org.json which is provided by Android
         exclude ("org.json", "json")

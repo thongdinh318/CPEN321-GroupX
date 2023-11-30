@@ -1,5 +1,7 @@
 package com.groupx.quicknews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.app.AlertDialog;
@@ -50,18 +52,22 @@ public class SearchArticlesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search_articles, container, false);
+        return rootView;
+    }
 
-
+    @Override
+    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         initDatePicker(DATEPICKER_FROM);
         initDatePicker(DATEPICKER_TO);
 
-        fromButton = rootView.findViewById(R.id.date_picker_from);
-        toButton = rootView.findViewById(R.id.date_picker_to);
-        filterSearchButton = rootView.findViewById(R.id.filter_search_button);
-        searchView = rootView.findViewById(R.id.searchView);
-        publisher = rootView.findViewById(R.id.publisher_input);
-        category = rootView.findViewById(R.id.category_input);
-        recommendedArticlesButton = rootView.findViewById(R.id.article_button);
+        fromButton = view.findViewById(R.id.date_picker_from);
+        toButton = view.findViewById(R.id.date_picker_to);
+        filterSearchButton = view.findViewById(R.id.filter_search_button);
+        searchView = view.findViewById(R.id.searchView);
+        publisher = view.findViewById(R.id.publisher_input);
+        category = view.findViewById(R.id.category_input);
+        recommendedArticlesButton = view.findViewById(R.id.article_button);
 
         category.setText("");
         fromButton.setText(getTodayDate());
@@ -100,29 +106,29 @@ public class SearchArticlesFragment extends Fragment {
                 String url = getString(R.string.server_dns) + "article/filter/search?"+query;
                 Log.d(TAG,url);
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
-        }
-    });
+            }
+        });
 
-    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-        // ChatGPT usage: No.
-        @Override
-        public boolean onQueryTextSubmit(String query) {
-            String queryFilters = buildQuery();
-            String url = getString(R.string.server_dns) + "article/filter/search?"+queryFilters;
-            Log.d(TAG,url);
-            getArticlesAndSwitchViews(url, ArticlesActivity.class);
-            return true;
-        }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            // ChatGPT usage: No.
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                String queryFilters = buildQuery();
+                String url = getString(R.string.server_dns) + "article/filter/search?"+queryFilters;
+                Log.d(TAG,url);
+                getArticlesAndSwitchViews(url, ArticlesActivity.class);
+                return true;
+            }
 
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            return false;
-        }
-    });
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
-    recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
-        // ChatGPT usage: No.
-        @Override
+        recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
+            // ChatGPT usage: No.
+            @Override
             public void onClick(View view) {
                 Log.d(TAG, "Trying to open articles view");
                 String userId = LoginActivity.getUserId();
@@ -130,7 +136,6 @@ public class SearchArticlesFragment extends Fragment {
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
             }
         });
-        return rootView;
     }
 
     private String buildQuery() {
@@ -252,13 +257,14 @@ public class SearchArticlesFragment extends Fragment {
         int calDay = cal.get(Calendar.DAY_OF_MONTH);
 
         if (curDatePicker == DATEPICKER_FROM) {
-            datePickerDialogFrom = new DatePickerDialog(getActivity().getApplicationContext(), AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+            datePickerDialogFrom = new DatePickerDialog(requireActivity(), dateSetListener,
                     calYear, calMonth, calDay);
             datePickerDialogFrom.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
         else if (curDatePicker == DATEPICKER_TO) {
-            datePickerDialogTo = new DatePickerDialog(getActivity().getApplicationContext(), AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+            datePickerDialogTo = new DatePickerDialog(requireActivity(), dateSetListener,
                     calYear, calMonth, calDay);
+            datePickerDialogTo.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
     }
 

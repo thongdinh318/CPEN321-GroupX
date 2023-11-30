@@ -58,11 +58,11 @@ public class LoginActivityTest {
                 allOf(withId(R.id.action_forums), withContentDescription("Forums"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.bottom_navigation),
+                                        withId(R.id.bottomNavigation),
                                         0),
                                 1),
                         isDisplayed()));
-        bottomNavigationItemView.check(matches(isDisplayed()));
+        bottomNavigationItemView.perform(click());
     }
 
     private static Matcher<View> childAtPosition(

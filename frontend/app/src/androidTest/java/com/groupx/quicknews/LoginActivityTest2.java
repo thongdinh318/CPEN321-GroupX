@@ -1,12 +1,14 @@
-package com.groupx.quicknews.forums;
+package com.groupx.quicknews;
 
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -17,17 +19,12 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.test.espresso.ViewInteraction;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.groupx.quicknews.SearchArticlesFragment;
-import com.groupx.quicknews.R;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,28 +32,38 @@ import org.junit.runner.RunWith;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class NavForumListActivityTest {
+public class LoginActivityTest2 {
 
     @Rule
-    public ActivityScenarioRule<SearchArticlesFragment> mActivityScenarioRule =
-            new ActivityScenarioRule<>(SearchArticlesFragment.class);
+    public ActivityScenarioRule<LoginActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(LoginActivity.class);
 
     @Test
-    public void openForumListTest() {
+    public void loginActivityTest2() {
 
-        ViewInteraction bottomNavigationItemView = onView(
-                Matchers.allOf(ViewMatchers.withId(R.id.action_forums), withContentDescription("Forums"),
+
+        ViewInteraction appCompatEditText = onView(
+                allOf(withId(R.id.edit_post),
                         childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.bottom_navigation),
-                                        0),
+                                allOf(withId(R.id.layout_make_post),
+                                        childAtPosition(
+                                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                                2)),
+                                0),
+                        isDisplayed()));
+        appCompatEditText.perform(replaceText("asd"), closeSoftKeyboard());
+
+        ViewInteraction materialButton = onView(
+                allOf(withId(R.id.button_post), withText("Post"),
+                        childAtPosition(
+                                allOf(withId(R.id.layout_make_post),
+                                        childAtPosition(
+                                                withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
+                                                2)),
                                 1),
                         isDisplayed()));
-        bottomNavigationItemView.perform(click());
-
-        ViewInteraction recyclerView = onView(withId(R.id.view_forum));
-        recyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))); // Check if the RecyclerView is visible
-        }
+        materialButton.perform(click());
+    }
 
     private static Matcher<View> childAtPosition(
             final Matcher<View> parentMatcher, final int position) {

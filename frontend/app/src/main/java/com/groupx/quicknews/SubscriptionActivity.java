@@ -90,6 +90,7 @@ public class SubscriptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 updateSubscriptionList();
+                finish();
             }
         });
     }

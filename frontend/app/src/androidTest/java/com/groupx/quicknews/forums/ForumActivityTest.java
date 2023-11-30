@@ -17,21 +17,25 @@ import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.internal.util.Checks.checkNotNull;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.groupx.quicknews.BaseActivity;
 import com.groupx.quicknews.ForumsListFragment;
 import com.groupx.quicknews.R;
 import com.groupx.quicknews.util.RecyclerViewIdlingResource;
@@ -52,17 +56,27 @@ public class ForumActivityTest {
     private RecyclerViewIdlingResource idlingResource;
     private RecyclerView recyclerViewComments;
     @Rule
-    public ActivityScenarioRule<ForumsListFragment> mActivityScenarioRule =
-            new ActivityScenarioRule<>(ForumsListFragment.class);
+    public ActivityScenarioRule<BaseActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(BaseActivity.class);
 
     @Before
     public void setUp() {
+        ViewInteraction bottomNavigationItemView = onView(
+                allOf(withId(R.id.action_forums), withContentDescription("Forums"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.bottomNavigation),
+                                        0),
+                                1),
+                        isDisplayed()));
+        bottomNavigationItemView.perform(click());
+
         ViewInteraction recyclerView = onView(
                 allOf(withId(R.id.view_forum),
                         childAtPosition(
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                1)));
-        recyclerView.perform(actionOnItemAtPosition(2, click()));
+                                0)));
+        recyclerView.perform(actionOnItemAtPosition(0, click()));
     }
 
         @Test
@@ -208,6 +222,27 @@ public class ForumActivityTest {
                 ViewParent parent = view.getParent();
                 return parent instanceof ViewGroup && parentMatcher.matches(parent)
                         && view.equals(((ViewGroup) parent).getChildAt(position));
+            }
+        };
+    }
+
+    public static Matcher<View> atPosition(final int position, @NonNull final Matcher<View> itemMatcher) {
+        checkNotNull(itemMatcher);
+        return new BoundedMatcher<View, RecyclerView>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has item at position " + position + ": ");
+                itemMatcher.describeTo(description);
+            }
+
+            @Override
+            protected boolean matchesSafely(final RecyclerView view) {
+                RecyclerView.ViewHolder viewHolder = view.findViewHolderForAdapterPosition(position);
+                if (viewHolder == null) {
+                    // has no item on such position
+                    return false;
+                }
+                return itemMatcher.matches(viewHolder.itemView);
             }
         };
     }
