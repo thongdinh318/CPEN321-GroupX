@@ -151,7 +151,6 @@ public class ForumActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Response response) throws IOException{
                     int statusCode = response.code();
-                    //TODO: update statusCodes so they convey more information
                     if (statusCode == 200){
                         Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
                         runOnUiThread(new Runnable() {

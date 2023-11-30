@@ -10,9 +10,11 @@ import com.groupx.quicknews.R;
 
 public class ForumViewHolder extends RecyclerView.ViewHolder {
     public TextView forumName;
-        // ChatGPT usage: No.
+    public TextView commentCount;
+    // ChatGPT usage: No.
     public ForumViewHolder(@NonNull View view) {
         super(view);
         forumName = itemView.findViewById(R.id.text_forum_name);
+        commentCount = itemView.findViewById(R.id.text_comment_count);
     }
 }

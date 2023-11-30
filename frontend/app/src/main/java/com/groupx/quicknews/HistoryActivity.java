@@ -40,7 +40,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Viewing History");
+        getSupportActionBar().setTitle("Viewed Articles");
         articleView = findViewById(R.id.view_article);
 
         getArticleHistory();
