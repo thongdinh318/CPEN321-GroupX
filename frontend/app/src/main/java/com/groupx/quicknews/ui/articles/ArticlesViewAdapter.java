@@ -1,5 +1,6 @@
 package com.groupx.quicknews.ui.articles;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,22 +19,31 @@ import com.groupx.quicknews.HistoryActivity;
 import com.groupx.quicknews.LoginActivity;
 import com.groupx.quicknews.R;
 import com.groupx.quicknews.helpers.HttpClient;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import okhttp3.Response;
 
 public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder> {
     private Context context;
+    private Activity activity;
     private List<Article> articles;
     final static String TAG = "ArticleView";
     public ArticlesViewAdapter(Context context, List<Article> articles) {
         this.context = context;
         this.articles = articles;
+        this.activity = (Activity) context;
     }
     // ChatGPT usage: No.
     @NonNull
@@ -83,6 +94,8 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
             String formatedDate = new SimpleDateFormat("dd/MM/yyyy").format(date);
             holder.articleDatePublished.setText(formatedDate);
         }
+
+        getImage(holder.articlePreviewImage, "https://www.youtube.com/watch?v=SbMesdse3RA"); //articles.get(position).getUrl()
     }
 
     // ChatGPT usage: No.
@@ -122,6 +135,26 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         catch(Exception e) {
             Log.e(TAG, "exception", e);
         }
+    }
+
+    // ChatGPT usage: used to generate function, slight changes made to adapt for use in adapter
+    public void getImage(ImageView imageView, String url) {
+        Executor executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                Document doc = Jsoup.connect(url).get();
+                Elements ogImage = doc.select("meta[property=og:image]");
+
+                if (!ogImage.isEmpty()) {
+                    String imageUrl = ogImage.attr("content");
+
+                    activity.runOnUiThread(() ->
+                            Picasso.get().load(imageUrl).fit().centerCrop().into(imageView));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
 

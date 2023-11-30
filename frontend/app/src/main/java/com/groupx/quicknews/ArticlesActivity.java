@@ -37,7 +37,7 @@ public class ArticlesActivity extends AppCompatActivity {
         List<Article> articlesList = SearchArticlesFragment.getArticleList();
         articleView = findViewById(R.id.view_article);
         articleView.setLayoutManager(new LinearLayoutManager(this));
-        articleView.setAdapter(new ArticlesViewAdapter(getApplicationContext(), articlesList));
+        articleView.setAdapter(new ArticlesViewAdapter(this, articlesList));
 
     }
 
@@ -69,6 +69,4 @@ public class ArticlesActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    //TODO: need someway to refresh articles. possibly on pulldown
 }

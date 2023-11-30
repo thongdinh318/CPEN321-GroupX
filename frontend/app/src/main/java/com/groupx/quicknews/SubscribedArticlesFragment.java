@@ -69,7 +69,7 @@ public class SubscribedArticlesFragment extends Fragment {
                             public void run() {
                                 Log.d(TAG, articles.toString());
                                 articleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                                articleView.setAdapter(new ArticlesViewAdapter(getActivity().getApplicationContext(), articles));
+                                articleView.setAdapter(new ArticlesViewAdapter(getActivity(), articles));
                             }
                         });
                     }

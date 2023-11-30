@@ -43,6 +43,10 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("androidx.navigation:navigation-fragment:2.5.3")
     implementation("androidx.navigation:navigation-ui:2.5.3")
+
+    implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation ("org.jsoup:jsoup:1.14.3")
+
     // define a BOM and its version
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.11.0"))
     // define any required OkHttp artifacts without version

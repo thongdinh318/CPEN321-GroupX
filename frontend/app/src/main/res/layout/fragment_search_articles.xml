@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchView"
-        android:layout_marginTop="@dimen/text_cardview_padding">
+        android:layout_marginTop="30dp">
         <TextView
             android:id="@+id/publisher_view"
             android:layout_width="wrap_content"
