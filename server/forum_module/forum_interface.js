@@ -1,9 +1,5 @@
-import express from "express";
-import { MongoClient } from "mongodb";
-const uri = 'mongodb://127.0.0.1:27017';
-const client = new MongoClient(uri);
-
-// import client from "./server/mongoClient.js"
+import * as server from "../server.js"
+// const client = server.client
 
 //const https = require("https");
 
@@ -15,7 +11,7 @@ function dateAdded(){
 	return time;
 }
 
-export class ForumModule{
+export default class ForumModule{
     //ChatGPT usage: No
     construtor(){
         this.dateCreated = new Date();
@@ -24,94 +20,127 @@ export class ForumModule{
     // DATABASE COMMUNICATION INTERFACES
     //ChatGPT usage: No
     createForum = async function(forumId, forumName){
-        try{
-            let forum = {
-                id: forumId,
-                name : forumName,
-            };
-            forum.dateCreated = dateAdded();
-            forum.comments = [];
-            const res =  await client.db('ForumDB').collection('forums').insertOne(forum);
-            return forum;
-        }catch(err){
-            return (err);
-        }
+        let forum = {
+            id: forumId,
+            name : forumName,
+        };
+        forum.dateCreated = dateAdded();
+        forum.comments = [];
+        await server.client.db('ForumDB').collection('forums').insertOne(forum);
+        return forum;
     }
 
     //ChatGPT usage: No
     getAllForums = async function(){
-        try{
-            const result = await client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
+        // console.log("Get all forums")
+        // try{
+            const result = await server.client.db("ForumDB").collection("forums").find().sort({ 'rating' : -1 }).toArray();
+            
             return (result);
-        } catch (err){
-            return(err)
-        }
+        // } catch (err){
+        //     return(err)
+        // }
     }
     //ChatGPT usage: No
     getForum = async function (forumId){
         // const response = await axios.get(url  + "/" + forumId);
-        try{
-            
-            const result = await client.db("ForumDB").collection("forums").find({"id": forumId}).toArray();
-            // console.log(result);
-
+        // console.log("Get forum" + forumId)
+        // try{
+            const result = await server.client.db("ForumDB").collection("forums").find({id : forumId}).toArray();
+    
             return (result);
-        } catch (err){
-            return(err)
-        }
+        // } catch (err){
+        //     return(err)
+        // }
         // return response.data;
         
     }
 
     //ChatGPT usage: No
-    deleteForum = async function(forumId){
-        // const response = await axios.delete(url + "/" +forumId);
-        // return response.data;
-
-        try{
-            const result = await client.db("ForumDB").collection("forums").deleteOne({id : forumId});
-            return result.acknowledged
+    // deleteForum = async function(forumId){
+    //     // const response = await axios.delete(url + "/" +forumId);
+    //     // return response.data;
+    //     // console.log("Delete forum " + forumId)
+    //     // try{
+    //         const result = await server.client.db("ForumDB").collection("forums").deleteOne({id : forumId});
+    //         return result.acknowledged
     
-        }catch(err){
-            return(err);
-        }
+    //     // }catch(err){
+    //     //     return(err);
+    //     // }
         
-    }
+    // }
 
     //ChatGPT usage: No
-    deleteForums = async function(){
-        // const response = await axios.delete(url);
-        // return response.data;
-
-        try{
-            const result = await client.db('ForumDB').collection('forums').drop({});
+    // deleteForums = async function(){
+    //     // const response = await axios.delete(url);
+    //     // return response.data;
+    //     // console.log("Delete all forums")
+    //     // try{
+    //         const result = await server.client.db('ForumDB').collection('forums').drop({});
             
-            return result
+    //         return result
     
-        }catch(err){
-            return (err)
-        }
-    }
+    //     // }catch(err){
+    //     //     return (err)
+    //     // }
+        
+    // }
 
     //ChatGPT usage: No
     addCommentToForum = async function(forumId, commentData, username, parent_id){
-        try{
-            var datePosted = dateAdded();
-            let date = new Date();
-            let comment = {
-                comment_id : forumId + "_" + date,
-                parent_id : parent_id, // NULL if it has no parent
-                username : username,
-                content : commentData,
-                datePosted: datePosted
+        var datePosted = dateAdded();
+
+        let commentLevel;
+        let comment_id = forumId + "_" + (Date.now());
+
+        if(parent_id == null)
+            commentLevel = 0;
+
+        else{
+            // Find the parent post and get its level
+            let parentForum = await server.client.db("ForumDB").collection('forums').find({comments : {$elemMatch : {comment_id : parent_id}}}).toArray();
+            let parentComment = parentForum[0].comments.find(o => o.comment_id === parent_id);
+
+            let index = parentForum[0].comments.indexOf(parentComment);
+            parentForum[0].comments[index].childArray.push(comment_id);
+
+            const parentUpdate = await server.client.db('ForumDB').collection('forums').updateOne({ id : forumId}, {$set : {comments : parentForum[0].comments}});
+
+            // If you try to reply to a comment at level 3 then it is proccessed as a sibling comment and not a child
+            if(parentComment.commentLevel == 3){
+                commentLevel = 3;
+                parent_id = parentComment.parent_id;
+
+            }else{
+                commentLevel = parentComment.commentLevel + 1;
             }
-            const response = await client.db('ForumDB').collection('forums')
-                            .updateOne({ id : forumId}, { $push:{ comments : comment }});
-            return response.acknowledged;
-        }catch(err){
-            console.log(err);
-            return false;
         }
 
+        let comment = {
+            commentLevel: commentLevel, // max 3
+            parent_id: parent_id, //Null if this is the first comment of the thread
+            comment_id : comment_id,
+            childArray : [],
+            username,
+            content : commentData,
+            datePosted
+        }
+
+        try{
+            const response = await server.client.db('ForumDB').collection('forums')
+                            .updateOne({ id : forumId}, { $push:{ comments : comment }});
+            
+            console.log(response)
+
+            if(response["modifiedCount"] !== 0)
+                return (comment_id);
+            else
+                return "err";
+            
+        }catch(err){
+
+            return "err";
+        }
     }
-};
+}

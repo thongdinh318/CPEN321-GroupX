@@ -13,14 +13,12 @@ import * as recommendation from "./articles/recommendation.js";
 import ForumModule from "./forum_module/forum_interface.js";
 
 const uri = "mongodb://127.0.0.1:27017"
-import WebSocket, {WebSocketServer} from "ws";
 
 export const client = new mongo.MongoClient(uri)
 
 export var app = express()
 app.use(express.json())
 
-// const wss = new WebSocketServer({ port: 9000 });
 const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
 const wss = new Server(socket_server);
 //local test
@@ -51,6 +49,10 @@ function isErr(error){
 
 //Verify and register users
 // ChatGPT usage: No.
+app.get("/", async (req,res) =>{
+    res.status(200).send("here");
+});
+
 app.post("/signin", async (req,res)=>{
     console.log("Signed in")
     const token = req.body.idToken;
@@ -59,7 +61,7 @@ app.post("/signin", async (req,res)=>{
         // console.log(payload)
         var loggedInUserPromise = userMod.registerNewUser(payload['sub'], payload['name'], payload['email'])
         loggedInUserPromise.then((loggedInUser)=>{
-            // console.log(loggedInUser)
+            console.log(loggedInUser)
             delete loggedInUser.user._id
             res.status(200).send({user: loggedInUser.user, jwt: loggedInUser.jwt})
         })
@@ -388,75 +390,40 @@ app.get("/forums/:forum_id", async (req, res) =>{
 });  
 
 
-//Doesnt need this anymore since we use ws
-// app.use("/addComment/:forum_id", (req,res,next)=>{
-//     if (req.headers.jwt == undefined){
-//         res.status(400).send("No JWT in headers")
-//         return
-//     }
-//     try {
-//         var decoded = jwt.verify(req.headers.jwt, key)
-//     } catch (err) {
-//         res.status(403).send(err.message)
-//         return
-//     }
-//     if (decoded.id === req.body.userId){
-//         // console.log("Rigth token, proceed")
-//         next()
-//     }
-//     else{
-//         res.status(400).send("Wrong token")
-//         return;
-//     }
-// })
 
-wss.on('connection', async (ws) => {
+
+wss.on('connection', async (socket) => {
     console.log('A new client Connected!');
-  
-    ws.on('message', async (comment, isBinary) =>{
-        console.log("Sample Text for sockets");  
-        comment = JSON.parse(comment);
 
+    socket.on('message', async (comment, isBinary) =>{
+        console.log("Sample Text for sockets");
+        comment = JSON.parse(comment);
         console.log(comment);
 
-        // let commentData = comment.commentData;
-        // let userId = comment.userId;
-        // const user = await userMod.getProfile(userId);
-        // let forum_id = comment.forum_id;
-        // let parent_id = comment.parent_id;
-        // const result = await forum.addCommentToForumOld(parseInt(forum_id,10), commentData, user.username)
-        // console.log(result)
-        // if (result){
-        //     console.log("Listen!! server emits orders")
-        //     wss.sockets.emit("new_message", "Make Get requests, my children")
-        // }
+        let commentData = comment.commentData;
+        let userId = comment.userId;
+        const user = await userMod.getProfile(userId);
+        let forum_id = comment.forum_id;
+        let parent_id = comment.parent_id;
       
-    //   const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
+        const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id)
+        console.log(result)
 
-  
-    //   if (result === "err"){
-    //     ws.send("Could not post comment");
-    //   }
-    //   else{
-    //       try{
-    //           const newForum = await forum.getForum(forum_id);
-    //           // console.log(newForum)
-    //           // ws.send(newForum, {binary : isBinary});
-    //           wss.clients.forEach(async (socketClient)=>{
-    //             // If the new comment does not appear on the user's screen
-    //               if (socketClient !== ws && socketClient.readyState === WebSocket.OPEN){
-    //                   socketClient.send(newForum);
+        if (result === 'err'){
+            console.log("Listen!! server emits orders")
+            // wss.sockets.emit("new_message", "Could not post comment")
+            socket.to(socket.id).emit("new_message","Could not post comment");
 
-    //               } else if (socketClient == ws){
+        }else{
+            const newForum = await forum.getForum(forum_id);
 
-    //                 socketClient.send(result);
-    //               }
-    //           });
-              
-    //       }catch{
-    //           ws.send("Could not post comment")
-    //       }  
-    //     } 
+            // Send every other user the updated forum
+            socket.brodcast("new_message",newForum);
+
+            // return comment_id to poster
+            socket.to(socket.id).emit("new_message", result);
+        }
+
     });
     
   });
