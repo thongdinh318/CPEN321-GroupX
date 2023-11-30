@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,8 +72,10 @@ import java.util.Objects;
 @RunWith(AndroidJUnit4.class)
 public class ForumActivityTest {
 
-    private RecyclerViewIdlingResource idlingResource;
-    private RecyclerView recyclerViewComments;
+    Resources resources;
+    String editTextHint;
+    String buttonPostText;
+
     @Rule
     public ActivityScenarioRule<BaseActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(BaseActivity.class);
@@ -101,6 +104,9 @@ public class ForumActivityTest {
                                 withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
                                 0)));
         recyclerView.perform(actionOnItemAtPosition(0, click()));
+        resources = InstrumentationRegistry.getInstrumentation().getTargetContext().getResources();
+        editTextHint = resources.getString(R.string.hint_edit_post);
+        buttonPostText = resources.getString(R.string.button_post);
     }
 
         @Test
@@ -108,14 +114,17 @@ public class ForumActivityTest {
         ViewInteraction commentRecyclerView = onView(withId(R.id.view_comment));
         commentRecyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
+
+
         ViewInteraction editText = onView(
-                allOf(withId(R.id.edit_post), withHint("Enter Message"),
+                allOf(withId(R.id.edit_post), withHint(editTextHint),
                         withParent(allOf(withId(R.id.layout_make_post))),
                         isDisplayed()));
-        editText.check(matches(withHint("Enter Message")));
+        editText.check(matches(withHint(editTextHint)));
+        editText.check(matches(isDisplayed()));
 
         ViewInteraction button = onView(
-                allOf(withId(R.id.button_post), withText("Post"),
+                allOf(withId(R.id.button_post), withText(buttonPostText),
                         withParent(allOf(withId(R.id.layout_make_post))),
                         isDisplayed()));
         button.check(matches(isNotEnabled()));
@@ -126,11 +135,11 @@ public class ForumActivityTest {
         ViewInteraction commentRecyclerView = onView(withId(R.id.view_comment));
         commentRecyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         ViewInteraction button = onView(
-                allOf(withId(R.id.button_post), withText("Post"),
+                allOf(withId(R.id.button_post), withText(buttonPostText),
                         withParent(withId(R.id.layout_make_post)),
                         isDisplayed()));
         ViewInteraction editText = onView(
-                allOf(withId(R.id.edit_post), withHint("Enter Message"),
+                allOf(withId(R.id.edit_post), withHint(editTextHint),
                         withParent(withId(R.id.layout_make_post)),
                         isDisplayed()));
 
@@ -164,7 +173,7 @@ public class ForumActivityTest {
                 .check(matches(atPosition(count - 1, hasDescendant(
                         allOf(withId(R.id.text_user), withText(user[0]))))));
 
-        editText.check(matches(withHint("Enter Message")));
+        editText.check(matches(withHint(editTextHint)));
         button.check(matches(isNotEnabled()));
     }
 
@@ -173,11 +182,11 @@ public class ForumActivityTest {
         ViewInteraction commentRecyclerView = onView(withId(R.id.view_comment));
         commentRecyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
         ViewInteraction button = onView(
-                allOf(withId(R.id.button_post), withText("Post"),
+                allOf(withId(R.id.button_post), withText(buttonPostText),
                         withParent(withId(R.id.layout_make_post)),
                         isDisplayed()));
         ViewInteraction editText = onView(
-                allOf(withId(R.id.edit_post), withHint("Enter Message"),
+                allOf(withId(R.id.edit_post), withHint(editTextHint),
                         withParent(withId(R.id.layout_make_post)),
                         isDisplayed()));
         try {
@@ -207,7 +216,7 @@ public class ForumActivityTest {
                 .check(matches(atPosition(count - 2, hasDescendant(
                         allOf(withId(R.id.text_comment), withText("Test Post 2"))))));
 
-        editText.check(matches(withHint("Enter Message")));
+        editText.check(matches(withHint(editTextHint)));
         button.check(matches(isNotEnabled()));
     }
 
@@ -221,7 +230,7 @@ public class ForumActivityTest {
         int count = recyclerView.getAdapter().getItemCount();
 
         try {
-            Thread.sleep(10000);
+            Thread.sleep(12000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

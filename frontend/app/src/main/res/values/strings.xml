@@ -115,6 +115,9 @@
     <string name="forum_button">Forums</string>
     <string name="toast_no_sub">Please subscribe to a publisher</string>
 
+    <string name="hint_edit_post">Enter Message</string>
+    <string name="button_post">Post</string>
+
     <!--endpoints-->
     <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
     <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
