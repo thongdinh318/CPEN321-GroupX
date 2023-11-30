@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groupx.quicknews.helpers.HttpClient;
@@ -68,6 +69,15 @@ public class SubscribedArticlesFragment extends Fragment {
                                 articleView.setAdapter(new ArticlesViewAdapter(getActivity(), articles));
                             }
                         });
+                    }
+                    else {
+                        getActivity().runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getActivity().getApplicationContext(),
+                                        getString(R.string.toast_no_sub), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

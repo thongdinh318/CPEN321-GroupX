@@ -5,13 +5,16 @@ import static androidx.test.internal.util.Checks.checkNotNull;
 import static org.hamcrest.Matchers.isA;
 
 import android.app.Activity;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.Checkable;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.Root;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.BoundedMatcher;
@@ -135,4 +138,5 @@ public class Util {
             }
         };
     }
-}
+
+    }

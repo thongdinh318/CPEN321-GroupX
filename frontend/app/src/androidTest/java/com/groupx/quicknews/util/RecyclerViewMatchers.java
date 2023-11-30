@@ -21,4 +21,19 @@ public class RecyclerViewMatchers {
             }
         };
     }
+
+    public static Matcher<Object> withItemCountEqual(final int count) {
+        return new BoundedMatcher<Object, RecyclerView>(RecyclerView.class) {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with item count equal to: " + count);
+            }
+
+            @Override
+            protected boolean matchesSafely(RecyclerView recyclerView) {
+                RecyclerView.Adapter adapter = recyclerView.getAdapter();
+                return adapter != null && adapter.getItemCount() == count;
+            }
+        };
+    }
 }

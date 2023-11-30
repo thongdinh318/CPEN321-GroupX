@@ -113,6 +113,7 @@
     <string name="filter_search_button">Search</string>
     <string name="get_recommended_button">Recommended Articles</string>
     <string name="forum_button">Forums</string>
+    <string name="toast_no_sub">Please subscribe to a publisher</string>
 
     <!--endpoints-->
     <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
