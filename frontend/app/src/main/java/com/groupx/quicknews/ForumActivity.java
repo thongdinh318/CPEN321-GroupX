@@ -76,7 +76,6 @@ public class ForumActivity extends AppCompatActivity {
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                postComment(commentText.getText().toString());
                 emitComment(commentText.getText().toString());
                 commentText.getText().clear();
             }
@@ -85,6 +84,7 @@ public class ForumActivity extends AppCompatActivity {
 
     private void setSocket(){
         try {
+            Log.d(TAG,"setting socket");
             socket = IO.socket(getString(R.string.server_socket));
         } catch (URISyntaxException e) {
             Log.d(TAG, "Error connecting to socket");
@@ -221,7 +221,7 @@ public class ForumActivity extends AppCompatActivity {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-        socket.emit("message_to_forum", json.toString());
+        socket.emit("message", json.toString());
     }
 
     //https://dev.to/ahmmedrejowan/hide-the-soft-keyboard-and-remove-focus-from-edittext-in-android-ehp

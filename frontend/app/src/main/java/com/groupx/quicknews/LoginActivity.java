@@ -130,8 +130,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (statusCode == 200){
                             String res = response.body().string();
                             res = res.replace("\"", "\'");
-                            JSONObject user = new JSONObject(res);
-
+                            JSONObject jsonRes= new JSONObject(res);
+                            JSONObject user = jsonRes.getJSONObject("user");
                             if (user.has("userId")){
                                 userId = user.getString("userId");
                                 updateUI();
