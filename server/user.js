@@ -78,6 +78,7 @@ async function registerNewUser(userId, username, userEmail){
         await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
         return ({user: userProfile, jwt: token})
     }
+    
     var newUser = createNewUser(userId, username,userEmail)
     
     var token = jwt.sign({id:userId}, server.key, {algorithm:'HS256'}) // local
