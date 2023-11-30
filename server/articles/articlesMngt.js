@@ -13,10 +13,10 @@ const defArticle = {
 
 //Intit DB Function-->
 // ChatGPT usage: No.
-export async function initADb(){
+/*export async function initADb(){
     await server.client.db("articledb").collection("articles").insertOne(defArticle)
     return("success\n")
-}
+}*/
 //<--- Intit DB Function
 
 //Search an article based on its id 

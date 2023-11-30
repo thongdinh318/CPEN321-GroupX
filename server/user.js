@@ -37,10 +37,10 @@ function createNewUser(userId, userName, userEmail){
 
 //Init DB function --->
 //ChatGPT usage: No
-async function initUDb(){
+/*async function initUDb(){
     await server.client.db("userdb").collection("profile").insertOne(defUser)
     return("success\n")
-}
+}*/
 //<--- Init DB function
 
 //Interfaces with frontend -->
@@ -71,9 +71,9 @@ async function registerNewUser(userId, username, userEmail){
     if (userProfile.userId){
         await server.client.db("tokendb").collection("jwt").deleteOne({userId: userProfile.userId})
     
-        var token = jwt.sign({id:userId,}, server.key, {algorithm:'HS256'}) // local
+        // var token = jwt.sign({id:userId,}, server.key, {algorithm:'HS256'}) // local
     
-        // var token = jwt.sign({id:userId,}, server.key, {algorithm:'ES256'}) // cloud
+        var token = jwt.sign({id:userId,}, server.key, {algorithm:'ES256'}) // cloud
     
         await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
         return ({user: userProfile, jwt: token})
@@ -81,9 +81,9 @@ async function registerNewUser(userId, username, userEmail){
     
     var newUser = createNewUser(userId, username,userEmail)
     
-    var token = jwt.sign({id:userId}, server.key, {algorithm:'HS256'}) // local
+    // var token = jwt.sign({id:userId}, server.key, {algorithm:'HS256'}) // local
     
-    // var token = jwt.sign({id:userId}, server.key, {algorithm:'ES256'}) // cloud
+    var token = jwt.sign({id:userId}, server.key, {algorithm:'ES256'}) // cloud
     
     await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
     await server.client.db("userdb").collection("profile").insertOne(newUser);
@@ -173,4 +173,4 @@ async function getAllUserHistory(){
     return result
 }
 // <---- Interfaces with other modules
-export {initUDb, registerNewUser, verify, getProfile, updateProfile, updateHistory, getAllUserHistory}
+export {registerNewUser, verify, getProfile, updateProfile, updateHistory, getAllUserHistory}

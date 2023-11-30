@@ -20,8 +20,8 @@ export const client = new mongo.MongoClient(uri)
 export var app = express()
 app.use(express.json())
 
-const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
-const wss = new Server(socket_server);
+//const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
+//const wss = new Server(socket_server);
 //local test
 //export const key = "secret"
 //const cert = key
@@ -34,13 +34,13 @@ var options = {
           cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
 };
 
-// const socket_server = https.createServer(options,app)
-// const wss = new Server(socket_server)
+const socket_server = https.createServer(options,app)
+const wss = new Server(socket_server)
 
-const forum = new ForumModule()
+export const forum = new ForumModule()
 var forum_id = 1;
-export var forumTheme = new Set(["General News", "Economics", "Education"])
-
+//export var forumTheme = new Set(["General News", "Economics", "Education"])
+export var forumTheme = new Set([])
 // Error checking function
 //https://stackoverflow.com/questions/30469261/checking-for-typeof-error-in-js
 // ChatGPT usage: No.
@@ -406,12 +406,12 @@ app.get("/article/filter/search", async(req,res)=>{
             return;
         }
 
-        if (end == start){
+        //if (end == start){
             end = new Date(new Date(end).setUTCHours(23,59,59,999)).toISOString()
-        }
-        else{
-            end = new Date(end).toISOString()
-        }
+        //}
+        //else{
+          //  end = new Date(end).toISOString()
+        //}
         start = new Date(start).toISOString()
         query.publishedDate = {$gte:start, $lte: end}
     }
@@ -487,26 +487,6 @@ app.use("/article/subscribed/:userId", (req,res,next)=>{
         return;
     }
 })
-app.use("/article/subscribed/:userId", (req,res,next)=>{
-    if (req.headers.jwt == undefined){
-        res.status(400).send("No JWT in headers")
-        return
-    }
-    try {
-        var decoded = jwt.verify(req.headers.jwt, cert)
-    } catch (err) {
-        res.status(403).send(err.message)
-        return
-    }
-    if (decoded.id === req.params.userId){
-        // console.log("Rigth token, proceed")
-        next()
-    }
-    else{
-        res.status(400).send("Wrong token")
-        return;
-    }
-})
 //ChatGPT Ussage: No
 app.get("/article/subscribed/:userId", async (req,res)=>{
     const userId = req.params.userId
@@ -522,6 +502,8 @@ app.get("/article/subscribed/:userId", async (req,res)=>{
             userSubList[i] = new RegExp(userSubList[i].toLowerCase())
         }
         query.publisher =  {$in:userSubList}
+    } else{
+	query.publisher = "none"
     }
     
     const foundArticles = await articleMod.searchByFilter(query)
@@ -672,13 +654,13 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 // Main Function
 // ChatGPT usage: No.
 
-export var server = app.listen(8081, (req,res)=>{
+/*export var server = app.listen(8081, (req,res)=>{
     var host = server.address().address
     var port = server.address().port
-})
+})*/
 
 // create https server
-// export var server = https.createServer(options, app).listen(8081)
+export var server = https.createServer(options, app).listen(8081)
 
 socket_server.listen(9000)
 
@@ -692,10 +674,6 @@ async function run(){
         client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
         client.db("tokendb").collection("jwt").deleteMany({})
-
-        for (var theme of forumTheme){
-            await forum.createForum(theme)
-        }
         console.log("Retrieving some articles")
         var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
         
