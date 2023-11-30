@@ -11,17 +11,20 @@ import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.groupx.quicknews.util.Util.atPosition;
 import static com.groupx.quicknews.util.Util.getCurrentActivity;
 import static com.groupx.quicknews.util.Util.setChecked;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
@@ -175,7 +178,8 @@ public class AccessibilityTests {
             throw new RuntimeException(e);
         }
 
-        onView(withId(R.id.view_article)).check(matches(isDisplayed()));
+        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
+                .check(matches(withText("Articles")));
     }
 
     @Test
@@ -202,7 +206,8 @@ public class AccessibilityTests {
             throw new RuntimeException(e);
         }
 
-        onView(withId(R.id.view_article)).check(matches(isDisplayed()));
+        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
+                .check(matches(withText("Articles")));
     }
 
     @Test
@@ -234,7 +239,8 @@ public class AccessibilityTests {
             throw new RuntimeException(e);
         }
 
-        onView(withId(R.id.view_article)).check(matches(isDisplayed()));
+        onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
+                .check(matches(withText("Viewed Articles")));
     }
 
     private static Matcher<View> childAtPosition(
