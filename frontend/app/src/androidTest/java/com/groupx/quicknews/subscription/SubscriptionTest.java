@@ -235,8 +235,5 @@ public class SubscriptionTest {
 
         onView(withText(R.string.toast_no_sub)).inRoot(new ToastMatcher())
                 .check(matches(isDisplayed()));
-
-        //ViewInteraction recyclerView = onView(withId(R.id.view_article));
-        //recyclerView.check(matches(RecyclerViewMatchers.withItemCountEqual(0)));
     }
 }
