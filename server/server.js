@@ -403,25 +403,20 @@ wss.on('connection', async (socket) => {
         let commentData = comment.commentData;
         let userId = comment.userId;
         const user = await userMod.getProfile(userId);
-        let forum_id = comment.forum_id;
-        let parent_id = comment.parent_id;
-      
-        const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id)
+        let forum_id = parseInt(comment.forum_id,10);
+        const result = await forum.addCommentToForum(forum_id, commentData, user.username)
         console.log(result)
 
-        if (result === 'err'){
+        if (!result){
             console.log("Listen!! server emits orders")
             // wss.sockets.emit("new_message", "Could not post comment")
-            socket.to(socket.id).emit("new_message","Could not post comment");
+            socket.to(socket.id).emit("message_error","Could not post comment");
 
         }else{
             const newForum = await forum.getForum(forum_id);
 
             // Send every other user the updated forum
-            socket.brodcast("new_message",newForum);
-
-            // return comment_id to poster
-            socket.to(socket.id).emit("new_message", result);
+            socket.emit("new_message",newForum)
         }
 
     });
