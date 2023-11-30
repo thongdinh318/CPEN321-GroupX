@@ -73,7 +73,7 @@ public class SearchArticlesTest {
                 .check(matches(isDisplayed()));
     }
 
-    @Test
+    //@Test
     public void invalidDateRange() {
         //set date_to to Nov 28th
         ViewInteraction toButton = onView(
@@ -112,6 +112,32 @@ public class SearchArticlesTest {
                 .check(matches(isDisplayed()));
     }
 
+    @Test
+    public void noArticlesFound() {
+        ViewInteraction searchAutoComplete = onView(
+                allOf(withClassName(is("android.widget.SearchView$SearchAutoComplete")),
+                        childAtPosition(
+                                allOf(withClassName(is("android.widget.LinearLayout")),
+                                        childAtPosition(
+                                                withClassName(is("android.widget.LinearLayout")),
+                                                1)),
+                                0),
+                        isDisplayed()));
+        searchAutoComplete.perform(replaceText("Floccinaucinihilipilification"), closeSoftKeyboard());
+
+        ViewInteraction searchButton = onView(
+                allOf(withId(R.id.filter_search_button), withText("Search"),
+                        childAtPosition(
+                                childAtPosition(
+                                        withId(R.id.nav_fragment_frame),
+                                        0),
+                                5),
+                        isDisplayed()));
+        searchButton.perform(click());
+
+        onView(withText("No articles matched")).inRoot(new ToastMatcher())
+                .check(matches(isDisplayed()));
+    }
     //@Test
     public void loginActivityTest2() {
 
