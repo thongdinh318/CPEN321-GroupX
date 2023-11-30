@@ -45,6 +45,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.groupx.quicknews.BaseActivity;
 import com.groupx.quicknews.ForumActivity;
 import com.groupx.quicknews.ForumsListFragment;
@@ -149,9 +153,16 @@ public class ForumActivityTest {
                 .check(matches(atPosition(count - 1, hasDescendant(
                         allOf(withId(R.id.text_comment), withText("Test Post 1"))))));
 
+        final String[] user = new String[1];
+        mActivityScenarioRule.getScenario().onActivity(a -> {
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(a);
+            user[0] = account.getGivenName() + " " + account.getFamilyName();
+
+        });
+
         onView(withId(R.id.view_comment))
                 .check(matches(atPosition(count - 1, hasDescendant(
-                        allOf(withId(R.id.text_user), withText("Ryan Clayton"))))));
+                        allOf(withId(R.id.text_user), withText(user[0]))))));
 
         editText.check(matches(withHint("Enter Message")));
         button.check(matches(isNotEnabled()));
