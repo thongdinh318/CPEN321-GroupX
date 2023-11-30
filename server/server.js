@@ -45,6 +45,7 @@ function isErr(error){
 //Verify and register users
 // ChatGPT usage: No.
 app.post("/signin", async (req,res)=>{
+    console.log("Sign in");
     const token = req.body.idToken;
     const payloadPromise =  userMod.verify(token)
     payloadPromise.then((payload)=>{
@@ -62,7 +63,7 @@ app.post("/signin", async (req,res)=>{
 })
 
 app.use("/signout", (req,res,next)=>{
-    // console.log(req.headers)
+    console.log(req.headers)
     if (req.headers.jwt == undefined){
         res.status(400).send("No JWT in headers")
     }
@@ -77,12 +78,13 @@ app.use("/signout", (req,res,next)=>{
         next()
     }
     else{
-        res.status(400).send("Wrong token")
+        res.status(400).send("Middleware Signout Wrong token")
         return;
     }
 })
 app.delete("/signout", async(req, res)=>{
     var userId = req.body.userId
+    
     var jwtFound = await client.db("tokendb").collection("jwt").findOne({userId})
     if (jwtFound){
         client.db("tokendb").collection("jwt").deleteOne({userId})
@@ -437,16 +439,16 @@ wss.on('connection', async (ws) => {
   
       comment = JSON.parse(comment);
   
-      // console.log(comment);
+      console.log(comment);
   
-      let commentData = comment.content;
+      let commentData = comment.commentData;
       let userId = comment.userId;
       const user = await userMod.getProfile(userId);
       let forum_id = comment.forum_id;
       let parent_id = comment.parent_id;
       
       const result = await forum.addCommentToForum(forum_id, commentData, user.username, parent_id).then()
-
+      console.log(result)
   
       if (result === "err"){
         ws.send("Could not post comment");
