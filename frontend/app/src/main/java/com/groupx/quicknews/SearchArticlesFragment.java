@@ -1,22 +1,16 @@
 package com.groupx.quicknews;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -26,20 +20,11 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.groupx.quicknews.databinding.ActivityMainBinding;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.articles.Article;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -47,8 +32,7 @@ import java.util.List;
 
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
-    ActivityMainBinding binding;
+public class SearchArticlesFragment extends Fragment {
     private EditText category;
     private Button fromButton;
     private Button toButton;
@@ -64,30 +48,33 @@ public class MainActivity extends AppCompatActivity {
     final static int DATEPICKER_FROM = 2;
     // ChatGPT usage: No.
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_search_articles, container, false);
+
 
         initDatePicker(DATEPICKER_FROM);
         initDatePicker(DATEPICKER_TO);
 
-        fromButton = findViewById(R.id.date_picker_from);
-        toButton = findViewById(R.id.date_picker_to);
-        filterSearchButton = findViewById(R.id.filter_search_button);
-        searchView = findViewById(R.id.searchView);
-        publisher = findViewById(R.id.publisher_input);
+        fromButton = rootView.findViewById(R.id.date_picker_from);
+        toButton = rootView.findViewById(R.id.date_picker_to);
+        filterSearchButton = rootView.findViewById(R.id.filter_search_button);
+        searchView = rootView.findViewById(R.id.searchView);
+        publisher = rootView.findViewById(R.id.publisher_input);
+        category = rootView.findViewById(R.id.category_input);
+        recommendedArticlesButton = rootView.findViewById(R.id.article_button);
 
+        category.setText("");
         fromButton.setText(getTodayDate());
         toButton.setText(getTodayDate());
 
 
         //can replace with list from server?
         String[] items = new String[]{"search all", "cbc", "cnn"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, items);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         publisher.setAdapter(adapter);
 
-        initNavigationBar();
+        //initNavigationBar();
 
         fromButton.setOnClickListener(new View.OnClickListener() {
             // ChatGPT usage: No.
@@ -105,9 +92,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        category = findViewById(R.id.category_input);
-        category.setText("");
-
         filterSearchButton.setOnClickListener(new View.OnClickListener() {
             // ChatGPT usage: No.
             @Override
@@ -118,9 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
         }
     });
-    recommendedArticlesButton = findViewById(R.id.article_button);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
         // ChatGPT usage: No.
         @Override
         public boolean onQueryTextSubmit(String query) {
@@ -137,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         }
     });
 
-        recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
+    recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
         // ChatGPT usage: No.
         @Override
             public void onClick(View view) {
@@ -147,34 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 getArticlesAndSwitchViews(url, ArticlesActivity.class);
             }
         });
-    }
-
-    private void initNavigationBar() {
-        BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.action_home);
-        bottomNavigationView.findViewById(R.id.action_home).setEnabled(false);
-
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemID = item.getItemId();
-            if (itemID == R.id.action_home) {
-                return true;
-            }
-            else if (itemID == R.id.action_forums) {
-                Log.d(TAG, "Trying to open forum view");
-                Intent forumIntent = new Intent(MainActivity.this, ForumsListActivity.class);
-                startActivity(forumIntent);
-                overridePendingTransition(0, 0);
-                return true;
-            }
-            else if (itemID == R.id.action_subscribed) {
-                Log.d(TAG, "Trying to open subscribed view");
-                Intent forumIntent = new Intent(MainActivity.this, SubscribedArticlesActivity.class);
-                startActivity(forumIntent);
-                overridePendingTransition(0, 0);
-                return true;
-            }
-            return false;
-        });
+        return rootView;
     }
 
     private String buildQuery() {
@@ -222,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
                     if (response.code() == 400){
                         String msg = response.body().string();
                         Log.d(TAG, msg);
-                        runOnUiThread(new Runnable() {
+                        getActivity().runOnUiThread(new Runnable() {
                             public void run() {
-                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -235,9 +191,9 @@ public class MainActivity extends AppCompatActivity {
                         JSONArray res = new JSONArray(json);
                         //Matched articles check
                         if (res.length() == 0){
-                            runOnUiThread(new Runnable() {
+                            getActivity().runOnUiThread(new Runnable() {
                                 public void run() {
-                                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
                                 }
                             });
                         }
@@ -246,12 +202,12 @@ public class MainActivity extends AppCompatActivity {
                             articleList = Arrays.asList(mapper.readValue(res.toString(), Article[].class));
                             articleList = new ArrayList<>(articleList); //jacksons creates immutable list
 
-                            Intent articleIntent = new Intent(MainActivity.this, targetActivity);;
+                            Intent articleIntent = new Intent(getActivity().getApplicationContext(), targetActivity);;
                             startActivity(articleIntent);
                         }
                     }
 
-                } catch (IOException | JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -296,12 +252,12 @@ public class MainActivity extends AppCompatActivity {
         int calDay = cal.get(Calendar.DAY_OF_MONTH);
 
         if (curDatePicker == DATEPICKER_FROM) {
-            datePickerDialogFrom = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+            datePickerDialogFrom = new DatePickerDialog(getActivity().getApplicationContext(), AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
                     calYear, calMonth, calDay);
             datePickerDialogFrom.getDatePicker().setMaxDate(System.currentTimeMillis());
         }
         else if (curDatePicker == DATEPICKER_TO) {
-            datePickerDialogTo = new DatePickerDialog(this, AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
+            datePickerDialogTo = new DatePickerDialog(getActivity().getApplicationContext(), AlertDialog.THEME_HOLO_LIGHT, dateSetListener,
                     calYear, calMonth, calDay);
         }
     }
@@ -358,85 +314,6 @@ public class MainActivity extends AppCompatActivity {
     // ChatGPT usage: No.
     private void openDatePicker(DatePickerDialog datePickerDialog){
         datePickerDialog.show();
-    }
-
-    //<--- Helper functions
-
-    //https://dev.to/ahmmedrejowan/hide-the-soft-keyboard-and-remove-focus-from-edittext-in-android-ehp
-    // ChatGPT usage: No.
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            View v = getCurrentFocus();
-            if (v instanceof EditText) {
-                Rect outRect = new Rect();
-                v.getGlobalVisibleRect(outRect);
-                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
-                    v.clearFocus();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event);
-    }
-
-    // ChatGPT usage: No.
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu resource
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_articles, menu);
-        return true;
-    }
-
-    // ChatGPT usage: No.
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if( itemId == R.id.action_manage_subscriptions ) {
-            Intent intent = new Intent(MainActivity.this, SubscriptionActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if( itemId == R.id.action_view_history ) {
-            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if( itemId == R.id.action_logout ) {
-            signOutServer();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void signOutServer() {
-        String url = getString(R.string.server_dns) + "signout";
-        Log.d(TAG,url);
-        boolean success;
-        HttpClient.deleteRequestWithJWT(url, new HttpClient.ApiCallback() {
-            @Override
-            public void onResponse(Response response) throws IOException {
-                Log.d(TAG, response.body().string());
-                signOutGoogle();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-            }
-        });
-    }
-    private void signOutGoogle() {
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getApplicationContext(), GoogleSignInOptions.DEFAULT_SIGN_IN);
-        googleSignInClient.signOut()
-            .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            });
     }
 
     // ChatGPT usage: No.

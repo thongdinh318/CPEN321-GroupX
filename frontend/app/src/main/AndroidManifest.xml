@@ -16,7 +16,6 @@
         android:theme="@style/Theme.MyApplication"
         tools:remove="android:appComponentFactory"
         tools:targetApi="31">
-
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -32,23 +31,13 @@
             android:label="@string/title_activity_articles"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
         <activity
-            android:name=".SubscribedArticlesActivity"
-            android:exported="false"
-            android:label="@string/title_activity_subscribed"
-            android:theme="@style/Theme.MyApplication.NoActionBar"/>
+            android:name=".BaseActivity"
+            android:exported="false" />
         <activity
             android:name=".ForumActivity"
             android:exported="false"
             android:label="@string/title_activity_forum"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
-        <activity
-            android:name=".ForumsListActivity"
-            android:exported="false"
-            android:label="@string/title_activity_forums_list"
-            android:theme="@style/Theme.MyApplication.NoActionBar" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"/>
         <activity
             android:name=".HistoryActivity"
             android:exported="false"

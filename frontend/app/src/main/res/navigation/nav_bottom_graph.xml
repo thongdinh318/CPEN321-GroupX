@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_bottom_graph"
+    app:startDestination="@id/searchViewFragment">
+
+    <fragment
+        android:id="@+id/searchViewFragment"
+        android:name="com.groupx.quicknews.SearchArticlesFragment"
+        android:label="@string/title_search"
+        tools:layout="@layout/fragment_search_articles" />
+
+    <fragment
+        android:id="@+id/subscribedArticlesFragment"
+        android:name="com.groupx.quicknews.SubscribedArticlesFragment"
+        android:label="@string/title_view_subscribed"
+        tools:layout="@layout/fragment_subscribed_articles" />
+
+    <fragment
+        android:id="@+id/forumsListFragment"
+        android:name="com.groupx.quicknews.ForumsListFragment"
+        android:label="@string/title_forums"
+        tools:layout="@layout/fragment_forums_list" />
+
+</navigation>

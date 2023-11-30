@@ -166,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "No user signed in");
         }
         else {
-            Intent signInIntent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent signInIntent = new Intent(LoginActivity.this, BaseActivity.class);
             startActivity(signInIntent);
         }
     }

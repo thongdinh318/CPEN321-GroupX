@@ -22,7 +22,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.groupx.quicknews.MainActivity;
+import com.groupx.quicknews.SearchArticlesFragment;
 import com.groupx.quicknews.R;
 
 import org.hamcrest.Description;
@@ -38,8 +38,8 @@ import org.junit.runner.RunWith;
 public class NavForumListActivityTest {
 
     @Rule
-    public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(MainActivity.class);
+    public ActivityScenarioRule<SearchArticlesFragment> mActivityScenarioRule =
+            new ActivityScenarioRule<>(SearchArticlesFragment.class);
 
     @Test
     public void openForumListTest() {
