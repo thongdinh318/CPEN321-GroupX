@@ -121,6 +121,14 @@ public class ForumActivity extends AppCompatActivity {
         socket.on("new_message", onNewMessage);
     }
 
+    // ChatGPT Usage: No
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "Left forum");
+        socket.disconnect();
+    }
+
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
