@@ -6,11 +6,6 @@ import https from "https"
 import http from "http"
 import jwt from "jsonwebtoken";
 import {Server} from "socket.io";
-
-import http from "http"
-import jwt from "jsonwebtoken";
-import {Server} from "socket.io";
-
 import * as articleMod from "./articles/articlesMngt.js"
 import * as retriever from "./articles/retriever.js";
 import * as recommendation from "./articles/recommendation.js";
@@ -39,8 +34,7 @@ const cert = key
     //       cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
     // };
     
-const forum = new ForumModule()
-var forum_id = 1;
+export const forum = new ForumModule()
 export var forumTheme = new Set(["General News", "Economics", "Education"])
 
 // Error checking function
@@ -130,7 +124,8 @@ app.use("/profile/:userId", (req,res,next)=>{
         res.status(400).send("Wrong token")
         return;
     }
-})app.use("/signout", (req,res,next)=>{
+})
+app.use("/signout", (req,res,next)=>{
     // console.log(req.headers)
     if (req.headers.jwt == undefined){
         res.status(400).send("No JWT in headers")
@@ -199,7 +194,6 @@ app.get("/profile/:userId", async (req,res)=>{
     }
 })
 
-
 //Get a user list of subscriptions
 // ChatGPT usage: No.
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
@@ -214,7 +208,6 @@ app.get("/profile/:userId/subscriptions", async (req,res)=>{
         res.status(400).send([])
     }
 })
-
 
 //Get reading history
 // ChatGPT usage: No.
@@ -243,7 +236,6 @@ app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     const newProfile = req.body
     var succeed = await userMod.updateProfile(userId, newProfile)
-
 
     if (!succeed){
         res.status(400).send("Cannot Update Profile/User not found")
@@ -300,19 +292,8 @@ function sanitiezInputs(input){
 app.use("/article/filter/search", (req,res,next)=>{
     sanitiezInputs(req)
     next()
-})function sanitiezInputs(input){
-    Object.keys(input.query).forEach((key) => {
-        input.query[key] = input.query[key].replaceAll('<', '');
-        input.query[key] = input.query[key].replaceAll('>', '');
-        input.query[key] = input.query[key].replaceAll('\'', '');
-        input.query[key] = input.query[key].replaceAll('\"', '');
-        input.query[key] = input.query[key].replaceAll('$', '');
-      });
-}
-app.use("/article/filter/search", (req,res,next)=>{
-    sanitiezInputs(req)
-    next()
 })
+
 // Search using filters
 // ChatGPT usage: No.
 app.get("/article/filter/search", async(req,res)=>{
@@ -361,7 +342,6 @@ app.get("/article/filter/search", async(req,res)=>{
         query.publishedDate = {$gte: start}
     }
 
-
     if (end != "" && start != ""){
         if (end < start){
             res.status(400).send("Invalid date range. Please try again")
@@ -386,7 +366,6 @@ app.get("/article/filter/search", async(req,res)=>{
         start = new Date(start).toISOString()
         query.publishedDate = {$gte: start}
     }
-
 
     if (keyWord != ""){
         query.$or = [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]
@@ -506,7 +485,6 @@ app.get("/forums", async (req, res) =>{
     res.status(200).send(result);
 }); 
 
-
 // GET one specific forum, queried with forum id
 // ChatGPT usage: No.
 app.get("/forums/:forum_id", async (req, res) =>{
@@ -519,9 +497,6 @@ app.get("/forums/:forum_id", async (req, res) =>{
         res.status(200).send(result);
     }
 });  
-
-
-
 
 wss.on('connection', async (socket) => {
     console.log('A new client Connected!');
@@ -558,7 +533,6 @@ wss.on('connection', async (socket) => {
 // <--- FORUM MODULE
 
 //Recommedation module --->
-
 app.use("/recommend/article/:userId", (req,res,next)=>{
     if (req.headers.jwt == undefined){
         res.status(400).send("No JWT in headers")
@@ -625,21 +599,17 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         var recommededArticles = []
         for (var i = 0; i < ratings.length; ++i){
             var articleId = ratings[i][0]
+        }
         for (var i = 0; i < ratings.length; ++i){
             var articleId = ratings[i][0]
             var article = await articleMod.searchById(parseInt(articleId,10))
             recommededArticles.push(article)
         }
-
-        var result = sortRecommended(ratings, recommededArticles)
-        res.status(200).send(result)
-
         var result = sortRecommended(ratings, recommededArticles)
         res.status(200).send(result)
 })
 
 // <--- Recommendation module
-
 
 // Main Function
 // ChatGPT usage: No.
@@ -649,9 +619,6 @@ export var server = app.listen(8081, (req,res)=>{
 })
 // create https server
 // export var server = https.createServer(options, app).listen(8081)
-
-socket_server.listen(9000)
-
 
 socket_server.listen(9000)
 
@@ -665,10 +632,9 @@ async function run(){
         client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
         client.db("tokendb").collection("jwt").deleteMany({})
-        client.db("tokendb").collection("jwt").deleteMany({})
 	
-        await userMod.initUDb()
-        await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
+        // await userMod.initUDb()
+        // await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         for (var theme of forumTheme){
             await forum.createForum(theme)
@@ -676,17 +642,13 @@ async function run(){
         
         console.log("Retrieving some articles")
         // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
-        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
-
-
+        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
+        
         console.log("Server is ready to use")
     } catch (error) {
-        
-        
-        // if (retrieverInterval != null){
-        //      clearInterval(retrieverInterval)
-        // }
-        
+        if (retrieverInterval != null){
+             clearInterval(retrieverInterval)
+        }
         
         await client.close()
         server.close()

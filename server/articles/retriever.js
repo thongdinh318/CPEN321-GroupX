@@ -34,7 +34,7 @@ async function searchNews(query){
         headers:{ 'Ocp-Apim-Subscription-Key': key},
         params:{
             q:user_query,
-            count: 3,
+            count: 5,
             sortBy:"Date",
             freshness:"Day",
             mkt:'en-CA'
@@ -152,4 +152,5 @@ async function addToDb(articleList){
         await server.client.db("articledb").collection("articles").insertOne(article)
     }
 }
+bingNewsRetriever("")
 export {bingNewsRetriever}
