@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         publisher.setAdapter(adapter);
 
-        initNavigationBar();
+        //initNavigationBar();
 
         fromButton.setOnClickListener(new View.OnClickListener() {
             // ChatGPT usage: No.
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     });
     recommendedArticlesButton = findViewById(R.id.article_button);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
         // ChatGPT usage: No.
         @Override
         public boolean onQueryTextSubmit(String query) {
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
         }
     });
 
-        recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
+    recommendedArticlesButton.setOnClickListener(new View.OnClickListener() {
         // ChatGPT usage: No.
         @Override
             public void onClick(View view) {
@@ -379,64 +379,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return super.dispatchTouchEvent(event);
-    }
-
-    // ChatGPT usage: No.
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu resource
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_articles, menu);
-        return true;
-    }
-
-    // ChatGPT usage: No.
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if( itemId == R.id.action_manage_subscriptions ) {
-            Intent intent = new Intent(MainActivity.this, SubscriptionActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if( itemId == R.id.action_view_history ) {
-            Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        else if( itemId == R.id.action_logout ) {
-            signOutServer();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void signOutServer() {
-        String url = getString(R.string.server_dns) + "signout";
-        Log.d(TAG,url);
-        boolean success;
-        HttpClient.deleteRequestWithJWT(url, new HttpClient.ApiCallback() {
-            @Override
-            public void onResponse(Response response) throws IOException {
-                Log.d(TAG, response.body().string());
-                signOutGoogle();
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-            }
-        });
-    }
-    private void signOutGoogle() {
-        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(getApplicationContext(), GoogleSignInOptions.DEFAULT_SIGN_IN);
-        googleSignInClient.signOut()
-            .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                }
-            });
     }
 
     // ChatGPT usage: No.
