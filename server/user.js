@@ -77,12 +77,14 @@ async function registerNewUser(userId, username, userEmail){
 
     if (userProfile.userId){
         await server.client.db("tokendb").collection("jwt").deleteOne({userId: userProfile.userId})
-        var token = jwt.sign({id:userId, exp:"30 days"}, server.key)
+        var token = jwt.sign({id:userId,}, server.key, {algorithm:'HS256'}) // local
+        // var token = jwt.sign({id:userId,}, server.key, {algorithm:'ES256'}) // cloud
         await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
         return ({user: userProfile, jwt: token})
     }
     var newUser = createNewUser(userId, username,userEmail)
-    var token = jwt.sign({id:userId, exp:"30 days"}, server.key)
+    var token = jwt.sign({id:userId}, server.key, {algorithm:'HS256'}) // local
+    // var token = jwt.sign({id:userId}, server.key, {algorithm:'ES256'}) // cloud
     await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
     await server.client.db("userdb").collection("profile").insertOne(newUser);
     return ({user: newUser, jwt: token})

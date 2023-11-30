@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groupx.quicknews.databinding.ActivityForumBinding;
+import com.groupx.quicknews.helpers.ForumSocket;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.forum.Comment;
 import com.groupx.quicknews.ui.forum.CommentsViewAdapter;
@@ -28,11 +29,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.WebSocket;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
 
 public class ForumActivity extends AppCompatActivity {
 
@@ -41,6 +51,7 @@ public class ForumActivity extends AppCompatActivity {
 
     private String forumID;
     private List<Comment> comments;
+    private Socket socket;
     final static String TAG = "ForumActivity";
 
     // ChatGPT usage: No.
@@ -50,10 +61,11 @@ public class ForumActivity extends AppCompatActivity {
 
         ActivityForumBinding binding;
         Button postButton;
-
+        Log.d(TAG, "Enter forum activity");
         binding = ActivityForumBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         forumID = getIntent().getStringExtra("forumID");
+        setSocket();
 
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
@@ -67,7 +79,7 @@ public class ForumActivity extends AppCompatActivity {
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                postComment(commentText.getText().toString());
+                emitComment(commentText.getText().toString());
                 commentText.getText().clear();
             }
         });
@@ -87,12 +99,53 @@ public class ForumActivity extends AppCompatActivity {
         });
     }
 
+    // ChatGPT usage: Yes
+    private void setSocket(){
+        try {
+            Log.d(TAG,"setting socket");
+            socket = IO.socket(getString(R.string.server_socket));
+        } catch (URISyntaxException e) {
+            Log.d(TAG, "Error connecting to socket:" + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     // ChatGPT usage: No.
     @Override
     protected void onStart() {
         super.onStart();
         getComments();
+        socket.connect();
+        socket.on(Socket.EVENT_CONNECT, onConnect);
+        socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        socket.on("new_message", onNewMessage);
     }
+
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Log.d(TAG, "Socket connected");
+        }
+    };
+
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            //TODO: do something when a new message is added to the forum
+            Log.d(TAG,"New message, update");
+            getComments();
+        }
+    };
+
+    //ChatGPT usage: Yes
+    private Emitter.Listener onConnectError = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Exception e = (Exception) args[0];
+            Log.d(TAG, "Socket.IO connection error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    };
 
     // ChatGPT usage: No.
     private void getComments () {
@@ -110,7 +163,7 @@ public class ForumActivity extends AppCompatActivity {
                         JSONArray jsonArray = new JSONArray(responseBody);
                         JSONObject json = jsonArray.getJSONObject(0);
                         JSONArray jsonComments = json.getJSONArray("comments");
-
+                        Log.d(TAG,jsonComments.toString());
                         //update forum comment view
                         ObjectMapper mapper = new ObjectMapper();
                         comments = Arrays.asList(mapper.readValue(jsonComments.toString(), Comment[].class));
@@ -173,6 +226,19 @@ public class ForumActivity extends AppCompatActivity {
         catch(Exception e) {
             Log.e(TAG, "exception", e);
         }
+    }
+
+    private void emitComment(String comment){
+        //Posting comment to the server
+        JSONObject json = new JSONObject();
+        try {
+            json.put("userId", LoginActivity.getUserId());
+            json.put("commentData", comment);
+            json.put("forum_id", forumID);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        socket.emit("message", json.toString());
     }
 
     //https://dev.to/ahmmedrejowan/hide-the-soft-keyboard-and-remove-focus-from-edittext-in-android-ehp

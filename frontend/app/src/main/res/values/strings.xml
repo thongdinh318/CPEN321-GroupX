@@ -117,6 +117,7 @@
     <!--endpoints-->
     <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
     <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
+    <string name="server_socket">https://quicknews.canadacentral.cloudapp.azure.com:9000/</string>
 
     <!--NavBar-->
     <string name="title_search">Search</string>

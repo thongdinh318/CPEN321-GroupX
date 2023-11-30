@@ -18,10 +18,6 @@ import com.groupx.quicknews.ui.articles.ArticlesViewAdapter;
 import java.util.List;
 
 public class ArticlesActivity extends AppCompatActivity {
-
-
-
-    
     // ChatGPT usage: No.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
