@@ -1,6 +1,6 @@
 import {expect, test, jest} from "@jest/globals"
 import { MongoClient } from "mongodb";
-import {server} from "../server.js"
+import {server, socket_server} from "../server.js"
 import { bingNewsRetriever } from "../articles/retriever.js";
 
 let connection
@@ -16,6 +16,7 @@ afterAll(async ()=>{
     await db.collection('articles').deleteMany({});
     await connection.close()
     server.close()
+    socket_server.close()
 });
 
 describe('test retriever', ()=>{
@@ -30,12 +31,23 @@ describe('test retriever', ()=>{
         expect(retrievedArticle[0].content).toStrictEqual("summary success")
     })
     //Chat GPT Usage: No
-    test("nonempty query", async()=>{
-        // Input: the query is not empty
+    test("retrieved article has multiple categories", async()=>{
+        // Input: the query provided gives result to an article has multiple categories 
         // Expected behavior: a new article is retrieved
         // Expected output: array of 1 article
 
-        const retrievedArticle = await bingNewsRetriever("abc")
+        const retrievedArticle = await bingNewsRetriever("1")
+        expect(retrievedArticle.length).toBe(1)
+        expect(retrievedArticle[0].title).toStrictEqual("test html")
+        expect(retrievedArticle[0].content).toStrictEqual("summary success")
+    })
+
+    test("retrieved article has undefined category", async()=>{
+        // Input: the query provided gives result to an article has undefined categories
+        // Expected behavior: a new article is retrieved
+        // Expected output: array of 1 article
+
+        const retrievedArticle = await bingNewsRetriever("2")
         expect(retrievedArticle.length).toBe(1)
         expect(retrievedArticle[0].title).toStrictEqual("test html")
         expect(retrievedArticle[0].content).toStrictEqual("summary success")

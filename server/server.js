@@ -21,7 +21,7 @@ export var app = express()
 app.use(express.json())
 
 // const wss = new WebSocketServer({ port: 9000 });
-const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
+export const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
 const wss = new Server(socket_server);
 //local test
 export const key = "secret"
@@ -498,9 +498,6 @@ function sortRecommended(ratingArr, articleArr){
                     mostRecentArticleIndex = j
                 }
             }
-            if (ratingArr[j][1] > ratingArr[i][1]){
-                break;
-            }
         }
         result.push(mostRecentArticle)
         if (mostRecentArticleIndex != i){
@@ -574,15 +571,15 @@ async function run(){
         }
         
         console.log("Retrieving some articles")
-        await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
-        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
+        // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
 
         console.log("Server is ready to use")
     } catch (error) {
         
-        if (retrieverInterval != null){
-             clearInterval(retrieverInterval)
-        }
+        // if (retrieverInterval != null){
+        //      clearInterval(retrieverInterval)
+        // }
         
         await client.close()
         server.close()

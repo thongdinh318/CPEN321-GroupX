@@ -27,6 +27,7 @@ export default class ForumModule{
         };
         forum.dateCreated = dateAdded();
         forum.comments = [];
+        console.log(forum)
         await server.client.db('ForumDB').collection('forums').insertOne(forum);
         forum_id++;
         return forum;

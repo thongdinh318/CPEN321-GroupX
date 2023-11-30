@@ -78,7 +78,6 @@ async function bingNewsRetriever(query){
     if (query ==""){
         query = "General News"
     }
-    
     var retrievedArticles =[]
     for (var article of result.value){
         var articleEntry = {}
@@ -96,8 +95,8 @@ async function bingNewsRetriever(query){
             webContent += sentence
             sentenceNum += 1 
         })
-        // var articleBody = await summarizer.summarizeArticle(webContent, Math.round(sentenceNum/2))
-        articleBody = webContent
+        var articleBody = await summarizer.summarizeArticle(webContent, Math.round(sentenceNum/2))
+        // var articleBody = webContent
         if (articleBody.message && articleBody.stack){
             continue
         }
@@ -108,19 +107,43 @@ async function bingNewsRetriever(query){
         
         articleEntry.publisher = article.provider[0].name.toLowerCase()
         articleEntry.publishedDate = article.datePublished
-        articleEntry.categories = article.category != undefined? [article.category]:[query]
-        
-        if (!server.forumTheme.has(articleEntry.categories)){
-            server.forumTheme.add(articleEntry.categories)
-            server.forum.createForum(articleEntry.categories)
+
+        var theme = article.category
+        if (Array.isArray(theme)){
+            articleEntry.categories = []
+            console.log("An array") 
+            for (var category of theme){
+                console.log("117" + category)
+                articleEntry.categories.push(category)
+                addToTheme(category)
+            }
         }
-        
+        else{
+            if (theme == undefined){
+                theme = query
+            }
+            
+            articleEntry.categories = [theme]
+            addToTheme(theme)
+        }
         retrievedArticles.push(articleEntry)
     }
     addToDb(retrievedArticles)
+    console.log(retrievedArticles)
     return retrievedArticles
 }
 
+function addToTheme(newTheme){
+    for (var theme of server.forumTheme){
+        if(theme.toLowerCase() === newTheme.toLowerCase()){
+            return
+        }
+    }
+    server.forumTheme.add(newTheme)
+    server.forum.createForum(newTheme)
+    console.log("new theme")
+    return
+}
 // ChatGPT usage: No.
 async function addToDb(articleList){
     for (var article of articleList){

@@ -4,7 +4,7 @@ const testArticle1 = {
     "content": "This will be a match i hope",
     "categories":[],
     "publisher":"cnn",
-    "publishedDate": "2023-11-20",
+    "publishedDate": "2023-04-20",
 }
 
 const testArticle2 = {
@@ -13,7 +13,7 @@ const testArticle2 = {
     "content": "Filter this pleasee",
     "categories":["education","environment"],
     "publisher":"cnn",
-    "publishedDate": "2023-04-02",
+    "publishedDate": "2023-11-02",
 }
 
 const testArticle3 = {

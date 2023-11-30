@@ -28,7 +28,23 @@ const mockSearchNewsSuccessReturn =
                 "provider":[{
                     "name": "test Publisher"
                 }],
-                "category":"test category"
+                "category":["test category", "General News"]
+            }
+        ]
+    }
+}
+
+const mockSearchNewsSuccessReturn2 =
+{
+    data:{
+        value:[
+            {
+                "name": "test html",
+                "url": "success_url",
+                "datePublished": "2023-11-22T00:00:00.0000000",
+                "provider":[{
+                    "name": "test Publisher"
+                }]
             }
         ]
     }
@@ -98,7 +114,12 @@ class mockAxios {
                     return Promise.resolve(mockSearchNewsEmptyReturn)
                 }
                 else{
-                    return Promise.resolve(mockSearchNewsSuccessReturn)
+                    if (msg[0] == "1"){
+                        return Promise.resolve(mockSearchNewsSuccessReturn)
+                    }
+                    else{
+                        return Promise.resolve(mockSearchNewsSuccessReturn2)
+                    }
                 }
                 
             }

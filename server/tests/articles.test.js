@@ -1,5 +1,5 @@
 import {expect, test, jest} from "@jest/globals" 
-import { app, server } from "../server.js";
+import { app, server, socket_server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { testUser1, testUser2, testUser3, testUser4 } from "./testUsers.js";
@@ -21,6 +21,7 @@ afterAll(async ()=>{
     await uDB.collection('profile').deleteMany({});
     await connection.close()
     server.close()
+    socket_server.close()
 });
 
 //interface GET /article/:articleId
@@ -79,23 +80,24 @@ describe('Search with filter', () => {
         const searchQuery = "?publisher=&after=&before=2023-04-30&categories=&kw="
         const res = await supertest(app).get("/article/filter/search" + searchQuery)
         expect(res.status).toStrictEqual(200);
-        delete testArticle2._id
+        delete testArticle1._id
         delete res.body[0]._id
-        expect(res.body[0]).toStrictEqual(testArticle2)
+        expect(res.body[0]).toStrictEqual(testArticle1)
     });
     //Chat GPT Usage: No
     test('Filter with only after date', async () => {
         // Input: ‘filters’ only contains after date query
         // Expected status code: 200
         // Expected behavior: articles with matching filter
-        // Expected output: array of matching articles, only 1 for testing
+        // Expected output: array of matching articles, only 2 for testing
 
         const searchQuery = "?publisher=&after=2023-04-30&before=&categories=&kw="
         const res = await supertest(app).get("/article/filter/search" + searchQuery)
         expect(res.status).toStrictEqual(200);
-        delete testArticle1._id
+        delete testArticle2._id
         delete res.body[0]._id
-        expect(res.body[0]).toStrictEqual(testArticle1)
+        // expect(res.body.length).toBe(2)
+        expect(res.body[0]).toStrictEqual(testArticle2)
     });
 
     test('Filter articles in the same date', async () => {
@@ -132,7 +134,7 @@ describe('Search with filter', () => {
         // Expected behavior: articles not found, no articles is returned
         // Expected output: String saying "No articles matched"
         //Chat GPT Usage: No
-        const searchQuery = "?publisher=&after=2023-09-01&before=2023-12-31&categories=education,environment&kw="
+        const searchQuery = "?publisher=&after=2023-09-01&before=2023-12-31&categories=notmatch&kw="
         const res = await supertest(app).get("/article/filter/search" + searchQuery)
         expect(res.status).toStrictEqual(400);
         expect(res.text).toStrictEqual("No articles matched");

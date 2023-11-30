@@ -1,5 +1,5 @@
 import {expect, test, jest} from "@jest/globals" 
-import { app, server } from "../server.js";
+import { app, server, socket_server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { testUser1, testUser2, testUser3, testUser4 } from "./testUsers.js";
@@ -22,6 +22,7 @@ afterAll(async ()=>{
     await aDB.collection('articles').deleteMany({});
     await connection.close()
     server.close()
+    socket_server.close()
 })
 
 //Interface GET /recommend/article/:userId
