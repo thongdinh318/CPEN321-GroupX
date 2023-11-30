@@ -53,7 +53,7 @@
             android:layout_toStartOf="@+id/button_post"
             android:layout_marginStart="16dp"
             android:background="@android:color/transparent"
-            android:hint="Enter Message"
+            android:hint="@string/hint_edit_post"
             android:inputType="textNoSuggestions"
             android:maxLines="5"
             tools:ignore="Autofill" />
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackground"
-            android:text="Post"
+            android:text="@string/button_post"
             android:textColor="@color/black" />
 
     </RelativeLayout>
