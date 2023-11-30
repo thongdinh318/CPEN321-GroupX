@@ -95,7 +95,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
             holder.articleDatePublished.setText(formatedDate);
         }
 
-        getImage(holder.articlePreviewImage, "https://www.youtube.com/watch?v=SbMesdse3RA"); //articles.get(position).getUrl()
+        getImage(holder.articlePreviewImage, articles.get(position).getUrl());
     }
 
     // ChatGPT usage: No.
