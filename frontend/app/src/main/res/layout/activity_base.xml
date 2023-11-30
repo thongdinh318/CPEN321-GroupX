@@ -6,25 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".BaseActivity">
 
-    <!--<com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar"
-        android:fitsSystemWindows="true"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:theme="@style/Theme.MyApplication.AppBarOverlay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"> >
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_height="?attr/actionBarSize"
-            android:layout_width="match_parent"
-            app:layout_collapseMode="pin"
-            app:popupTheme="@style/Theme.MyApplication.PopupOverlay" />
-
-    </com.google.android.material.appbar.AppBarLayout>-->
-
     <fragment
         android:id="@+id/nav_fragment_frame"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -34,8 +15,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/nav_bottom_graph"
         app:defaultNavHost="true"/>
+
+    <!--app:navGraph="@navigation/nav_bottom_graph"-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

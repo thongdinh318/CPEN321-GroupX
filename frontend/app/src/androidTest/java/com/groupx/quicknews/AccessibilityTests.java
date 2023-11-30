@@ -6,7 +6,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static org.hamcrest.Matchers.allOf;
 
 import android.view.View;
@@ -30,8 +29,8 @@ import org.junit.runner.RunWith;
 public class AccessibilityTests {
 
     @Rule
-    public ActivityScenarioRule<MainActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(MainActivity.class);
+    public ActivityScenarioRule<SearchArticlesFragment> mActivityScenarioRule =
+            new ActivityScenarioRule<>(SearchArticlesFragment.class);
 
     @Test
     public void forumAccessTest() {

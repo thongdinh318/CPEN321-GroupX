@@ -1,5 +1,7 @@
 package com.groupx.quicknews;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,14 +35,18 @@ public class SubscribedArticlesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_subscribed_articles, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_subscribed_articles, container, false);
 
         articleView = rootView.findViewById(R.id.view_article);
 
-        getSubscribedArticles();
-
         return rootView;
+    }
 
+    @Override
+    public void onViewCreated (@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        getSubscribedArticles();
     }
 
     public void getSubscribedArticles() {

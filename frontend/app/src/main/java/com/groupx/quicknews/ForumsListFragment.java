@@ -1,11 +1,9 @@
 package com.groupx.quicknews;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.forumlist.Forum;
 import com.groupx.quicknews.ui.forumlist.ForumsViewAdapter;
@@ -36,7 +33,7 @@ public class ForumsListFragment extends Fragment {
     // ChatGPT usage: No.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_forums_list, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_forums_list, container, false);
 
         viewForum = rootView.findViewById(R.id.view_forum);
         getForums();

@@ -1,21 +1,16 @@
 package com.groupx.quicknews;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Log;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -29,9 +24,7 @@ import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.articles.Article;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -39,7 +32,7 @@ import java.util.List;
 
 import okhttp3.Response;
 
-public class MainActivity extends Fragment {
+public class SearchArticlesFragment extends Fragment {
     private EditText category;
     private Button fromButton;
     private Button toButton;
@@ -56,7 +49,7 @@ public class MainActivity extends Fragment {
     // ChatGPT usage: No.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_search_articles, container, false);
 
 
         initDatePicker(DATEPICKER_FROM);

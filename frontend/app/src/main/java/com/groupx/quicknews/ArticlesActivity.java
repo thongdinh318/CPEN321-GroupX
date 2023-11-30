@@ -34,7 +34,7 @@ public class ArticlesActivity extends AppCompatActivity {
         Toolbar toolbar = binding.toolbar;
         setSupportActionBar(toolbar);
 
-        List<Article> articlesList = MainActivity.getArticleList();
+        List<Article> articlesList = SearchArticlesFragment.getArticleList();
         articleView = findViewById(R.id.view_article);
         articleView.setLayoutManager(new LinearLayoutManager(this));
         articleView.setAdapter(new ArticlesViewAdapter(getApplicationContext(), articlesList));

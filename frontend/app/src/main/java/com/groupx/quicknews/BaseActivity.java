@@ -2,10 +2,9 @@ package com.groupx.quicknews;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.Intent;
@@ -43,9 +42,33 @@ public class BaseActivity extends AppCompatActivity {
         binding = ActivityBaseBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        NavController navController = Navigation.findNavController(this, R.id.nav_fragment_frame);
-        NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
-        Log.d(TAG, navController.toString());
+        //NavController navController = Navigation.findNavController(this, R.id.nav_fragment_frame);
+        //NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+        replaceFragment(new SearchArticlesFragment());
+        binding.bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.action_search) {
+                replaceFragment(new SearchArticlesFragment());
+                return true;
+            }
+            else if (id == R.id.action_forums) {
+                replaceFragment(new ForumsListFragment());
+                return true;
+            }
+            else if (id == R.id.action_subscribed) {
+                replaceFragment(new SubscribedArticlesFragment());
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        });
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.nav_fragment_frame, fragment);
+        fragmentTransaction.commit();
     }
 
     // ChatGPT usage: No.
