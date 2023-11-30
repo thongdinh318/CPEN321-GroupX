@@ -35,6 +35,9 @@ describe("GET /recommend/article/:userId", ()=>{
         // Expected output: array of all articles in the db (3 for testing)
         const res = await supertest(app).get("/recommend/article/3").set("jwt","3");
         expect(res.status).toBe(200);
+        expect(res.body[0]).toStrictEqual(testArticle1);
+        expect(res.body[1]).toStrictEqual(testArticle2);
+        expect(res.body[2]).toStrictEqual(testArticle3);
         expect(res.body.length).toStrictEqual(3);
     });
     //Chat GPT Usage: No
