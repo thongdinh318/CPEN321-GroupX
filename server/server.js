@@ -410,13 +410,13 @@ wss.on('connection', async (socket) => {
         if (!result){
             console.log("Listen!! server emits orders")
             // wss.sockets.emit("new_message", "Could not post comment")
-            socket.to(socket.id).emit("message_error","Could not post comment");
+            wss.to(socket.id).emit("message_error","Could not post comment");
 
         }else{
             const newForum = await forum.getForum(forum_id);
 
             // Send every other user the updated forum
-            socket.emit("new_message",newForum)
+            wss.sockets.emit("new_message",newForum)
         }
 
     });
