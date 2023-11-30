@@ -55,38 +55,19 @@ export default class ForumModule{
         // return response.data;
         
     }
-
-    //ChatGPT usage: No
-    // deleteForum = async function(forumId){
-    //     // const response = await axios.delete(url + "/" +forumId);
-    //     // return response.data;
-    //     // console.log("Delete forum " + forumId)
-    //     // try{
-    //         const result = await server.client.db("ForumDB").collection("forums").deleteOne({id : forumId});
-    //         return result.acknowledged
+    addCommentToForumOld = async function(forumId, commentData, username){
+        var datePosted = dateAdded();
+        let comment = {
+            username,
+            content : commentData,
+            datePosted
+        }
+        const response = await server.client.db('ForumDB').collection('forums')
+                        .updateOne({ id : forumId}, { $push:{ comments : comment }});
+        console.log(response)
+        return (response["modifiedCount"] !== 0);
+    }
     
-    //     // }catch(err){
-    //     //     return(err);
-    //     // }
-        
-    // }
-
-    //ChatGPT usage: No
-    // deleteForums = async function(){
-    //     // const response = await axios.delete(url);
-    //     // return response.data;
-    //     // console.log("Delete all forums")
-    //     // try{
-    //         const result = await server.client.db('ForumDB').collection('forums').drop({});
-            
-    //         return result
-    
-    //     // }catch(err){
-    //     //     return (err)
-    //     // }
-        
-    // }
-
     //ChatGPT usage: No
     addCommentToForum = async function(forumId, commentData, username, parent_id){
         var datePosted = dateAdded();
@@ -113,9 +94,6 @@ export default class ForumModule{
 
             const parentUpdate = await server.client.db('ForumDB').collection('forums').updateOne({ id : forumId}, {$set : {comments : parentForum[0].comments}});
 
-
-            
-
             // If you try to reply to a comment at level 3 then it is proccessed as a sibling comment and not a child
             if(parentComment.commentLevel == 3){
                 commentLevel = 3;
@@ -127,8 +105,6 @@ export default class ForumModule{
             }
             
         }
-        
-
         let comment = {
             
             commentLevel: commentLevel, // max 3
@@ -139,11 +115,7 @@ export default class ForumModule{
             username,
             content : commentData,
             datePosted
-        }
-
-
-
-        
+        }        
         try{
             const response = await server.client.db('ForumDB').collection('forums')
                             .updateOne({ id : forumId}, { $push:{ comments : comment }});
