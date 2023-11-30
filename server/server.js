@@ -7,20 +7,25 @@ import http from "http"
 import jwt from "jsonwebtoken";
 import {Server} from "socket.io";
 
+import http from "http"
+import jwt from "jsonwebtoken";
+import {Server} from "socket.io";
+
 import * as articleMod from "./articles/articlesMngt.js"
 import * as retriever from "./articles/retriever.js";
 import * as recommendation from "./articles/recommendation.js";
 import ForumModule from "./forum_module/forum_interface.js";
 
+
 const uri = "mongodb://127.0.0.1:27017"
+
 
 export const client = new mongo.MongoClient(uri)
 
 export var app = express()
 app.use(express.json())
 
-// const wss = new WebSocketServer({ port: 9000 });
-export const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
+const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
 const wss = new Server(socket_server);
 //local test
 export const key = "secret"
@@ -33,10 +38,9 @@ const cert = key
     //       key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
     //       cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
     // };
-// export const socket_server = https.createServer(options, app);
-
-export const forum = new ForumModule()
-
+    
+const forum = new ForumModule()
+var forum_id = 1;
 export var forumTheme = new Set(["General News", "Economics", "Education"])
 
 // Error checking function
@@ -51,7 +55,12 @@ function isErr(error){
 
 //Verify and register users
 // ChatGPT usage: No.
+app.get("/", async (req,res) =>{
+    res.status(200).send("here");
+});
+
 app.post("/signin", async (req,res)=>{
+    console.log("Signed in")
     console.log("Signed in")
     const token = req.body.idToken;
     const payloadPromise =  userMod.verify(token)
@@ -59,7 +68,7 @@ app.post("/signin", async (req,res)=>{
         // console.log(payload)
         var loggedInUserPromise = userMod.registerNewUser(payload['sub'], payload['name'], payload['email'])
         loggedInUserPromise.then((loggedInUser)=>{
-            // console.log(loggedInUser)
+            console.log(loggedInUser)
             delete loggedInUser.user._id
             res.status(200).send({user: loggedInUser.user, jwt: loggedInUser.jwt})
         })
@@ -121,12 +130,65 @@ app.use("/profile/:userId", (req,res,next)=>{
         res.status(400).send("Wrong token")
         return;
     }
+})app.use("/signout", (req,res,next)=>{
+    // console.log(req.headers)
+    if (req.headers.jwt == undefined){
+        res.status(400).send("No JWT in headers")
+    }
+    try {
+        var decoded = jwt.verify(req.headers.jwt, cert)
+    } catch (err) {
+        res.status(403).send(err.message)
+        return
+    }
+    if (decoded.id === req.body.userId){
+        // console.log("Rigth token, proceed")
+        next()
+    }
+    else{
+        res.status(400).send("Wrong token")
+        return;
+    }
+})
+app.delete("/signout", async(req, res)=>{
+    var userId = req.body.userId
+    var jwtFound = await client.db("tokendb").collection("jwt").findOne({userId})
+    if (jwtFound){
+        client.db("tokendb").collection("jwt").deleteOne({userId})
+        res.status(200).send("Signned out Success")
+    }
+    else{
+        res.status(400).send("User already signed out")
+    }
+})
+
+
+app.use("/profile/:userId", (req,res,next)=>{
+    // console.log(req.headers)
+    if (req.headers.jwt == undefined){
+        res.status(400).send("No JWT in headers")
+    }
+    try {
+        var decoded = jwt.verify(req.headers.jwt, cert)
+    } catch (err) {
+        res.status(403).send(err.message)
+        return
+    }
+    if (decoded.id === req.params.userId){
+        // console.log("Rigth token, proceed")
+        next()
+    }
+    else{
+        res.status(400).send("Wrong token")
+        return;
+    }
 })
 //Get a user profile
 // ChatGPT usage: No.
 app.get("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     var user = await userMod.getProfile(userId)
+
 
     if (user.userId == undefined){
         res.status(400).send("User Profile not Found")
@@ -143,6 +205,7 @@ app.get("/profile/:userId", async (req,res)=>{
 app.get("/profile/:userId/subscriptions", async (req,res)=>{
     var userId = req.params.userId
     var userProfile = await userMod.getProfile(userId);
+
 
     if (userProfile.userId){
         res.status(200).send(userProfile.subscriptionList)
@@ -180,6 +243,7 @@ app.put("/profile/:userId", async (req,res)=>{
     var userId = req.params.userId
     const newProfile = req.body
     var succeed = await userMod.updateProfile(userId, newProfile)
+
 
     if (!succeed){
         res.status(400).send("Cannot Update Profile/User not found")
@@ -236,6 +300,18 @@ function sanitiezInputs(input){
 app.use("/article/filter/search", (req,res,next)=>{
     sanitiezInputs(req)
     next()
+})function sanitiezInputs(input){
+    Object.keys(input.query).forEach((key) => {
+        input.query[key] = input.query[key].replaceAll('<', '');
+        input.query[key] = input.query[key].replaceAll('>', '');
+        input.query[key] = input.query[key].replaceAll('\'', '');
+        input.query[key] = input.query[key].replaceAll('\"', '');
+        input.query[key] = input.query[key].replaceAll('$', '');
+      });
+}
+app.use("/article/filter/search", (req,res,next)=>{
+    sanitiezInputs(req)
+    next()
 })
 // Search using filters
 // ChatGPT usage: No.
@@ -243,8 +319,16 @@ app.get("/article/filter/search", async(req,res)=>{
     var publisher = req.query.publisher
     var end = req.query.before
     var start = req.query.after
+    var end = req.query.before
+    var start = req.query.after
     var categories = req.query.categories
     var keyWord = req.query.kw
+    console.log(req.query)
+    if (publisher == undefined || end == undefined || start == undefined || keyWord == undefined){
+        res.status(400).send("Invalid query. Please try again")
+        return;
+    }
+
     console.log(req.query)
     if (publisher == undefined || end == undefined || start == undefined || keyWord == undefined){
         res.status(400).send("Invalid query. Please try again")
@@ -278,7 +362,34 @@ app.get("/article/filter/search", async(req,res)=>{
     }
 
 
+    if (end != "" && start != ""){
+        if (end < start){
+            res.status(400).send("Invalid date range. Please try again")
+            return;
+        }
+
+        if (end == start){
+            end = new Date(new Date(end).setUTCHours(23,59,59,999)).toISOString()
+        }
+        else{
+            end = new Date(end).toISOString()
+        }
+        start = new Date(start).toISOString()
+        query.publishedDate = {$gte:start, $lte: end}
+    }
+    else if (end != ""){
+        end = new Date(end).toISOString()
+        query.publishedDate = {$lte: end}
+        
+    }
+    else if (start != ""){
+        start = new Date(start).toISOString()
+        query.publishedDate = {$gte: start}
+    }
+
+
     if (keyWord != ""){
+        query.$or = [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]
         query.$or = [{content: {$regex: keyWord, $options:"i"}}, {title: {$regex: keyWord, $options:"i"}}]
     }
     if (publisher != ""){
@@ -290,7 +401,9 @@ app.get("/article/filter/search", async(req,res)=>{
         query.categories = {$in: list}
     }
     console.log(query)
+    console.log(query)
     var foundArticles = await articleMod.searchByFilter(query)
+
 
     if (foundArticles.length == 0){
         res.status(400).send("No articles matched")
@@ -317,6 +430,26 @@ app.get("/article/kwsearch/search", async(req,res)=>{
     }
 })
 
+app.use("/article/subscribed/:userId", (req,res,next)=>{
+    if (req.headers.jwt == undefined){
+        res.status(400).send("No JWT in headers")
+        return
+    }
+    try {
+        var decoded = jwt.verify(req.headers.jwt, cert)
+    } catch (err) {
+        res.status(403).send(err.message)
+        return
+    }
+    if (decoded.id === req.params.userId){
+        // console.log("Rigth token, proceed")
+        next()
+    }
+    else{
+        res.status(400).send("Wrong token")
+        return;
+    }
+})
 app.use("/article/subscribed/:userId", (req,res,next)=>{
     if (req.headers.jwt == undefined){
         res.status(400).send("No JWT in headers")
@@ -388,48 +521,35 @@ app.get("/forums/:forum_id", async (req, res) =>{
 });  
 
 
-//Doesnt need this anymore since we use ws
-// app.use("/addComment/:forum_id", (req,res,next)=>{
-//     if (req.headers.jwt == undefined){
-//         res.status(400).send("No JWT in headers")
-//         return
-//     }
-//     try {
-//         var decoded = jwt.verify(req.headers.jwt, key)
-//     } catch (err) {
-//         res.status(403).send(err.message)
-//         return
-//     }
-//     if (decoded.id === req.body.userId){
-//         // console.log("Rigth token, proceed")
-//         next()
-//     }
-//     else{
-//         res.status(400).send("Wrong token")
-//         return;
-//     }
-// })
 
-wss.on('connection', async (ws) => {
+
+wss.on('connection', async (socket) => {
     console.log('A new client Connected!');
-  
-    ws.on('message', async (comment, isBinary) =>{
-        console.log("Received new message")  
-        comment = JSON.parse(comment);
 
+    socket.on('message', async (comment, isBinary) =>{
+        console.log("Sample Text for sockets");
+        comment = JSON.parse(comment);
         console.log(comment);
 
         let commentData = comment.commentData;
         let userId = comment.userId;
         const user = await userMod.getProfile(userId);
-        let forum_id = comment.forum_id;
-        let parent_id = comment.parent_id;
-        const result = await forum.addCommentToForumOld(parseInt(forum_id,10), commentData, user.username)
+        let forum_id = parseInt(comment.forum_id,10);
+        const result = await forum.addCommentToForum(forum_id, commentData, user.username)
         console.log(result)
-        if (result){
+
+        if (!result){
             console.log("Listen!! server emits orders")
-            wss.sockets.emit("new_message", "Make Get requests, my children")
+            // wss.sockets.emit("new_message", "Could not post comment")
+            wss.to(socket.id).emit("message_error","Could not post comment");
+
+        }else{
+            const newForum = await forum.getForum(forum_id);
+
+            // Send every other user the updated forum
+            wss.sockets.emit("new_message",newForum)
         }
+
     });
     
   });
@@ -500,12 +620,19 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         }
         var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
         console.log(ratings)
+        var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
+        console.log(ratings)
         var recommededArticles = []
+        for (var i = 0; i < ratings.length; ++i){
+            var articleId = ratings[i][0]
         for (var i = 0; i < ratings.length; ++i){
             var articleId = ratings[i][0]
             var article = await articleMod.searchById(parseInt(articleId,10))
             recommededArticles.push(article)
         }
+
+        var result = sortRecommended(ratings, recommededArticles)
+        res.status(200).send(result)
 
         var result = sortRecommended(ratings, recommededArticles)
         res.status(200).send(result)
@@ -525,6 +652,9 @@ export var server = app.listen(8081, (req,res)=>{
 
 socket_server.listen(9000)
 
+
+socket_server.listen(9000)
+
 async function run(){
     const RETRIEVE_INTERVAL = 4.32 * Math.pow(10,7) //12 hours
     try {
@@ -534,6 +664,7 @@ async function run(){
         client.db("userdb").collection("profile").deleteMany({})
         client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
         client.db("ForumDB").collection("forums").deleteMany({})
+        client.db("tokendb").collection("jwt").deleteMany({})
         client.db("tokendb").collection("jwt").deleteMany({})
 	
         await userMod.initUDb()
@@ -547,12 +678,15 @@ async function run(){
         // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
         // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
 
+
         console.log("Server is ready to use")
     } catch (error) {
+        
         
         // if (retrieverInterval != null){
         //      clearInterval(retrieverInterval)
         // }
+        
         
         await client.close()
         server.close()
