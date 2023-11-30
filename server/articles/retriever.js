@@ -96,7 +96,8 @@ async function bingNewsRetriever(query){
             webContent += sentence
             sentenceNum += 1 
         })
-        var articleBody = await summarizer.summarizeArticle(webContent, Math.round(sentenceNum/2))
+        // var articleBody = await summarizer.summarizeArticle(webContent, Math.round(sentenceNum/2))
+        articleBody = webContent
         if (articleBody.message && articleBody.stack){
             continue
         }
@@ -104,9 +105,16 @@ async function bingNewsRetriever(query){
             articleEntry.title = article.name
             articleEntry.content = articleBody
         }
+        
         articleEntry.publisher = article.provider[0].name.toLowerCase()
         articleEntry.publishedDate = article.datePublished
         articleEntry.categories = article.category != undefined? [article.category]:[query]
+        
+        if (!server.forumTheme.has(articleEntry.categories)){
+            server.forumTheme.add(articleEntry.categories)
+            server.forum.createForum(articleEntry.categories)
+        }
+        
         retrievedArticles.push(articleEntry)
     }
     addToDb(retrievedArticles)

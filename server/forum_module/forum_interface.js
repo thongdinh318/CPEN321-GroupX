@@ -5,6 +5,7 @@ import * as server from "../server.js"
 
 // const url = "http://" + host + ":" + forumDB_port  + "/forums";
 //ChatGPT usage: No
+var forum_id = 1;
 function dateAdded(){
 	const date = new Date();
 	let time = date.toLocaleDateString() + " " + date.toLocaleTimeString();	
@@ -19,14 +20,15 @@ export default class ForumModule{
 
     // DATABASE COMMUNICATION INTERFACES
     //ChatGPT usage: No
-    createForum = async function(forumId, forumName){
+    createForum = async function(forumName){
         let forum = {
-            id: forumId,
+            id: forum_id,
             name : forumName,
         };
         forum.dateCreated = dateAdded();
         forum.comments = [];
         await server.client.db('ForumDB').collection('forums').insertOne(forum);
+        forum_id++;
         return forum;
     }
 
@@ -67,7 +69,7 @@ export default class ForumModule{
         console.log(response)
         return (response["modifiedCount"] !== 0);
     }
-    
+
     //ChatGPT usage: No
     addCommentToForum = async function(forumId, commentData, username, parent_id){
         var datePosted = dateAdded();

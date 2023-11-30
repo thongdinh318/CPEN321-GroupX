@@ -35,8 +35,8 @@ const cert = key
     //       cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
     // };
     
-const forum = new ForumModule()
-var forum_id = 1;
+export const forum = new ForumModule()
+
 export var forumTheme = new Set(["General News", "Economics", "Education"])
 
 // Error checking function
@@ -469,6 +469,7 @@ wss.on('connection', async (ws) => {
 app.use("/recommend/article/:userId", (req,res,next)=>{
     if (req.headers.jwt == undefined){
         res.status(400).send("No JWT in headers")
+        return
     }
     try {
         var decoded = jwt.verify(req.headers.jwt, cert)
@@ -569,19 +570,19 @@ async function run(){
         await articleMod.initADb() // when testing, run the server once the comment out this line so we don't overcrowded the db with root article
 
         for (var theme of forumTheme){
-            await forum.createForum(forum_id++,theme)
+            await forum.createForum(theme)
         }
         
-        // console.log("Retrieving some articles")
-        // await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
-        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
+        console.log("Retrieving some articles")
+        await retriever.bingNewsRetriever("") //when testing, run the server once then comment out this line so we don't make unnecessary transactions to the api
+        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
 
         console.log("Server is ready to use")
     } catch (error) {
         
-        // if (retrieverInterval != null){
-        //      clearInterval(retrieverInterval)
-        // }
+        if (retrieverInterval != null){
+             clearInterval(retrieverInterval)
+        }
         
         await client.close()
         server.close()
