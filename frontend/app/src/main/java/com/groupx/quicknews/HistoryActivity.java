@@ -49,7 +49,7 @@ public class HistoryActivity extends AppCompatActivity {
     private void getArticleHistory() {
         // Make a get request to get the history of this user
         String getUrl = getString(R.string.server_dns) +"profile/"+ LoginActivity.getUserId() +"/history";
-        HttpClient.getRequest(getUrl, new HttpClient.ApiCallback() {
+        HttpClient.getRequestWithJWT(getUrl, new HttpClient.ApiCallback() {
             // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {
