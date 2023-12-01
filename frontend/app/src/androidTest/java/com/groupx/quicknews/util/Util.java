@@ -125,7 +125,9 @@ public class Util {
                     }
 
                     @Override
-                    public void describeMismatch(Object item, Description mismatchDescription) {}
+                    public void describeMismatch(Object item, Description mismatchDescription) {
+                        //not used
+                    }
 
                     @Override
                     public void describeTo(Description description) {

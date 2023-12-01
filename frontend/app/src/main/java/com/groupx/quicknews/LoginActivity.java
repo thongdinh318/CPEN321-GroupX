@@ -26,7 +26,6 @@ import okhttp3.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
-
     private static GoogleSignInAccount account;
     private static String userId;
     private static String token;
@@ -104,10 +103,6 @@ public class LoginActivity extends AppCompatActivity {
                 validateToken(idToken);
             }
         } catch (ApiException e) {
-
-            //AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-            //builder.setMessage("Error occurred while Signing in. Please try again").setTitle("Sign In Failed");
-            //AlertDialog dialog = builder.create();
 
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
