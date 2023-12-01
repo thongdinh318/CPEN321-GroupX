@@ -76,7 +76,7 @@ async function scrapeURL(url){
 async function bingNewsRetriever(query){
     var result = await searchNews(query)
     if (query ==""){
-        query = "General News"
+        query = "general"
     }
     
     var retrievedArticles =[]

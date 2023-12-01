@@ -13,7 +13,7 @@ beforeAll(async()=>{
 });
 
 afterAll(async ()=>{
-    await db.collection('articles').deleteMany({});
+    await db.collection('articledb').deleteMany({});
     await connection.close()
     server.close()
 });

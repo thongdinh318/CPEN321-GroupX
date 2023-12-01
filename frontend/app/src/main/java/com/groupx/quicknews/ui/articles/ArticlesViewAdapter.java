@@ -109,7 +109,7 @@ public class ArticlesViewAdapter extends RecyclerView.Adapter<ArticleViewHolder>
         try {
             JSONObject json = new JSONObject();
             json.put("articleId", article.getArticleId());
-            HttpClient.putRequestWithJWT(url, json.toString(), new HttpClient.ApiCallback(){
+            HttpClient.putRequest(url, json.toString(), new HttpClient.ApiCallback(){
                 // ChatGPT usage: No.
                 @Override
                 public void onResponse(Response response) {
