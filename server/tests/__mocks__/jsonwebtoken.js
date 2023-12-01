@@ -7,9 +7,11 @@ class MockJwt{
         if (token === "expired"){
             throw new Error("Expired Token")
         }
-        else{
-            return{id: token}
-        }
+        // else{
+            var returnVal = new Object()
+            returnVal.id = token
+            return returnVal
+        // }
     }
 }
 

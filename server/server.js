@@ -1,8 +1,8 @@
 import express from "express";
 import * as userMod from "./user.js"
 import * as mongo from "mongodb";
-import fs from "fs"
-import https from "https"
+// import fs from "fs"
+// import https from "https"
 import http from "http"
 import jwt from "jsonwebtoken";
 import {Server} from "socket.io";
@@ -38,7 +38,6 @@ const cert = key
 export const wss = new Server(socket_server)
 
 export const forum = new ForumModule()
-var forum_id = 1;
 //export var forumTheme = new Set(["General News", "Economics", "Education"])
 export var forumTheme = new Set([])
 // Error checking function
@@ -234,7 +233,7 @@ function sanitiezInputs(input){
         input.query[key] = input.query[key].replaceAll('<', '');
         input.query[key] = input.query[key].replaceAll('>', '');
         input.query[key] = input.query[key].replaceAll('\'', '');
-        input.query[key] = input.query[key].replaceAll('\"', '');
+        input.query[key] = input.query[key].replaceAll('"', '');
         input.query[key] = input.query[key].replaceAll('$', '');
       });
 }
@@ -247,8 +246,6 @@ app.use("/article/filter/search", (req,res,next)=>{
 // ChatGPT usage: No.
 app.get("/article/filter/search", async(req,res)=>{
     var publisher = req.query.publisher
-    var end = req.query.before
-    var start = req.query.after
     var end = req.query.before
     var start = req.query.after
     var categories = req.query.categories
@@ -331,6 +328,8 @@ app.use("/article/subscribed/:userId", (req,res,next)=>{
         res.status(400).send("No JWT in headers")
         return
     }
+    var something = 1;
+    something++
     try {
         var decoded = jwt.verify(req.headers.jwt, cert)
     } catch (err) {
@@ -356,7 +355,7 @@ app.get("/article/subscribed/:userId", async (req,res)=>{
     }
     const userSubList = userProfile.subscriptionList
     var query = new Object()
-    if (userSubList.length != 0){
+    if (userSubList.length !== 0){
         for (var i = 0; i < userSubList.length; i++){
             userSubList[i] = new RegExp(userSubList[i].toLowerCase())
         }
@@ -493,12 +492,12 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         }
         var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
         console.log(ratings)
-        var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
-        console.log(ratings)
+        // var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
+        // console.log(ratings)
         var recommededArticles = []
-        for (var i = 0; i < ratings.length; ++i){
-            var articleId = ratings[i][0]
-        }
+        // for (var i = 0; i < ratings.length; ++i){
+        //     var articleId = ratings[i][0]
+        // }
         for (var i = 0; i < ratings.length; ++i){
             var articleId = ratings[i][0]
             var article = await articleMod.searchById(parseInt(articleId,10))
@@ -514,8 +513,8 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 // ChatGPT usage: No.
 
 export var server = app.listen(8081, (req,res)=>{
-    var host = server.address().address
-    var port = server.address().port
+    // var host = server.address().address
+    // var port = server.address().port
 })
 
 // create https server
@@ -535,12 +534,12 @@ async function run(){
         // client.db("tokendb").collection("jwt").deleteMany({})
         // console.log("Retrieving some articles")
         
-        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
+        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
         console.log("Server is ready to use")
     } catch (error) {
-        // if (retrieverInterval != null){
-        //      clearInterval(retrieverInterval)
-        // }
+        if (retrieverInterval != null){
+             clearInterval(retrieverInterval)
+        }
         
         await client.close()
         server.close()

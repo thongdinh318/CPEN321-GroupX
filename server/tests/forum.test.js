@@ -1,8 +1,8 @@
-import {expect, test, jest} from "@jest/globals" ;
-import { app, server,socket_server,wss } from "../server.js";
+import {expect, test} from "@jest/globals" ;
+import { app, server,socket_server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
-import { forum1, forum2, forum3, forum1_after, comment1, comment2_bad_forumId ,comment3_bad_userId} from "./testForum.js";
+import { forum1, forum2, forum3, comment1, comment2_bad_forumId ,comment3_bad_userId} from "./testForum.js";
 import {io} from "socket.io-client"
 
 
@@ -134,7 +134,9 @@ describe("socket event: message",  ()=>{
             clientSockets[0].emit("message", JSON.stringify(comment1));
             
             // Short delay because the code is too fast
-            await new Promise(r => setTimeout(r, 200));
+            var prom = await new Promise(r => setTimeout(r, 200));
+            prom = "Nothing"
+            // prom.then(()=>{console.log("Timeout")})
 
             const correctResponse = {                                                                                                                                                                     
                 id: 1,
