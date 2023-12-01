@@ -15,10 +15,10 @@ import okio.ByteString;
 public class ForumSocket extends WebSocketListener {
 
     private static final String SOCKET_URL = "wss://quicknews.canadacentral.cloudapp.azure.com:9000/";
-    private WebSocket webSocket;
     private String TAG = "ForumSocket";
     public void openWebSocket() {
         Log.d(TAG, "opening socket");
+        WebSocket webSocket;
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
         builder.connectionSpecs(listOf(

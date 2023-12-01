@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groupx.quicknews.databinding.ActivityForumBinding;
-import com.groupx.quicknews.helpers.ForumSocket;
 import com.groupx.quicknews.helpers.HttpClient;
 import com.groupx.quicknews.ui.forum.Comment;
 import com.groupx.quicknews.ui.forum.CommentsViewAdapter;
@@ -136,11 +135,38 @@ public class ForumActivity extends AppCompatActivity {
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            //TODO: do something when a new message is added to the forum
-            Log.d(TAG,"New message, update");
-            getComments();
+            Log.d(TAG, "New message, update");
+            Comment comment = null;
+            if (args[0] instanceof JSONArray) {
+                try {
+                    JSONArray jsonArray = (JSONArray) args[0];
+                    JSONObject json = null;
+                    json = jsonArray.getJSONObject(0);
+                    JSONArray jsonComments = json.getJSONArray("comments");
+                    json = jsonComments.getJSONObject(jsonComments.length() - 1);
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    comment = mapper.readValue(json.toString(), Comment.class);
+                    addCommentToView(comment);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
         }
     };
+
+    private void addCommentToView(Comment comment) {
+        comments.add(comment);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                forumView.getAdapter().notifyItemInserted(comments.size()-1);
+            }
+        });
+    }
 
     //ChatGPT usage: Yes
     private Emitter.Listener onConnectError = new Emitter.Listener() {
@@ -207,18 +233,11 @@ public class ForumActivity extends AppCompatActivity {
             json.put("commentData", comment);
             HttpClient.postRequestWithJWT(url, json.toString(), new HttpClient.ApiCallback(){
                 @Override
-                public void onResponse(Response response) throws IOException{
+                public void onResponse(Response response) {
                     int statusCode = response.code();
                     if (statusCode == 200){
                         Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
-                        runOnUiThread(new Runnable() {
-                            // ChatGPT usage: No.
-                            @Override
-                            public void run() {
-                                comments.add(postedComment);
-                                forumView.getAdapter().notifyItemInserted(comments.size()-1);
-                            }
-                        });
+                        addCommentToView(postedComment);
                     }
                 }
                 // ChatGPT usage: No.
@@ -241,7 +260,7 @@ public class ForumActivity extends AppCompatActivity {
             json.put("commentData", comment);
             json.put("forum_id", forumID);
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         socket.emit("message", json.toString());
     }
