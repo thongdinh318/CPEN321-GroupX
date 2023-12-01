@@ -29,9 +29,7 @@ public class SubscribedArticlesFragment extends Fragment {
     private RecyclerView articleView;
 
     final static String TAG = "SubscribedFragment";
-
-    public SubscribedArticlesFragment() { }
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_subscribed_articles, container, false);
