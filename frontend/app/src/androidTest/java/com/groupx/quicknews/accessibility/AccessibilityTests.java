@@ -73,7 +73,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         ViewInteraction recyclerView = onView(
@@ -92,7 +92,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         supplySubs();
@@ -125,7 +125,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         removeSubs();
@@ -148,7 +148,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         ViewInteraction bottomNavigationItemView = onView(
@@ -164,7 +164,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         ViewInteraction materialButton = onView(
@@ -175,7 +175,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
@@ -187,7 +187,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         ViewInteraction bottomNavigationItemView = onView(
@@ -203,7 +203,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
@@ -215,7 +215,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         ViewInteraction overflowMenuButton = onView(
@@ -236,7 +236,7 @@ public class AccessibilityTests {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         onView(allOf(instanceOf(TextView.class), withParent(withId(R.id.toolbar))))
