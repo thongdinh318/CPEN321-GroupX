@@ -91,8 +91,9 @@ public class Util {
                     Date dateCheck = new SimpleDateFormat("dd/MM/yyyy").parse(dateString);
                     return !dateCheck.before(dateFrom) && !dateCheck.before(dateTo);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
+                return false;
             }
         };
     }
