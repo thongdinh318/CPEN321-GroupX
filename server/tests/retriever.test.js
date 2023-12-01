@@ -1,4 +1,4 @@
-import {expect, test, jest} from "@jest/globals"
+import {expect, test} from "@jest/globals"
 import { MongoClient } from "mongodb";
 import {server, socket_server} from "../server.js"
 import { bingNewsRetriever } from "../articles/retriever.js";

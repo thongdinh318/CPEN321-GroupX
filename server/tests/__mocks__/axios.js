@@ -152,13 +152,13 @@ class mockAxios {
         if (data.analysisInput.documents[0].text == "error content"){
             throw new Error("Error in Summary")
         }
-        else{
+        // else{
             return Promise.resolve({
                 headers:{
                     "operation-location": "success url"
                 }
             })
-        }
+        // }
     }    
 }
 export default mockAxios;
