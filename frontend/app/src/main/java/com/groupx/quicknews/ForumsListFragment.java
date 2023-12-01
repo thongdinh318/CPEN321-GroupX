@@ -30,8 +30,6 @@ public class ForumsListFragment extends Fragment {
     private List<Forum> forums;
     final static String TAG = "ForumsListActivity";
 
-    public ForumsListFragment() { }
-
     // ChatGPT usage: No.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

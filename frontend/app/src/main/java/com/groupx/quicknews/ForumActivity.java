@@ -83,6 +83,7 @@ public class ForumActivity extends AppCompatActivity {
         commentText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
+                //unused
             }
 
             @Override
@@ -91,7 +92,9 @@ public class ForumActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable editable) { }
+            public void afterTextChanged(Editable editable) {
+                //unused
+            }
         });
     }
 

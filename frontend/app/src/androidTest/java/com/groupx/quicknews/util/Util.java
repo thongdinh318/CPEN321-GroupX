@@ -77,7 +77,9 @@ public class Util {
 
         return new TypeSafeMatcher<View>() {
             @Override
-            public void describeTo(Description description) { }
+            public void describeTo(Description description) {
+                //unused
+            }
 
             @Override
             public boolean matchesSafely(View view) {
@@ -125,7 +127,9 @@ public class Util {
                     public void describeMismatch(Object item, Description mismatchDescription) {}
 
                     @Override
-                    public void describeTo(Description description) {}
+                    public void describeTo(Description description) {
+                        //unused
+                    }
                 };
             }
 
