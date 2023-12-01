@@ -40,9 +40,7 @@ public class SearchArticlesFragment extends Fragment {
     private Button toButton;
     private DatePickerDialog datePickerDialogFrom;
     private DatePickerDialog datePickerDialogTo;
-    private Button filterSearchButton;
     private SearchView searchView;
-    private Button recommendedArticlesButton;
     private Spinner publisher;
     private static List<Article> articleList = new ArrayList<>();
     final static String TAG = "MainActivity";
@@ -63,11 +61,11 @@ public class SearchArticlesFragment extends Fragment {
 
         fromButton = view.findViewById(R.id.date_picker_from);
         toButton = view.findViewById(R.id.date_picker_to);
-        filterSearchButton = view.findViewById(R.id.filter_search_button);
+        Button filterSearchButton = view.findViewById(R.id.filter_search_button);
         searchView = view.findViewById(R.id.searchView);
         publisher = view.findViewById(R.id.publisher_input);
         category = view.findViewById(R.id.category_input);
-        recommendedArticlesButton = view.findViewById(R.id.article_button);
+        Button recommendedArticlesButton = view.findViewById(R.id.article_button);
 
         category.setText("");
         fromButton.setText(getTodayDate());

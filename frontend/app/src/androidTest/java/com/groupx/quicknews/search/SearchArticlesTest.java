@@ -67,7 +67,7 @@ public class SearchArticlesTest {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         ViewInteraction searchAutoComplete = onView(
                 allOf(withClassName(is("android.widget.SearchView$SearchAutoComplete")),
@@ -100,7 +100,7 @@ public class SearchArticlesTest {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         //set date_to to Nov 28th
         ViewInteraction toButton = onView(
@@ -145,7 +145,7 @@ public class SearchArticlesTest {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         ViewInteraction searchAutoComplete = onView(
                 allOf(withClassName(is("android.widget.SearchView$SearchAutoComplete")),

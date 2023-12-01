@@ -51,7 +51,7 @@ public class LoginActivityTest {
         try {
             Thread.sleep(4000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         ViewInteraction bottomNavigationItemView = onView(

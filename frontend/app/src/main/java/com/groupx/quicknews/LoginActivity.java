@@ -14,8 +14,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.groupx.quicknews.helpers.HttpClient;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private static GoogleSignInAccount account;
     private static String userId;
     private static String token;
-    private int RC_SIGN_IN = 1;
+    private final int RC_SIGN_IN = 1;
     final static String TAG = "LoginActivity";
 
     // ChatGPT usage: No.

@@ -73,7 +73,7 @@ public class ForumActivityTest {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         ViewInteraction recyclerView = onView(
@@ -126,7 +126,7 @@ public class ForumActivityTest {
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         Activity activity = getCurrentActivity();
@@ -174,7 +174,7 @@ public class ForumActivityTest {
         button.perform(click());
         Thread.sleep(2000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
 
@@ -196,7 +196,7 @@ public class ForumActivityTest {
         button.check(matches(isNotEnabled()));
     }
 
-    //@Test
+    @Test
     public void receiveNewCommentTest() {
         ViewInteraction commentRecyclerView = onView(withId(R.id.view_comment));
         commentRecyclerView.check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
@@ -208,7 +208,7 @@ public class ForumActivityTest {
         try {
             Thread.sleep(12000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         onView(withId(R.id.view_comment))

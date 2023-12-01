@@ -224,34 +224,6 @@ public class ForumActivity extends AppCompatActivity {
         }
     }
 
-    // ChatGPT usage: No.
-    private void postComment(String comment) {
-        String url = getString(R.string.server_dns) + "addComment/" + forumID;
-        try {
-            JSONObject json = new JSONObject();
-            json.put("userId", LoginActivity.getUserId());
-            json.put("commentData", comment);
-            HttpClient.postRequestWithJWT(url, json.toString(), new HttpClient.ApiCallback(){
-                @Override
-                public void onResponse(Response response) {
-                    int statusCode = response.code();
-                    if (statusCode == 200){
-                        Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
-                        addCommentToView(postedComment);
-                    }
-                }
-                // ChatGPT usage: No.
-                @Override
-                public void onFailure(Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-        catch(Exception e) {
-            Log.e(TAG, "exception", e);
-        }
-    }
-
     private void emitComment(String comment){
         //Posting comment to the server
         JSONObject json = new JSONObject();
