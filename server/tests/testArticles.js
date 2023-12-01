@@ -22,7 +22,7 @@ const testArticle3 = {
     "content": "THis is a weird one",
     "categories":[],
     "publisher":"cbc",
-    "publishedDate": null,
+    "publishedDate": "2023-01-30T14:02:00.000Z",
 }
 
 export {testArticle1, testArticle2, testArticle3}

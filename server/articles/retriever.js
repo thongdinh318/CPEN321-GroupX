@@ -76,7 +76,7 @@ async function scrapeURL(url){
 async function bingNewsRetriever(query){
     var result = await searchNews(query)
     if (query ==""){
-        query = "general"
+        query = "General News"
     }
     var retrievedArticles =[]
     for (var article of result.value){
@@ -152,5 +152,4 @@ async function addToDb(articleList){
         await server.client.db("articledb").collection("articles").insertOne(article)
     }
 }
-bingNewsRetriever("")
 export {bingNewsRetriever}

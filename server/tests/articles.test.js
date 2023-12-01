@@ -220,12 +220,12 @@ describe("GET /article/subscribed/:userId", ()=>{
     test('Exist user id with no subs', async () => {
         // Input: userId that have not subscribed to any publishers
         // Expected status code: 200
-        // Expected behavior: return all articles in the db
-        // Expected output: array of articles
+        // Expected behavior: return no articles
+        // Expected output: return "No articles found"
 
         const res = await supertest(app).get("/article/subscribed/2").set("jwt","2")
-        expect(res.status).toStrictEqual(200);
-        expect(res.body.length).toStrictEqual(3);
+        expect(res.status).toStrictEqual(400);
+        expect(res.text).toStrictEqual("No articles found");
     });
     //Chat GPT Usage: No
     test('Exist user id with subs that has no articles in db', async () => {

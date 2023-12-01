@@ -58,9 +58,9 @@ export async function getArticleIds(){
     var articleIdList = [];
 
     articleCollection.forEach((article)=>{
-        if (article.articleId !== 0){
+        // if (article.articleId !== 0){
             articleIdList.push(article.articleId);
-        }
+        // }
     })
 
     return (articleIdList)
