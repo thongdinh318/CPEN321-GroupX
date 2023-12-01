@@ -53,31 +53,35 @@ public class HistoryActivity extends AppCompatActivity {
             // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {
-                try {
-                    Log.d(TAG, response.toString());
-                    if (response.code() == 200) {
-                        String responseBody = response.body().string();
-                        Log.d(TAG, responseBody);
-                        //update forums list
-                        ObjectMapper mapper = new ObjectMapper();
-                        articles = Arrays.asList(mapper.readValue(responseBody, Article[].class));
-                        runOnUiThread(new Runnable() {
-                            // ChatGPT usage: No.
-                            @Override
-                            public void run() {
-                                articleView.setLayoutManager(new LinearLayoutManager(HistoryActivity.this));
-                                articleView.setAdapter(new ArticlesViewAdapter(context, articles));
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                handleGetArticleResponse(response);
             }
             @Override
             public void onFailure(Exception e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void handleGetArticleResponse(Response response) {
+        try {
+            Log.d(TAG, response.toString());
+            if (response.code() == 200) {
+                String responseBody = response.body().string();
+                Log.d(TAG, responseBody);
+                //update forums list
+                ObjectMapper mapper = new ObjectMapper();
+                articles = Arrays.asList(mapper.readValue(responseBody, Article[].class));
+                runOnUiThread(new Runnable() {
+                    // ChatGPT usage: No.
+                    @Override
+                    public void run() {
+                        articleView.setLayoutManager(new LinearLayoutManager(HistoryActivity.this));
+                        articleView.setAdapter(new ArticlesViewAdapter(context, articles));
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
