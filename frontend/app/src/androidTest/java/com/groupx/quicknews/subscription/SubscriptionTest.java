@@ -164,8 +164,6 @@ public class SubscriptionTest {
                         isDisplayed()));
         materialTextView.perform(click());
 
-
-
         ViewInteraction switch_cbc = onView(
                 allOf(withId(R.id.sub_button_1), withText("Subscribe"),
                         childAtPosition(

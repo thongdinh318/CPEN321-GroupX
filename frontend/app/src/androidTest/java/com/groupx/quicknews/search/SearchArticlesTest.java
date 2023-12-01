@@ -68,6 +68,12 @@ public class SearchArticlesTest {
 
     @Test
     public void specialCharactersInSearch() {
+        //wait for previous tests toast to clear
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         ViewInteraction searchAutoComplete = onView(
                 allOf(withClassName(is("android.widget.SearchView$SearchAutoComplete")),
                         childAtPosition(
@@ -95,6 +101,12 @@ public class SearchArticlesTest {
 
     @Test
     public void invalidDateRange() {
+        //wait for previous tests toast to clear
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         //set date_to to Nov 28th
         ViewInteraction toButton = onView(
                 allOf(withId(R.id.date_picker_to), withText("NOV 30 2023"),
@@ -134,6 +146,12 @@ public class SearchArticlesTest {
 
     @Test
     public void noArticlesFound() {
+        //wait for previous tests toast to clear
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         ViewInteraction searchAutoComplete = onView(
                 allOf(withClassName(is("android.widget.SearchView$SearchAutoComplete")),
                         childAtPosition(
