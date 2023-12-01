@@ -46,9 +46,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Collection;
-import java.util.Objects;
-
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class ForumActivityTest {

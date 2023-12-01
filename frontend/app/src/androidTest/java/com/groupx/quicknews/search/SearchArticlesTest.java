@@ -15,7 +15,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -24,7 +23,6 @@ import static com.groupx.quicknews.util.Util.childAtPosition;
 import static com.groupx.quicknews.util.Util.dateWithinRange;
 import static com.groupx.quicknews.util.Util.getCurrentActivity;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -35,7 +33,6 @@ import android.content.Intent;
 import android.widget.DatePicker;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.intent.Intents;
@@ -44,13 +41,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.groupx.quicknews.BaseActivity;
-import com.groupx.quicknews.LoginActivity;
 import com.groupx.quicknews.R;
 import com.groupx.quicknews.util.ToastMatcher;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.jsoup.Connection;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;

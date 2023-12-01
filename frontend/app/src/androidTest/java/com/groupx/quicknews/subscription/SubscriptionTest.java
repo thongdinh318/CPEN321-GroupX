@@ -5,10 +5,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -19,13 +17,8 @@ import static com.groupx.quicknews.util.Util.getCurrentActivity;
 import static com.groupx.quicknews.util.Util.setChecked;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 import android.app.Activity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.ViewInteraction;
@@ -36,9 +29,7 @@ import androidx.test.filters.LargeTest;
 
 import com.groupx.quicknews.LoginActivity;
 import com.groupx.quicknews.R;
-import com.groupx.quicknews.util.RecyclerViewMatchers;
 import com.groupx.quicknews.util.ToastMatcher;
-import com.groupx.quicknews.util.Util;
 
 import org.junit.Rule;
 import org.junit.Test;
