@@ -328,8 +328,6 @@ app.use("/article/subscribed/:userId", (req,res,next)=>{
         res.status(400).send("No JWT in headers")
         return
     }
-    var something = 1;
-    something++
     try {
         var decoded = jwt.verify(req.headers.jwt, cert)
     } catch (err) {
