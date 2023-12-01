@@ -34,7 +34,7 @@ public class ForumSocket extends WebSocketListener {
     }
 
     @Override
-    public void onOpen(WebSocket webSocket, okhttp3.Response response) {
+    public void onOpen(WebSocket webSocket, Response response) {
         Log.d(TAG, "socket opened");
         // WebSocket connection opened
         // You can send messages or perform other actions here

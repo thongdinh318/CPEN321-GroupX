@@ -34,10 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.WebSocket;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
