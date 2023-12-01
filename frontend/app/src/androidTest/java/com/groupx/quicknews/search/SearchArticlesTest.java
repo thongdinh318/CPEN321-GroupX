@@ -239,29 +239,6 @@ public class SearchArticlesTest {
 
     @Test
     public void checkArticleCardView() {
-        //set date_from to Nov 28th
-        ViewInteraction fromButton = onView(
-                allOf(withId(R.id.date_picker_from), withText("NOV 30 2023"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
-                                        4),
-                                1),
-                        isDisplayed()));
-        fromButton.perform(click());
-
-        onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-                .perform(PickerActions.setDate(2023, 11, 28));
-
-        ViewInteraction fromConfirmButton = onView(
-                allOf(withId(android.R.id.button1), withText("OK"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withClassName(is("android.widget.ScrollView")),
-                                        0),
-                                3)));
-        fromConfirmButton.perform(scrollTo(), click());
-
         ViewInteraction searchButton = onView(
                 allOf(withId(R.id.filter_search_button), withText("Search"),
                         childAtPosition(
