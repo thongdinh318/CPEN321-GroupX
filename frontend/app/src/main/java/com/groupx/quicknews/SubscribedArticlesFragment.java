@@ -52,41 +52,44 @@ public class SubscribedArticlesFragment extends Fragment {
             // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {
-                try {
-                    Log.d(TAG, response.toString());
-                    if (response.code() == 200) {
-                        String responseBody = response.body().string();
-                        Log.d(TAG, responseBody);
-                        //update forums list
-                        ObjectMapper mapper = new ObjectMapper();
-                        articles = Arrays.asList(mapper.readValue(responseBody, Article[].class));
-                        getActivity().runOnUiThread(new Runnable() {
-                            // ChatGPT usage: No.
-                            @Override
-                            public void run() {
-                                Log.d(TAG, articles.toString());
-                                articleView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                                articleView.setAdapter(new ArticlesViewAdapter(getActivity(), articles));
-                            }
-                        });
-                    }
-                    else {
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getActivity().getApplicationContext(),
-                                        getString(R.string.toast_no_sub), Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                handleSubscribedArticleResponse(response);
             }
             @Override
             public void onFailure(Exception e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private void handleSubscribedArticleResponse(Response response) {
+        try {
+            Log.d(TAG, response.toString());
+            if (response.code() == 200) {
+                String responseBody = response.body().string();
+                Log.d(TAG, responseBody);
+                //update forums list
+                ObjectMapper mapper = new ObjectMapper();
+                articles = Arrays.asList(mapper.readValue(responseBody, Article[].class));
+                getActivity().runOnUiThread(new Runnable() {
+                    // ChatGPT usage: No.
+                    @Override
+                    public void run() {
+                        Log.d(TAG, articles.toString());
+                        articleView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        articleView.setAdapter(new ArticlesViewAdapter(getActivity(), articles));
+                    }
+                });
+            }
+            else {
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity().getApplicationContext(),
+                                getString(R.string.toast_no_sub), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

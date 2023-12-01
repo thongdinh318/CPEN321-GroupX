@@ -171,50 +171,13 @@ public class SearchArticlesFragment extends Fragment {
         return query;
     }
 
+    //chatGPT usage: no
     private void getArticlesAndSwitchViews(String url,  Class<?> targetActivity){
         HttpClient.getRequestWithJWT(url, new HttpClient.ApiCallback() {
             // ChatGPT usage: No.
             @Override
             public void onResponse(Response response) {
-                String json = null;
-                try {
-                    Log.d(TAG, "get articles:" +String.valueOf(response.code()));
-                    // Status code check
-                    if (response.code() == 400){
-                        String msg = response.body().string();
-                        Log.d(TAG, msg);
-                        getActivity().runOnUiThread(new Runnable() {
-                            public void run() {
-                                Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }
-                    else {
-                        json = response.body().string();
-                        Log.d(TAG,json);
-                        JSONArray res = new JSONArray(json);
-                        //Matched articles check
-                        if (res.length() == 0){
-                            getActivity().runOnUiThread(new Runnable() {
-                                public void run() {
-                                    Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-                        else {
-                            ObjectMapper mapper = new ObjectMapper();
-                            articleList = Arrays.asList(mapper.readValue(res.toString(), Article[].class));
-                            articleList = new ArrayList<>(articleList); //jacksons creates immutable list
-
-                            Intent articleIntent = new Intent(getActivity().getApplicationContext(), targetActivity);;
-                            startActivity(articleIntent);
-                        }
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                handleSearchResponse(response, targetActivity);
             }
 
             @Override
@@ -224,6 +187,47 @@ public class SearchArticlesFragment extends Fragment {
         });
     }
 
+    //chatGPT usage: no
+    private void handleSearchResponse(Response response, Class<?> targetActivity) {
+        String json = null;
+        try {
+            Log.d(TAG, "get articles:" +String.valueOf(response.code()));
+            // Status code check
+            if (response.code() == 400){
+                String msg = response.body().string();
+                Log.d(TAG, msg);
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getActivity().getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+                    }
+                });
+
+            }
+            else {
+                json = response.body().string();
+                Log.d(TAG,json);
+                JSONArray res = new JSONArray(json);
+                //Matched articles check
+                if (res.length() == 0){
+                    getActivity().runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getActivity().getApplicationContext(), "Error", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else {
+                    ObjectMapper mapper = new ObjectMapper();
+                    articleList = Arrays.asList(mapper.readValue(res.toString(), Article[].class));
+
+                    Intent articleIntent = new Intent(getActivity().getApplicationContext(), targetActivity);;
+                    startActivity(articleIntent);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     //Helper functions to create date pickers --->
     // ChatGPT usage: No.
