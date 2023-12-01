@@ -123,7 +123,6 @@ public class BaseActivity extends AppCompatActivity {
     private void signOutServer() {
         String url = getString(R.string.server_dns) + "signout";
         Log.d(TAG,url);
-        boolean success;
         HttpClient.deleteRequestWithJWT(url, new HttpClient.ApiCallback() {
             @Override
             public void onResponse(Response response) throws IOException {
