@@ -135,7 +135,7 @@ describe("socket event: message",  ()=>{
             
             // Short delay because the code is too fast
             // var t = function(){return;}
-            await new Promise(r => setTimeout(r, 200));
+            await new Promise((resolve) => setTimeout((resolve), 200));
             
             // prom.then(()=>{console.log("Timeout")})
 
