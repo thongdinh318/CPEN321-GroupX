@@ -1,5 +1,5 @@
 import {expect, test, jest} from "@jest/globals" ;
-import { app, server,wss } from "../server.js";
+import { app, server,socket_server,wss } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
 import { forum1, forum2, forum3, forum1_after, comment1, comment2_bad_forumId ,comment3_bad_userId} from "./testForum.js";
@@ -7,7 +7,8 @@ import {io} from "socket.io-client"
 
 
 let connection
-let fdb
+let fdb 
+let db
 let clientSockets= [];
 let clientRes = [];
 
@@ -21,9 +22,16 @@ beforeAll(async()=>{
     const uri = "mongodb://127.0.0.1:27017";
     connection = await MongoClient.connect(uri);
     fdb = connection.db("ForumDB");
-
+    db = connection.db("userdb");
     await fdb.collection("forums").deleteMany({})
-
+    await db.collection("profile").insertOne({ 
+        "userId": '0',
+        "username": "root",
+        "dob": null,
+        "email":null,
+        "subscriptionList":[],
+        "history":[]
+    })
     await fdb.collection('forums').insertOne({id: 1, name : "General News", comments : []});
     await fdb.collection('forums').insertOne({id: 2, name : "Economics", comments : []});
     await fdb.collection('forums').insertOne({id: 3, name : "Education", comments : []});
@@ -39,6 +47,7 @@ afterAll(async ()=>{
         clientSockets[i].disconnect();
     
     server.close()
+    socket_server.close()
 });
 
 

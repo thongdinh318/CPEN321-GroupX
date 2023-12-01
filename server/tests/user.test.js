@@ -19,6 +19,7 @@ beforeAll(async()=>{
 
 afterAll(async ()=>{
     await db.collection('profile').deleteMany({});
+    await connection.db("tokendb").collection("jwt").deleteMany({})
     await connection.close()
     server.close()
     socket_server.close()

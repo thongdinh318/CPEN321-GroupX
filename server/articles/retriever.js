@@ -152,5 +152,4 @@ async function addToDb(articleList){
         await server.client.db("articledb").collection("articles").insertOne(article)
     }
 }
-bingNewsRetriever("")
 export {bingNewsRetriever}

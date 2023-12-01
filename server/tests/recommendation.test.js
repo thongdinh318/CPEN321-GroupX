@@ -13,8 +13,8 @@ beforeAll(async ()=>{
     connection = await MongoClient.connect(uri);
     uDB = connection.db("userdb");
     aDB = connection.db("articledb");
-    await uDB.collection("profile").insertMany([testUser1, testUser2, testUser3, testUser4]);
     await aDB.collection("articles").insertMany([testArticle1, testArticle2, testArticle3]);  
+    await uDB.collection("profile").insertMany([testUser1, testUser2, testUser3, testUser4]);
 })
 
 afterAll(async ()=>{
