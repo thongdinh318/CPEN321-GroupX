@@ -47,6 +47,7 @@ public class ForumsViewAdapter extends RecyclerView.Adapter<ForumViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ForumViewHolder holder, int position) {
         holder.forumName.setText(forums.get(position).getForumName());
+        holder.commentCount.setText(forums.get(position).getNumComments());
     }
     // ChatGPT usage: No.
     @Override

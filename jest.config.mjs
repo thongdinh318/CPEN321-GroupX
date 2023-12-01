@@ -92,7 +92,6 @@ const config = {
   moduleNameMapper: {
     '^google-auth-library$': '<rootDir>/server/tests/__mocks__/google-auth-library.js',
     '^axios$': '<rootDir>/server/tests/__mocks__/axios.js',
-    '^jsonwebtoken$': '<rootDir>/server/tests/__mocks__/jsonwebtoken.js',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader

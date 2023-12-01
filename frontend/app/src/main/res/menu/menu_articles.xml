@@ -4,12 +4,15 @@
     tools:context="com.groupx.quicknews.ArticlesActivity" >
     <item
         android:id="@+id/action_view_history"
-        android:orderInCategory="100"
         android:title="History"
+        android:icon="@drawable/ic_baseline_history_24"
         app:actionViewClass="android.widget.SearchView" />
     <item
         android:id="@+id/action_manage_subscriptions"
-        android:title="Subscriptions"
-        android:orderInCategory="101"
+        android:title="Manage Subscriptions"
+        android:icon="@drawable/ic_baseline_checklist_rtl_24"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_logout"
+        android:title="Logout"/>
 </menu>

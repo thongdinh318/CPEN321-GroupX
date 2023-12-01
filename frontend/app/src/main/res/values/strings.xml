@@ -94,6 +94,7 @@
     <string name="redirect_article_button_caption">Read Full Article</string>
     <string name="title_activity_forum">Forum</string>
     <string name="title_activity_forums_list">Forums</string>
+    <string name="title_activity_subscribed">Subscribed Publishers Feed</string>
     <string name="username_caption">Username</string>
     <string name="dob_caption">Date of Birth</string>
     <string name="user_email_caption">User email</string>
@@ -102,21 +103,29 @@
     <string name="confirm_caption">Confirm</string>
     <string name="news_publisher_name">News Publisher</string>
     <string name="sub_button_caption">Subscribe</string>
-    <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
-    <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
-    <string name="server_socket">https://quicknews.canadacentral.cloudapp.azure.com:9000/</string>-->
-
-    <!--  <string name="server_dns">http://10.0.2.2:8081/</string>  For Local test -->
-    <!--<string name="server_socket">http://10.0.2.2:9000/</string> For Local test -->
-
     <string name="search_hint">Search articles</string>
     <string name="publisher_box">Publisher</string>
     <string name="categories_box">Category</string>
-    <string name="from_picker">From</string>
-    <string name="to_picker">To</string>
+    <string name="from_picker">From:</string>
+    <string name="to_picker">To:</string>
     <string name="date">mm/dd/yyyy</string>
     <string name="input_box">Input</string>
-    <string name="filter_search_button">Search By Filters</string>
+    <string name="filter_search_button">Search</string>
     <string name="get_recommended_button">Recommended Articles</string>
     <string name="forum_button">Forums</string>
+    <string name="toast_no_sub">Please subscribe to a publisher</string>
+
+    <string name="hint_edit_post">Enter Message</string>
+    <string name="button_post">Post</string>
+
+    <!--endpoints-->
+    <string name="server_client_id">474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com</string>
+    <string name="server_dns">https://quicknews.canadacentral.cloudapp.azure.com:8081/</string>
+    <string name="server_socket">https://quicknews.canadacentral.cloudapp.azure.com:9000/</string>
+
+    <!--NavBar-->
+    <string name="title_search">Search</string>
+    <string name="title_forums">Forums</string>
+    <string name="title_view_subscribed">Subscribed</string>
+
 </resources>

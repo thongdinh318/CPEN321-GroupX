@@ -14,6 +14,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.groupx.quicknews.helpers.HttpClient;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -125,11 +127,12 @@ public class LoginActivity extends AppCompatActivity {
                 // ChatGPT usage: No.
                 @Override
                 public void onResponse(Response response) {
-//                    Log.d(TAG, response.toString());
+
                     try{
                         int statusCode = response.code();
                         if (statusCode == 200){
                             String res = response.body().string();
+                            Log.d(TAG, res);
                             res = res.replace("\"", "\'");
                             JSONObject jsonRes = new JSONObject(res);
                             JSONObject user = jsonRes.getJSONObject("user");
@@ -163,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "No user signed in");
         }
         else {
-            Intent signInIntent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent signInIntent = new Intent(LoginActivity.this, BaseActivity.class);
             startActivity(signInIntent);
         }
     }

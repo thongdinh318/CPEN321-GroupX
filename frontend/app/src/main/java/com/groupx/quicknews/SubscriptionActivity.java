@@ -90,6 +90,7 @@ public class SubscriptionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 updateSubscriptionList();
+                finish();
             }
         });
     }
@@ -114,29 +115,7 @@ public class SubscriptionActivity extends AppCompatActivity {
                         String responseBody = response.body().string();
                         JSONArray userList = new JSONArray(responseBody);
                         Log.d(TAG, responseBody);
-                        if (userList.length() > 0) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (int i = 0; i < userList.length(); i++) {
-//                                        String sub = "";
-                                        try {
-                                            String sub = userList.getString(i);
-                                            if (sub.contains("cbc")){
-                                                cbc_sub.setChecked(true);
-                                                cbc_sub.jumpDrawablesToCurrentState();
-                                            } else if (sub.contains("cnn")) {
-                                                cnn_sub.setChecked(true);
-                                                cnn_sub.jumpDrawablesToCurrentState();
-                                            }
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                            });
-
-                        }
+                        setSwitchValues(userList);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -148,41 +127,69 @@ public class SubscriptionActivity extends AppCompatActivity {
             }
         });
     }
-    // ChatGPT usage: No.
-    private void updateSubscriptionList () {
-            JSONArray newSubArr = new JSONArray();
 
-            for (int i = 0; i<subscriptionList.size(); ++i){
-                newSubArr.put(subscriptionList.get(i));
-            }
-
-            String putUrl = getString(R.string.server_dns)+"profile/"+userId;
-            try {
-                JSONObject json = new JSONObject();
-                json.put("subscriptionList", newSubArr);
-                HttpClient.putRequestWithJWT(putUrl, json.toString(), new HttpClient.ApiCallback() {
-                    @Override
-                    public void onResponse(Response response) {
-                        if (response.code() == 200){
-                            try {
-                                String result = response.body().string();
-                                if ("true".equals(result)){
-                                    //TODO: Return to original view here
-                                    Log.d(TAG,result);
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
+    private void setSwitchValues(JSONArray userList) {
+        if (userList.length() <= 0) {
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < userList.length(); i++) {
+//                                    String sub = "";
+                    try {
+                        String sub = userList.getString(i);
+                        if (sub.contains("cbc")){
+                            cbc_sub.setChecked(true);
+                            cbc_sub.jumpDrawablesToCurrentState();
+                        } else if (sub.contains("cnn")) {
+                            cnn_sub.setChecked(true);
+                            cnn_sub.jumpDrawablesToCurrentState();
                         }
-                    }
-                    @Override
-                    public void onFailure(Exception e) {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                });
-            } catch (JSONException e) {
+                }
+            }
+        });
+
+    }
+
+    // ChatGPT usage: No.
+    private void updateSubscriptionList () {
+        JSONArray newSubArr = new JSONArray();
+
+        for (int i = 0; i<subscriptionList.size(); ++i){
+            newSubArr.put(subscriptionList.get(i));
+        }
+
+        String putUrl = getString(R.string.server_dns)+"profile/"+userId;
+        JSONObject json = new JSONObject();
+        try {
+            json.put("subscriptionList", newSubArr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        HttpClient.putRequestWithJWT(putUrl, json.toString(), new HttpClient.ApiCallback() {
+            @Override
+            public void onResponse(Response response) {
+                if (response.code() == 200){
+                    try {
+                        String result = response.body().string();
+                        if ("true".equals(result)){
+                            Log.d(TAG,result);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            @Override
+            public void onFailure(Exception e) {
                 e.printStackTrace();
             }
+        });
+
         }
 }

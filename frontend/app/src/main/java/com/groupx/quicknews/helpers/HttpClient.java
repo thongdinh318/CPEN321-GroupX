@@ -33,17 +33,17 @@ public class HttpClient {
                     .post(requestBody)
                     .build();
 
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        callback.onFailure(e);
-                    }
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    callback.onFailure(e);
+                }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        callback.onResponse(response);
-                    }
-                });
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    callback.onResponse(response);
+                }
+            });
         }
 
     // ChatGPT usage: No.
@@ -91,6 +91,8 @@ public class HttpClient {
             }
         });
     }
+
+  
     public static void  getRequestWithJWT(String url, ApiCallback callback) {
         String jwt = LoginActivity.getJWT();
         Request request = new Request.Builder()
@@ -114,7 +116,7 @@ public class HttpClient {
 
     }
 
-    public static void  putRequestWithJWT(String url, String json, ApiCallback callback) {
+    public static void putRequestWithJWT(String url, String json, ApiCallback callback) {
         MediaType JSON = MediaType.parse("application/json");
         String jwt = LoginActivity.getJWT();
         RequestBody requestBody = RequestBody.create(json, JSON);
@@ -147,6 +149,28 @@ public class HttpClient {
                 .url(url)
                 .addHeader("jwt", jwt)
                 .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                callback.onResponse(response);
+            }
+        });
+    }
+
+      // ChatGPT usage: No.
+    public static void deleteRequestWithJWT(String url, ApiCallback callback) {
+        String jwt = LoginActivity.getJWT();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("jwt", jwt)
+                .delete()
                 .build();
 
         client.newCall(request).enqueue(new Callback() {

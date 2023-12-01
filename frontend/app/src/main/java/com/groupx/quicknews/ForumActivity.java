@@ -3,6 +3,8 @@ package com.groupx.quicknews;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,10 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.WebSocket;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -73,12 +72,27 @@ public class ForumActivity extends AppCompatActivity {
         commentText = findViewById(R.id.edit_post);
 
         postButton = findViewById(R.id.button_post);
+        postButton.setEnabled(false);
         postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 emitComment(commentText.getText().toString());
                 commentText.getText().clear();
             }
+        });
+
+        commentText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                postButton.setEnabled(!charSequence.toString().trim().isEmpty());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) { }
         });
     }
 
@@ -102,6 +116,14 @@ public class ForumActivity extends AppCompatActivity {
         socket.on(Socket.EVENT_CONNECT, onConnect);
         socket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         socket.on("new_message", onNewMessage);
+    }
+
+    // ChatGPT Usage: No
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "Left forum");
+        socket.disconnect();
     }
 
     private Emitter.Listener onConnect = new Emitter.Listener() {
@@ -187,7 +209,6 @@ public class ForumActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Response response) throws IOException{
                     int statusCode = response.code();
-                    //TODO: update statusCodes so they convey more information
                     if (statusCode == 200){
                         Comment postedComment = new Comment(LoginActivity.getAccount().getDisplayName(), comment);
                         runOnUiThread(new Runnable() {
@@ -243,5 +264,4 @@ public class ForumActivity extends AppCompatActivity {
         }
         return super.dispatchTouchEvent(event);
     }
-
 }
