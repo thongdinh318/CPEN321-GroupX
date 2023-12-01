@@ -20,22 +20,22 @@ export const client = new mongo.MongoClient(uri)
 export var app = express()
 app.use(express.json())
 
-//const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
-//const wss = new Server(socket_server);
+export const socket_server = http.createServer(app); //maybe change this to https.createServer(app) for the cloud server?
+// const wss = new Server(socket_server);
 //local test
-//export const key = "secret"
-//const cert = key
+export const key = "secret"
+const cert = key
 
 // cloud
-export const key = fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem") //replace this with the private key on the server
-const cert = fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-var options = {
-          key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
-          cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
-};
+// export const key = fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem") //replace this with the private key on the server
+// const cert = fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+// var options = {
+//           key:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/privkey.pem"),
+//           cert:fs.readFileSync("/etc/letsencrypt/live/quicknews.canadacentral.cloudapp.azure.com/fullchain.pem")
+// };
 
-const socket_server = https.createServer(options,app)
-const wss = new Server(socket_server)
+// const socket_server = https.createServer(options,app)
+export const wss = new Server(socket_server)
 
 export const forum = new ForumModule()
 var forum_id = 1;
@@ -53,9 +53,6 @@ function isErr(error){
 
 //Verify and register users
 // ChatGPT usage: No.
-app.get("/", async (req,res) =>{
-    res.status(200).send("here");
-});
 
 app.post("/signin", async (req,res)=>{
     console.log("Signed in")
@@ -129,113 +126,7 @@ app.use("/profile/:userId", (req,res,next)=>{
         return;
     }
 })
-app.use("/signout", (req,res,next)=>{
-    // console.log(req.headers)
-    if (req.headers.jwt == undefined){
-        res.status(400).send("No JWT in headers")
-    }
-    try {
-        var decoded = jwt.verify(req.headers.jwt, cert)
-    } catch (err) {
-        res.status(403).send(err.message)
-        return
-    }
-    if (decoded.id === req.body.userId){
-        // console.log("Rigth token, proceed")
-        next()
-    }
-    else{
-        res.status(400).send("Wrong token")
-        return;
-    }
-})
-app.delete("/signout", async(req, res)=>{
-    var userId = req.body.userId
-    var jwtFound = await client.db("tokendb").collection("jwt").findOne({userId})
-    if (jwtFound){
-        client.db("tokendb").collection("jwt").deleteOne({userId})
-        res.status(200).send("Signned out Success")
-    }
-    else{
-        res.status(400).send("User already signed out")
-    }
-})
 
-
-app.use("/profile/:userId", (req,res,next)=>{
-    // console.log(req.headers)
-    if (req.headers.jwt == undefined){
-        res.status(400).send("No JWT in headers")
-    }
-    try {
-        var decoded = jwt.verify(req.headers.jwt, cert)
-    } catch (err) {
-        res.status(403).send(err.message)
-        return
-    }
-    if (decoded.id === req.params.userId){
-        // console.log("Rigth token, proceed")
-        next()
-    }
-    else{
-        res.status(400).send("Wrong token")
-        return;
-    }
-})
-app.use("/signout", (req,res,next)=>{
-    console.log(req.headers)
-    if (req.headers.jwt == undefined){
-        res.status(400).send("No JWT in headers")
-    }
-    try {
-        var decoded = jwt.verify(req.headers.jwt, cert)
-    } catch (err) {
-        res.status(403).send(err.message)
-        return
-    }
-    if (decoded.id === req.body.userId){
-        // console.log("Rigth token, proceed")
-        next()
-    }
-    else{
-        res.status(400).send("Middleware Signout Wrong token")
-        return;
-    }
-})
-app.delete("/signout", async(req, res)=>{
-    var userId = req.body.userId
-    
-    var jwtFound = await client.db("tokendb").collection("jwt").findOne({userId})
-    if (jwtFound){
-        client.db("tokendb").collection("jwt").deleteOne({userId})
-        res.status(200).send("Signned out Success")
-    }
-    else{
-        res.status(400).send("User already signed out")
-    }
-})
-
-
-app.use("/profile/:userId", (req,res,next)=>{
-    // console.log(req.headers)
-    if (req.headers.jwt == undefined){
-        res.status(400).send("No JWT in headers")
-    }
-    try {
-        var decoded = jwt.verify(req.headers.jwt, cert)
-    } catch (err) {
-        res.status(403).send(err.message)
-        return
-    }
-    if (decoded.id === req.params.userId){
-        // console.log("Rigth token, proceed")
-        next()
-    }
-    else{
-        res.status(400).send("Wrong token")
-        return;
-    }
-})
 //Get a user profile
 // ChatGPT usage: No.
 app.get("/profile/:userId", async (req,res)=>{
@@ -368,38 +259,7 @@ app.get("/article/filter/search", async(req,res)=>{
         return;
     }
 
-    console.log(req.query)
-    if (publisher == undefined || end == undefined || start == undefined || keyWord == undefined){
-        res.status(400).send("Invalid query. Please try again")
-        return;
-    }
-
     var query = {}
-    if (end != "" && start != ""){
-        if (end < start){
-            res.status(400).send("Invalid date range. Please try again")
-            return;
-        }
-
-        if (end == start){
-            end = new Date(new Date(end).setUTCHours(23,59,59,999)).toISOString()
-        }
-        else{
-            end = new Date(end).toISOString()
-        }
-        start = new Date(start).toISOString()
-        query.publishedDate = {$gte:start, $lte: end}
-    }
-    else if (end != ""){
-        end = new Date(end).toISOString()
-        query.publishedDate = {$lte: end}
-        
-    }
-    else if (start != ""){
-        start = new Date(start).toISOString()
-        query.publishedDate = {$gte: start}
-    }
-
     if (end != "" && start != ""){
         if (end < start){
             res.status(400).send("Invalid date range. Please try again")
@@ -437,7 +297,6 @@ app.get("/article/filter/search", async(req,res)=>{
         var list = categories.split(",")
         query.categories = {$in: list}
     }
-    console.log(query)
     console.log(query)
     var foundArticles = await articleMod.searchByFilter(query)
 
@@ -654,13 +513,13 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 // Main Function
 // ChatGPT usage: No.
 
-/*export var server = app.listen(8081, (req,res)=>{
+export var server = app.listen(8081, (req,res)=>{
     var host = server.address().address
     var port = server.address().port
-})*/
+})
 
 // create https server
-export var server = https.createServer(options, app).listen(8081)
+// export var server = https.createServer(options, app).listen(8081)
 
 socket_server.listen(9000)
 
@@ -670,18 +529,18 @@ async function run(){
         await client.connect()
         console.log("Successfully connect to db")
 
-        client.db("userdb").collection("profile").deleteMany({})
-        client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
-        client.db("ForumDB").collection("forums").deleteMany({})
-        client.db("tokendb").collection("jwt").deleteMany({})
-        console.log("Retrieving some articles")
-        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
+        // client.db("userdb").collection("profile").deleteMany({})
+        // client.db("articledb").collection("articles").deleteMany({}) //when testing, run the server once then comment out this line so the article db does not get cleaned up on startup
+        // client.db("ForumDB").collection("forums").deleteMany({})
+        // client.db("tokendb").collection("jwt").deleteMany({})
+        // console.log("Retrieving some articles")
         
+        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
         console.log("Server is ready to use")
     } catch (error) {
-        if (retrieverInterval != null){
-             clearInterval(retrieverInterval)
-        }
+        // if (retrieverInterval != null){
+        //      clearInterval(retrieverInterval)
+        // }
         
         await client.close()
         server.close()
