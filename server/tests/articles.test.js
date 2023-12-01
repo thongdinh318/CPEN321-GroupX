@@ -168,7 +168,7 @@ describe('Search with filter', () => {
         // Expected status code: 200
         // Expected behavior: sanitize the query then find and returns articles with matching filter
         // Expected output: array of matching articles
-        const searchQuery = "?publisher=CNN&after=2023-04-01&before=2023-12-31&categories=<edu$$$$$$$$$$cation>,<$$$$$$environment>&kw=$'\"\'<><><><>"
+        const searchQuery = "?publisher=CNN&after=2023-04-01&before=2023-12-31&categories=<edu$$$$$$$$$$cation>,<$$$$$$environment>&kw=$''<><><><>"
         const res = await supertest(app).get("/article/filter/search" + searchQuery)
         expect(res.status).toStrictEqual(200);
         delete res.body[0]._id;

@@ -128,7 +128,7 @@ class mockAxios {
                 
             }
         }
-        else {
+        // else {
             if (url === "err_url"){
                 return Promise.reject({
                     status:400,
@@ -145,7 +145,7 @@ class mockAxios {
                 status:200,
                 data:mockHtmlData
             })
-        }
+        // }
     }
 
     static post(url,data, config){

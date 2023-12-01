@@ -134,7 +134,9 @@ describe("socket event: message",  ()=>{
             clientSockets[0].emit("message", JSON.stringify(comment1));
             
             // Short delay because the code is too fast
-            await new Promise(r => setTimeout(r, 200));
+            var prom = await new Promise(r => setTimeout(r, 200));
+            prom = "Nothing"
+            // prom.then(()=>{console.log("Timeout")})
 
             const correctResponse = {                                                                                                                                                                     
                 id: 1,

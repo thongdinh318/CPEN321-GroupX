@@ -1,8 +1,8 @@
 import * as OAuth2Client from 'google-auth-library'
 import * as server from "./server.js"
+import jwt from "jsonwebtoken";
 const CLIENT_ID = "474807609573-3rub2rf78k2tirh75j9ivh9u16b7uor7.apps.googleusercontent.com"//TODO: replace witht the real client id
 const ggClient = new OAuth2Client.OAuth2Client(CLIENT_ID);
-import jwt from "jsonwebtoken";
 
 //Default user setting
 const defUser = { 
@@ -67,22 +67,21 @@ function verify(token){
 //ChatGPT usage: No
 async function registerNewUser(userId, username, userEmail){
     const userProfile = await checkAvailable(userId)
-
+    var token
     if (userProfile.userId){
         await server.client.db("tokendb").collection("jwt").deleteOne({userId: userProfile.userId})
     
-        var token = jwt.sign({id:userId,}, server.key, {algorithm:'HS256'}) // local
+        token = jwt.sign({id:userId,}, server.key, {algorithm:'HS256'}) // local
     
         // var token = jwt.sign({id:userId,}, server.key, {algorithm:'ES256'}) // cloud
     
-        await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})
+        await server.client.db("tokendb").collection("jwt").insertOne({userId, jwt: token})
         return ({user: userProfile, jwt: token})
     }
     
     var newUser = createNewUser(userId, username,userEmail)
     
-    var token = jwt.sign({id:userId}, server.key, {algorithm:'HS256'}) // local
-    // 
+    token = jwt.sign({id:userId}, server.key, {algorithm:'HS256'}) // local
     // var token = jwt.sign({id:userId}, server.key, {algorithm:'ES256'}) // cloud
     
     await server.client.db("tokendb").collection("jwt").insertOne({userId: userId, jwt: token})

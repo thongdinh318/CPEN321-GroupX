@@ -233,7 +233,7 @@ function sanitiezInputs(input){
         input.query[key] = input.query[key].replaceAll('<', '');
         input.query[key] = input.query[key].replaceAll('>', '');
         input.query[key] = input.query[key].replaceAll('\'', '');
-        input.query[key] = input.query[key].replaceAll('\"', '');
+        input.query[key] = input.query[key].replaceAll('"', '');
         input.query[key] = input.query[key].replaceAll('$', '');
       });
 }
@@ -246,8 +246,6 @@ app.use("/article/filter/search", (req,res,next)=>{
 // ChatGPT usage: No.
 app.get("/article/filter/search", async(req,res)=>{
     var publisher = req.query.publisher
-    var end = req.query.before
-    var start = req.query.after
     var end = req.query.before
     var start = req.query.after
     var categories = req.query.categories
@@ -330,6 +328,8 @@ app.use("/article/subscribed/:userId", (req,res,next)=>{
         res.status(400).send("No JWT in headers")
         return
     }
+    var something = 1;
+    something++
     try {
         var decoded = jwt.verify(req.headers.jwt, cert)
     } catch (err) {
@@ -492,12 +492,12 @@ app.get("/recommend/article/:userId", async (req,res)=>{
         }
         var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
         console.log(ratings)
-        var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
-        console.log(ratings)
+        // var ratings = await recommendation.collaborativeFilteringRecommendations(userId);
+        // console.log(ratings)
         var recommededArticles = []
-        for (var i = 0; i < ratings.length; ++i){
-            var articleId = ratings[i][0]
-        }
+        // for (var i = 0; i < ratings.length; ++i){
+        //     var articleId = ratings[i][0]
+        // }
         for (var i = 0; i < ratings.length; ++i){
             var articleId = ratings[i][0]
             var article = await articleMod.searchById(parseInt(articleId,10))
