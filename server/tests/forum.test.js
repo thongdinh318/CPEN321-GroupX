@@ -122,7 +122,7 @@ describe("GET /forums/:forum_id",  ()=>{
 
 
 
-describe("addComment sockets",  ()=>{
+describe("socket event: message",  ()=>{
     //Chat GPT Usage: No
 
     it("Successfully post a comment to a forum", async()=>{
