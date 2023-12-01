@@ -1,4 +1,4 @@
-import {expect, test, jest} from "@jest/globals" 
+import {expect, test} from "@jest/globals" 
 import { app, server, socket_server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
@@ -151,7 +151,7 @@ describe("PUT /profile/:userId/history", ()=>{
         expect(res.status).toBe(200);
         expect(res.text).toBe("Article added to history");
         const testUser = await db.collection("profile").findOne({"userId":"1"});
-        let historyElement = testUser.history.find((article) => article.articleId == 5)
+        let historyElement = testUser.history.find((article) => article.articleId === 5)
         expect(historyElement.views).toBe(1)
 
     });
@@ -168,7 +168,7 @@ describe("PUT /profile/:userId/history", ()=>{
         expect(res.status).toBe(200);
         expect(res.text).toBe("Article added to history");
         const testUser = await db.collection("profile").findOne({"userId":"1"});
-        let historyElement = testUser.history.find((article) => article.articleId == 1)
+        let historyElement = testUser.history.find((article) => article.articleId === 1)
         expect(historyElement.views).toBe(2)
 
     });

@@ -1,14 +1,14 @@
 import * as server from "../server.js"
 // const client = server.client
 
-const defArticle = {
-    "articleId": 0,
-    "views": 0,
-    "content": "",
-    "categories":[],
-    "publisher":"",
-    "publishedDate": null,
-}
+// const defArticle = {
+//     "articleId": 0,
+//     "views": 0,
+//     "content": "",
+//     "categories":[],
+//     "publisher":"",
+//     "publishedDate": null,
+// }
 
 
 //Intit DB Function-->
@@ -39,7 +39,7 @@ export async function searchByFilter(query){
     foundArticles = await foundArticles.toArray()
     
     // console.log(foundArticles)
-    if (foundArticles == undefined || foundArticles.length == 0){
+    if (foundArticles === undefined || foundArticles.length == 0){
         return []
     }
     

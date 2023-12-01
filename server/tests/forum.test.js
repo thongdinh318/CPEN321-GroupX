@@ -1,8 +1,8 @@
-import {expect, test, jest} from "@jest/globals" ;
-import { app, server,socket_server,wss } from "../server.js";
+import {expect, test} from "@jest/globals" ;
+import { app, server,socket_server } from "../server.js";
 import supertest from "supertest";
 import { MongoClient } from "mongodb";
-import { forum1, forum2, forum3, forum1_after, comment1, comment2_bad_forumId ,comment3_bad_userId} from "./testForum.js";
+import { forum1, forum2, forum3, comment1, comment2_bad_forumId ,comment3_bad_userId} from "./testForum.js";
 import {io} from "socket.io-client"
 
 

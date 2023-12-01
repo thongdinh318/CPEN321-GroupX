@@ -1,8 +1,8 @@
 import express from "express";
 import * as userMod from "./user.js"
 import * as mongo from "mongodb";
-import fs from "fs"
-import https from "https"
+// import fs from "fs"
+// import https from "https"
 import http from "http"
 import jwt from "jsonwebtoken";
 import {Server} from "socket.io";
@@ -38,7 +38,6 @@ const cert = key
 export const wss = new Server(socket_server)
 
 export const forum = new ForumModule()
-var forum_id = 1;
 //export var forumTheme = new Set(["General News", "Economics", "Education"])
 export var forumTheme = new Set([])
 // Error checking function
@@ -356,7 +355,7 @@ app.get("/article/subscribed/:userId", async (req,res)=>{
     }
     const userSubList = userProfile.subscriptionList
     var query = new Object()
-    if (userSubList.length != 0){
+    if (userSubList.length !== 0){
         for (var i = 0; i < userSubList.length; i++){
             userSubList[i] = new RegExp(userSubList[i].toLowerCase())
         }
@@ -514,8 +513,8 @@ app.get("/recommend/article/:userId", async (req,res)=>{
 // ChatGPT usage: No.
 
 export var server = app.listen(8081, (req,res)=>{
-    var host = server.address().address
-    var port = server.address().port
+    // var host = server.address().address
+    // var port = server.address().port
 })
 
 // create https server
@@ -535,12 +534,12 @@ async function run(){
         // client.db("tokendb").collection("jwt").deleteMany({})
         // console.log("Retrieving some articles")
         
-        // var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
+        var retrieverInterval = setInterval(retriever.bingNewsRetriever, RETRIEVE_INTERVAL, "") //get general news every 1 min
         console.log("Server is ready to use")
     } catch (error) {
-        // if (retrieverInterval != null){
-        //      clearInterval(retrieverInterval)
-        // }
+        if (retrieverInterval != null){
+             clearInterval(retrieverInterval)
+        }
         
         await client.close()
         server.close()
