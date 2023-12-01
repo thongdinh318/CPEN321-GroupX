@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.Checkable;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Root;
@@ -27,7 +28,10 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 public class Util {
 
@@ -73,6 +77,28 @@ public class Util {
         };
     }
 
+    public static Matcher<View> dateWithinRange( final String from, final String to) {
+
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) { }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                TextView textView = (TextView) view;
+                String dateString = textView.getText().toString();
+                try{
+                    Date dateFrom = new SimpleDateFormat("dd/MM/yyyy").parse(from);
+                    Date dateTo = new SimpleDateFormat("dd/MM/yyyy").parse(to);
+                    Date dateCheck = new SimpleDateFormat("dd/MM/yyyy").parse(dateString);
+                    return !dateCheck.before(dateFrom) && !dateCheck.before(dateTo);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
+
     public static Activity getCurrentActivity() {
         final Activity[] currentActivity = new Activity[1];
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
@@ -86,25 +112,6 @@ public class Util {
             }
         });
         return currentActivity[0];
-    }
-
-    //https://stackoverflow.com/questions/55653555/androidespresso-how-get-item-on-specific-position-of-recyclerview/55657804#55657804
-    public static Matcher<View> withIndex(final Matcher<View> matcher, final int index) {
-        return new TypeSafeMatcher<View>() {
-            int currentIndex = 0;
-
-            @Override
-            public void describeTo(Description description) {
-                description.appendText("with index: ");
-                description.appendValue(index);
-                matcher.describeTo(description);
-            }
-
-            @Override
-            public boolean matchesSafely(View view) {
-                return matcher.matches(view) && currentIndex++ == index;
-            }
-        };
     }
 
     //https://stackoverflow.com/questions/37819278/android-espresso-click-checkbox-if-not-checked
