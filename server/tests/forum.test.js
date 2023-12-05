@@ -134,8 +134,9 @@ describe("socket event: message",  ()=>{
             clientSockets[0].emit("message", JSON.stringify(comment1));
             
             // Short delay because the code is too fast
-            var prom = await new Promise(r => setTimeout(r, 200));
-            prom = "Nothing"
+            // var t = function(){return;}
+            await new Promise((resolve) => setTimeout((resolve), 200));
+            
             // prom.then(()=>{console.log("Timeout")})
 
             const correctResponse = {                                                                                                                                                                     
@@ -169,7 +170,7 @@ describe("socket event: message",  ()=>{
             // Expected output: Error message saying: "Could not post comment"
 
             clientSockets[1].emit("message", JSON.stringify(comment2_bad_forumId));
-            await new Promise(r => setTimeout(r, 200));
+            await new Promise((resolve) => setTimeout((resolve), 200));
             expect(clientRes[1]).toBe("Could not post comment");
 
         });
