@@ -89,7 +89,7 @@ public class Util {
                     Date dateFrom = new SimpleDateFormat("dd/MM/yyyy").parse(from);
                     Date dateTo = new SimpleDateFormat("dd/MM/yyyy").parse(to);
                     Date dateCheck = new SimpleDateFormat("dd/MM/yyyy").parse(dateString);
-                    return !dateCheck.before(dateFrom) && !dateCheck.before(dateTo);
+                    return !dateCheck.before(dateFrom) && !dateCheck.after(dateTo);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

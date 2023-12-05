@@ -98,13 +98,13 @@ public class SearchArticlesTest {
     public void invalidDateRange() {
         //wait for previous tests toast to clear
         try {
-            Thread.sleep(3000);
+            Thread.sleep(4000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         //set date_to to Nov 28th
         ViewInteraction toButton = onView(
-                allOf(withId(R.id.date_picker_to), withText("NOV 30 2023"),
+                allOf(withId(R.id.date_picker_to),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
@@ -189,7 +189,7 @@ public class SearchArticlesTest {
 
         //set date_from to Nov 28th
         ViewInteraction fromButton = onView(
-                allOf(withId(R.id.date_picker_from), withText("NOV 30 2023"),
+                allOf(withId(R.id.date_picker_from),
                         childAtPosition(
                                 childAtPosition(
                                         withClassName(is("androidx.constraintlayout.widget.ConstraintLayout")),
@@ -248,6 +248,12 @@ public class SearchArticlesTest {
                                 5),
                         isDisplayed()));
         searchButton.perform(click());
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         ViewInteraction articleView = onView(
                 allOf(withId(R.id.view_article),
